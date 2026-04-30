@@ -1,2 +1,0 @@
-# loyalty_dashboards
-loyalty_dashboards
