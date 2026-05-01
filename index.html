@@ -369,6 +369,16 @@
             color: var(--accent);
         }
 
+        #campaignTableBody tr {
+            cursor: pointer;
+            transition: background 0.15s ease, box-shadow 0.15s ease;
+        }
+        #campaignTableBody tr:hover {
+            background: rgba(142,68,173,0.06) !important;
+            box-shadow: inset 3px 0 0 #9b59b6;
+        }
+        #campaignTableBody tr:hover td:first-child { color: #8e44ad; }
+
         #clientTableBody tr {
             cursor: pointer;
             transition: background 0.15s ease, box-shadow 0.15s ease;
@@ -562,6 +572,7 @@
     <div class="nav-tabs">
         <button class="nav-tab active" onclick="switchPage('overview')">📊 Загальна</button>
         <button class="nav-tab" onclick="switchPage('economics')">💰 Лояльність</button>
+        <button class="nav-tab" onclick="switchPage('campaigns')">📢 Акції</button>
         <button class="nav-tab" onclick="switchPage('partners')">🤝 Партнери</button>
         <button class="nav-tab" onclick="switchPage('customers')">👥 Клієнт</button>
     </div>
@@ -653,9 +664,28 @@
             <!-- Divider -->
             <div style="border-top:1px dashed var(--border); margin:0.5rem 0;"></div>
 
+            <!-- Row 1.5: одиниці вимірювання -->
+            <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; margin-bottom:0.5rem;">
+                <span style="font-size:0.65rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap;">📐 Одиниці:</span>
+                <button class="unit-chip active" onclick="setUnit('count',this)">🔢 Кількість</button>
+                <button class="unit-chip" onclick="setUnit('boxiky',this)">📦 Боксики</button>
+                <button class="unit-chip" onclick="setUnit('uah',this)">₴ Гривні</button>
+                <button class="unit-chip" onclick="setUnit('promo',this)">🎟 Промокоди</button>
+                <button class="unit-chip" onclick="setUnit('en',this)">🚚 ЕН</button>
+                <span id="unitHint" style="font-size:0.65rem; color:var(--text-secondary); font-style:italic;"></span>
+            </div>
+            <style>
+                .unit-chip { padding:0.25rem 0.7rem; border-radius:20px; font-size:0.68rem; font-weight:600; border:1px solid var(--border); background:var(--bg-hover); color:var(--text-secondary); cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+                .unit-chip.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+                .unit-chip:hover:not(.active) { border-color:var(--primary); color:var(--primary); }
+            </style>
+
+            <!-- Divider -->
+            <div style="border-top:1px dashed var(--border); margin:0.5rem 0;"></div>
+
             <!-- Row 2: швидкі фільтри по поведінці клієнтів -->
-            <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
-                <span style="font-size:0.65rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap;">⚡ Клієнти:</span>
+            <div style="display:flex; gap:0.5rem; align-items:flex-end; flex-wrap:wrap;">
+                <span style="font-size:0.65rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap; padding-bottom:0.35rem;">⚡ Клієнти:</span>
 
                 <div style="display:flex; flex-direction:column; gap:0.2rem; min-width:130px;">
                     <span style="font-size:0.6rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.4px;">Заходив на партнера</span>
@@ -666,12 +696,21 @@
                     </select>
                 </div>
 
-                <div style="display:flex; flex-direction:column; gap:0.2rem; min-width:140px;">
-                    <span style="font-size:0.6rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.4px;">Копіював промокод</span>
+                <div style="display:flex; flex-direction:column; gap:0.2rem; min-width:160px;">
+                    <span style="font-size:0.6rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.4px;">🎯 Промокод НП (завдання)</span>
+                    <select id="qCopiedPromoNP" onchange="applyGlobalFilters()">
+                        <option value="all">Всі</option>
+                        <option value="yes">✅ Отримав</option>
+                        <option value="no">❌ Не отримував</option>
+                    </select>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:0.2rem; min-width:160px;">
+                    <span style="font-size:0.6rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.4px;">🏪 Промокод партнера</span>
                     <select id="qCopiedPromo" onchange="applyGlobalFilters()">
                         <option value="all">Всі</option>
-                        <option value="yes">✅ Так</option>
-                        <option value="no">❌ Ні</option>
+                        <option value="yes">✅ Отримав</option>
+                        <option value="no">❌ Не отримував</option>
                     </select>
                 </div>
 
@@ -718,729 +757,268 @@
 
         <!-- PAGE 0: OVERVIEW -->
         <div id="overview" class="page active">
-            <div class="grid grid-3x1">
-                <div class="card">
-                    <div class="card-title">👥 Активні Клієнти</div>
-                    <div class="card-value">
-                        28,450 <span class="card-unit">осіб</span>
-                    </div>
-                    <div class="card-change positive">↑ +4.8%</div>
+
+            <!-- ── КЛЮЧОВІ ІНСАЙТИ ── -->
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:0.5rem; margin-bottom:1rem;">
+                <div style="background:rgba(39,174,96,0.08); border:1px solid rgba(39,174,96,0.3); border-left:4px solid var(--success); border-radius:8px; padding:0.65rem 0.9rem;">
+                    <div style="font-size:0.6rem; font-weight:700; color:var(--success); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.2rem;">✅ Завдання працюють</div>
+                    <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary);">38% клієнтів виконали завдання</div>
+                    <div style="font-size:0.68rem; color:var(--text-secondary); margin-top:0.15rem;">і отримали промокод на знижку НП → прямий вплив на ЕН</div>
                 </div>
-                <div class="card">
-                    <div class="card-title">💰 Загальний Оборот Боксиків</div>
-                    <div class="card-value">
-                        128K <span class="card-unit">шт</span>
-                    </div>
-                    <div class="card-change positive">↑ +5.2%</div>
+                <div style="background:rgba(255,107,53,0.08); border:1px solid rgba(255,107,53,0.3); border-left:4px solid var(--accent); border-radius:8px; padding:0.65rem 0.9rem;">
+                    <div style="font-size:0.6rem; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.2rem;">⚠️ Великий відвал</div>
+                    <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary);">Зайшов на партнера → списав боксики: 62%</div>
+                    <div style="font-size:0.68rem; color:var(--text-secondary); margin-top:0.15rem;">38% заходять але не купують пропозицію — потребує аналізу</div>
                 </div>
-                <div class="card">
-                    <div class="card-title">🤝 Активних Партнерів</div>
-                    <div class="card-value">
-                        148 <span class="card-unit">магазинів</span>
-                    </div>
-                    <div class="card-change positive">↑ +12</div>
+                <div style="background:rgba(52,152,219,0.08); border:1px solid rgba(52,152,219,0.3); border-left:4px solid #3498db; border-radius:8px; padding:0.65rem 0.9rem;">
+                    <div style="font-size:0.6rem; font-weight:700; color:#3498db; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.2rem;">🏆 Топ категорія</div>
+                    <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary);">Технологія: конверсія → ЕН 62%</div>
+                    <div style="font-size:0.68rem; color:var(--text-secondary); margin-top:0.15rem;">Умова "доставка НП" в офері — найкращий драйвер ЕН</div>
+                </div>
+                <div style="background:rgba(155,89,182,0.08); border:1px solid rgba(155,89,182,0.3); border-left:4px solid #9b59b6; border-radius:8px; padding:0.65rem 0.9rem;">
+                    <div style="font-size:0.6rem; font-weight:700; color:#9b59b6; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.2rem;">📢 Акції ефективні</div>
+                    <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary);">Viber: відкрили 71%, промокод: 28%</div>
+                    <div style="font-size:0.68rem; color:var(--text-secondary); margin-top:0.15rem;">Найвища конверсія серед каналів акцій цього місяця</div>
+                </div>
+                <div style="background:rgba(243,156,18,0.08); border:1px solid rgba(243,156,18,0.3); border-left:4px solid var(--warning); border-radius:8px; padding:0.65rem 0.9rem;">
+                    <div style="font-size:0.6rem; font-weight:700; color:var(--warning); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.2rem;">💔 Проблема</div>
+                    <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary);">7 партнерів — 0 пропозицій</div>
+                    <div style="font-size:0.68rem; color:var(--text-secondary); margin-top:0.15rem;">Клієнти додали в улюблені, але купити нічого — мертвий трафік</div>
                 </div>
             </div>
 
-            <!-- System Health -->
-            <div class="grid grid-2x2">
+            <!-- ── KPI ── -->
+            <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:0.5rem; margin-bottom:1rem;">
+                <div class="card"><div class="card-title">👥 Активних клієнтів</div><div class="card-value">28,450</div><div class="card-change positive">↑ +4.8%</div></div>
+                <div class="card"><div class="card-title">📦 Боксиків на балансі</div><div class="card-value">128K</div><div class="card-change positive">↑ +6.2%</div></div>
+                <div class="card"><div class="card-title">🤝 Партнерів</div><div class="card-value">148</div><div class="card-change positive">↑ +12</div></div>
+                <div class="card"><div class="card-title">✅ Завдань виконано</div><div class="card-value">11,948</div><div class="card-change positive">↑ +5.6%</div></div>
                 <div class="card">
-                    <div class="card-title">📈 Загальні Показники по Місяцях</div>
-                    <div class="chart-container chart-large">
-                        <canvas id="chartOverviewTrend"></canvas>
-                    </div>
+                    <div class="card-title">🎯 Промокод завдання → ЕН НП</div>
+                    <div class="card-value" style="font-size:1.1rem;">38<span class="card-unit">%</span></div>
+                    <div style="font-size:0.6rem; color:var(--text-secondary); margin-top:0.2rem;">клієнтів що виконали завдання зробили ЕН</div>
                 </div>
                 <div class="card">
-                    <div class="card-title">🎯 Воронка: Комунікація → ЕН від Партнера</div>
-                    <div style="margin-top: 0.5rem; font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 1rem;">Кроки відмічені (опційно) можуть бути відсутні залежно від каналу</div>
+                    <div class="card-title">🏪 Промокод партнера → ЕН НП</div>
+                    <div class="card-value" style="font-size:1.1rem;">18<span class="card-unit">%</span></div>
+                    <div style="font-size:0.6rem; color:var(--text-secondary); margin-top:0.2rem;">клієнтів що списали боксики зробили ЕН</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">📢 Промокод акції → ЕН НП</div>
+                    <div class="card-value" style="font-size:1.1rem;">24<span class="card-unit">%</span></div>
+                    <div style="font-size:0.6rem; color:var(--text-secondary); margin-top:0.2rem;">клієнтів що отримали промокод зробили ЕН</div>
+                </div>
+            </div>
+
+            <!-- ── ВОРОНКИ ── -->
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.75rem; margin-bottom:1rem;">
+
+                <!-- Воронка завдань -->
+                <div class="card">
+                    <div class="card-title" style="font-size:0.72rem; margin-bottom:0.75rem;">✅ Завдання → ЕН</div>
                     <div class="funnel-container">
-                        <div class="funnel-step" style="animation-delay: 0s;">
-                            <div class="funnel-label" style="font-size:0.72rem;">📋 У завданні/кампанії <span style="color:var(--text-secondary); font-style:italic;">(опційно)</span></div>
-                            <div class="funnel-bar" style="width: 100%; background: linear-gradient(90deg, #7f8c8d, #95a5a6);">
-                                <span>45,200 осіб</span>
-                            </div>
-                            <div class="funnel-value">100%</div>
-                        </div>
-                        <div class="funnel-step" style="animation-delay: 0.1s;">
-                            <div class="funnel-label" style="font-size:0.72rem;">📤 Відправлена комунікація</div>
-                            <div class="funnel-bar" style="width: 88%; background: linear-gradient(90deg, #2980b9, #3498db);">
-                                <span>39,776 осіб</span>
-                            </div>
-                            <div class="funnel-value">88%</div>
-                        </div>
-                        <div class="funnel-step" style="animation-delay: 0.15s;">
-                            <div class="funnel-label" style="font-size:0.72rem;">✅ Доставлена <span style="color:var(--text-secondary); font-style:italic;">(опційно)</span></div>
-                            <div class="funnel-bar" style="width: 78%; background: linear-gradient(90deg, #27ae60, #2ecc71);">
-                                <span>35,256 осіб</span>
-                            </div>
-                            <div class="funnel-value">78%</div>
-                        </div>
-                        <div class="funnel-step" style="animation-delay: 0.2s;">
-                            <div class="funnel-label" style="font-size:0.72rem;">👁️ Прочитана <span style="color:var(--text-secondary); font-style:italic;">(опційно)</span></div>
-                            <div class="funnel-bar" style="width: 52%; background: linear-gradient(90deg, #f39c12, #e67e22);">
-                                <span>23,504 осіб</span>
-                            </div>
-                            <div class="funnel-value">52%</div>
-                        </div>
-                        <div class="funnel-step" style="animation-delay: 0.3s;">
-                            <div class="funnel-label" style="font-size:0.72rem;">📦 Зайшов у «Доставку бонусів»</div>
-                            <div class="funnel-bar" style="width: 38%;">
-                                <span>17,176 осіб</span>
-                            </div>
-                            <div class="funnel-value">38%</div>
-                        </div>
-                        <div class="funnel-step" style="animation-delay: 0.4s;">
-                            <div class="funnel-label" style="font-size:0.72rem;">🏪 Зайшов на партнера</div>
-                            <div class="funnel-bar" style="width: 26%;">
-                                <span>11,752 осіб</span>
-                            </div>
-                            <div class="funnel-value">26%</div>
-                        </div>
-                        <div class="funnel-step" style="animation-delay: 0.5s;">
-                            <div class="funnel-label" style="font-size:0.72rem;">🛒 Купив оффер за боксики</div>
-                            <div class="funnel-bar" style="width: 16%; background: linear-gradient(90deg, #8e44ad, #9b59b6);">
-                                <span>7,232 осіб</span>
-                            </div>
-                            <div class="funnel-value">16%</div>
-                        </div>
-                        <div class="funnel-step" style="animation-delay: 0.55s;">
-                            <div class="funnel-label" style="font-size:0.72rem;">📋 Скопіював промокод</div>
-                            <div class="funnel-bar" style="width: 11%; background: linear-gradient(90deg, #c0392b, #e74c3c);">
-                                <span>4,972 осіб</span>
-                            </div>
-                            <div class="funnel-value">11%</div>
-                        </div>
-                        <div class="funnel-step" style="animation-delay: 0.6s;">
-                            <div class="funnel-label" style="font-size:0.72rem;">🚚 ЕН від партнера (X днів)</div>
-                            <div class="funnel-bar" style="width: 7%; background: linear-gradient(90deg, #1a1a2e, #16213e);">
-                                <span>3,164 осіб</span>
-                            </div>
-                            <div class="funnel-value">7%</div>
-                        </div>
+                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Побачили завдання</div><div class="funnel-bar" style="width:100%; background:linear-gradient(90deg,#0d7c4f,#27ae60)"><span style="font-size:0.65rem;">28,450</span></div><div class="funnel-value" style="font-size:0.65rem;">100%</div></div>
+                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Почали завдання</div><div class="funnel-bar" style="width:68%; background:linear-gradient(90deg,#0d7c4f,#27ae60)"><span style="font-size:0.65rem;">19,346</span></div><div class="funnel-value" style="font-size:0.65rem;">68%</div></div>
+                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Виконали</div><div class="funnel-bar" style="width:42%; background:linear-gradient(90deg,#0d7c4f,#27ae60)"><span style="font-size:0.65rem;">11,948</span></div><div class="funnel-value" style="font-size:0.65rem;">42%</div></div>
+                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Промокод НП отримали</div><div class="funnel-bar" style="width:38%; background:linear-gradient(90deg,#0d7c4f,#27ae60)"><span style="font-size:0.65rem;">10,806</span></div><div class="funnel-value" style="font-size:0.65rem;">38%</div></div>
+                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Зробили ЕН з промокодом</div><div class="funnel-bar" style="width:22%; background:linear-gradient(90deg,#0d7c4f,#27ae60)"><span style="font-size:0.65rem;">6,259</span></div><div class="funnel-value" style="font-size:0.65rem;">22%</div></div>
+                    </div>
+                </div>
+
+                <!-- Воронка партнерів -->
+                <div class="card">
+                    <div class="card-title" style="font-size:0.72rem; margin-bottom:0.75rem;">🏪 Партнер → ЕН</div>
+                    <div class="funnel-container">
+                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Зайшли в розділ</div><div class="funnel-bar" style="width:100%; background:linear-gradient(90deg,#ff6b35,#e67e22)"><span style="font-size:0.65rem;">28,450</span></div><div class="funnel-value" style="font-size:0.65rem;">100%</div></div>
+                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Зайшли на партнера</div><div class="funnel-bar" style="width:58%; background:linear-gradient(90deg,#ff6b35,#e67e22)"><span style="font-size:0.65rem;">16,501</span></div><div class="funnel-value" style="font-size:0.65rem;">58%</div></div>
+                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Списали боксики</div><div class="funnel-bar" style="width:36%; background:linear-gradient(90deg,#ff6b35,#e67e22)"><span style="font-size:0.65rem;">10,242</span></div><div class="funnel-value" style="font-size:0.65rem;">36%</div></div>
+                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Промокод партнера отримали</div><div class="funnel-bar" style="width:28%; background:linear-gradient(90deg,#ff6b35,#e67e22)"><span style="font-size:0.65rem;">7,966</span></div><div class="funnel-value" style="font-size:0.65rem;">28%</div></div>
+                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Зробили ЕН з умовою НП</div><div class="funnel-bar" style="width:18%; background:linear-gradient(90deg,#ff6b35,#e67e22)"><span style="font-size:0.65rem;">5,121</span></div><div class="funnel-value" style="font-size:0.65rem;">18%</div></div>
+                    </div>
+                </div>
+
+                <!-- Воронка акцій -->
+                <div class="card">
+                    <div class="card-title" style="font-size:0.72rem; margin-bottom:0.75rem;">📢 Акція → ЕН</div>
+                    <div class="funnel-container">
+                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Відправлено</div><div class="funnel-bar" style="width:100%; background:linear-gradient(90deg,#8e44ad,#9b59b6)"><span style="font-size:0.65rem;">45,200</span></div><div class="funnel-value" style="font-size:0.65rem;">100%</div></div>
+                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Доставлено</div><div class="funnel-bar" style="width:88%; background:linear-gradient(90deg,#8e44ad,#9b59b6)"><span style="font-size:0.65rem;">39,776</span></div><div class="funnel-value" style="font-size:0.65rem;">88%</div></div>
+                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Відкрили / клікнули</div><div class="funnel-bar" style="width:52%; background:linear-gradient(90deg,#8e44ad,#9b59b6)"><span style="font-size:0.65rem;">23,504</span></div><div class="funnel-value" style="font-size:0.65rem;">52%</div></div>
+                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Промокод отримали</div><div class="funnel-bar" style="width:28%; background:linear-gradient(90deg,#8e44ad,#9b59b6)"><span style="font-size:0.65rem;">12,656</span></div><div class="funnel-value" style="font-size:0.65rem;">28%</div></div>
+                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Зробили ЕН</div><div class="funnel-bar" style="width:24%; background:linear-gradient(90deg,#8e44ad,#9b59b6)"><span style="font-size:0.65rem;">10,848</span></div><div class="funnel-value" style="font-size:0.65rem;">24%</div></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ── ВЕЛИКЕ ПОЛОТНО ── -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1rem;">
+                <div class="stat-section-box">
+                    <div class="stat-section-label">📈 Динаміка ЕН від кожного каналу по місяцях</div>
+                    <div class="chart-container"><canvas id="chartOverviewTrend"></canvas></div>
+                </div>
+                <div class="stat-section-box">
+                    <div class="stat-section-label">🌡️ Сегмент × Категорія партнера (боксиків списано)</div>
+                    <div style="overflow-x:auto; margin-top:0.4rem;">
+                        <table style="width:100%; font-size:0.68rem; border-collapse:collapse;">
+                            <thead>
+                                <tr>
+                                    <th style="padding:0.3rem 0.4rem; text-align:left; color:var(--text-secondary); font-size:0.6rem; white-space:nowrap;">Сегмент</th>
+                                    <th style="padding:0.3rem 0.35rem; text-align:center; font-size:0.6rem;">🏥</th>
+                                    <th style="padding:0.3rem 0.35rem; text-align:center; font-size:0.6rem;">📱</th>
+                                    <th style="padding:0.3rem 0.35rem; text-align:center; font-size:0.6rem;">👕</th>
+                                    <th style="padding:0.3rem 0.35rem; text-align:center; font-size:0.6rem;">🍔</th>
+                                    <th style="padding:0.3rem 0.35rem; text-align:center; font-size:0.6rem;">👶</th>
+                                </tr>
+                            </thead>
+                            <tbody id="heatmapBody"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
 
-            <!-- Cross-Tab Metrics Matrix -->
-            <div class="section-title">🔗 Матриця Пересічень (Клієнт × Партнер × Лояльність)</div>
-            <div class="card" style="padding: 0;">
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Метрика</th>
-                                <th>Клієнти</th>
-                                <th>Партнери</th>
-                                <th>Лояльність</th>
-                                <th>Інтеграція</th>
-                                <th>Статус</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>Активність</strong></td>
-                                <td>28,450 осіб</td>
-                                <td>2,847 пропозиції</td>
-                                <td>128K боксиків</td>
-                                <td>98.5%</td>
-                                <td><span class="badge badge-success">Відмінна</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Конверсія</strong></td>
-                                <td>34.2%</td>
-                                <td>42.5%</td>
-                                <td>35.2%</td>
-                                <td>37.3%</td>
-                                <td><span class="badge badge-success">Здорова</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Втрати</strong></td>
-                                <td>8.2%</td>
-                                <td>5.1%</td>
-                                <td>6.8%</td>
-                                <td>6.7%</td>
-                                <td><span class="badge badge-warning">Контролюється</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Середня Вартість</strong></td>
-                                <td>287 боксиків</td>
-                                <td>852 боксиків</td>
-                                <td>73.7%</td>
-                                <td>404 боксиків</td>
-                                <td><span class="badge badge-success">Стійка</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Задоволеність</strong></td>
-                                <td>7.8/10</td>
-                                <td>8.2/10</td>
-                                <td>7.9/10</td>
-                                <td>7.93/10</td>
-                                <td><span class="badge badge-success">Висока</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Утримання (30дн)</strong></td>
-                                <td>82%</td>
-                                <td>75%</td>
-                                <td>78%</td>
-                                <td>78.3%</td>
-                                <td><span class="badge badge-success">Добра</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.75rem; margin-bottom:1rem;">
+                <div class="stat-section-box">
+                    <div class="stat-section-label">🏆 Топ партнерів по ЕН що генерують</div>
+                    <div class="chart-container"><canvas id="chartTopPartners"></canvas></div>
+                </div>
+                <div class="stat-section-box">
+                    <div class="stat-section-label">📊 Активність сегментів (радар)</div>
+                    <div class="chart-container"><canvas id="chartOverviewRadar"></canvas></div>
+                </div>
+                <div class="stat-section-box">
+                    <div class="stat-section-label">💎 Розподіл по RFM</div>
+                    <div class="chart-container"><canvas id="chartOverviewRFM"></canvas></div>
                 </div>
             </div>
 
-            <!-- Distribution by Customer Lifecycle -->
-            <div class="section-title">🔄 Розподіл Клієнтів по Життєвому Циклу</div>
-            <div class="grid grid-2x2">
-                <div class="card">
-                    <div class="card-title">Сегментація Клієнтів</div>
-                    <div class="chart-container">
-                        <canvas id="chartLifecycle"></canvas>
-                    </div>
+        </div>
+
+
+
+        <!-- PAGE: АКЦІЇ -->
+        <div id="campaigns" class="page">
+
+            <!-- KPI -->
+            <div class="grid grid-3x1" style="margin-bottom:1rem;">
+                <div class="card"><div class="card-title">📢 Активних акцій</div><div class="card-value">12 <span class="card-unit">акцій</span></div><div class="card-change positive">↑ +3 нових</div></div>
+                <div class="card"><div class="card-title">📨 Відправлено (цей місяць)</div><div class="card-value">284K <span class="card-unit">повідомлень</span></div><div class="card-change positive">↑ +8.2%</div></div>
+                <div class="card"><div class="card-title">🚚 ЕН від акцій</div><div class="card-value">10,848 <span class="card-unit">шт</span></div><div class="card-change positive">↑ +5.4%</div></div>
+            </div>
+
+            <!-- Ефективність каналів -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1rem;">
+                <div class="stat-section-box">
+                    <div class="stat-section-label">📊 Ефективність каналів (середнє по всіх акціях)</div>
+                    <div class="chart-container"><canvas id="chartCampaignChannels"></canvas></div>
                 </div>
-                <div class="card">
-                    <div class="card-title">Розподіл по Активності</div>
-                    <div class="chart-container">
-                        <canvas id="chartActivityStatus"></canvas>
-                    </div>
+                <div class="stat-section-box">
+                    <div class="stat-section-label">📈 ЕН від акцій по місяцях</div>
+                    <div class="chart-container"><canvas id="chartCampaignEN"></canvas></div>
                 </div>
-                <div class="card">
-                    <div class="card-title">Поточний Стан Боксиків</div>
-                    <div class="chart-container">
-                        <canvas id="chartBoxStatus"></canvas>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-title">Ефективність Каналів</div>
-                    <div class="chart-container">
-                        <canvas id="chartChannels"></canvas>
+            </div>
+
+            <!-- Список акцій -->
+            <div class="section-title">📋 Список акцій</div>
+            <div style="margin-bottom:0.6rem; padding:0.5rem 0.75rem; background:rgba(255,107,53,0.07); border-left:3px solid var(--accent); border-radius:4px; font-size:0.75rem; color:var(--text-secondary);">
+                👆 Натисніть на рядок акції, щоб побачити детальну воронку
+            </div>
+
+            <div style="margin-bottom:0.75rem; display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
+                <select id="campaignChannelFilter" onchange="filterCampaigns()" style="max-width:160px;">
+                    <option value="all">Всі канали</option>
+                    <option value="Viber">💬 Viber</option>
+                    <option value="Push">🔔 Push</option>
+                    <option value="Email">📧 Email</option>
+                    <option value="SMS">💬 SMS</option>
+                </select>
+                <select id="campaignStatusFilter" onchange="filterCampaigns()" style="max-width:160px;">
+                    <option value="all">Всі статуси</option>
+                    <option value="active">🟢 Активна</option>
+                    <option value="done">✅ Завершена</option>
+                </select>
+                <input type="text" id="campaignSearch" placeholder="🔍 Пошук за назвою..." oninput="filterCampaigns()" style="max-width:250px;">
+            </div>
+
+            <!-- LIST -->
+            <div id="campaignListView">
+                <div class="card" style="padding:0;">
+                    <div class="table-container">
+                        <table id="campaignTable">
+                            <thead>
+                                <tr>
+                                    <th>Назва акції</th>
+                                    <th>Канал</th>
+                                    <th>Аудиторія</th>
+                                    <th>Відправлено</th>
+                                    <th>Доставлено</th>
+                                    <th>Відкрили</th>
+                                    <th>Промокод отримали</th>
+                                    <th>ЕН</th>
+                                    <th>Конв. → ЕН</th>
+                                    <th>Статус</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="campaignTableBody"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
 
-            <!-- Heatmap Matrix -->
-            <div class="section-title">🔥 Матриця Взаємодії: Клієнти ↔ Партнери</div>
-            <div class="card">
-                <div style="overflow-x: auto;">
-                    <table style="min-width: 800px;">
-                        <thead>
-                            <tr>
-                                <th style="min-width: 150px;">Сегмент Клієнта</th>
-                                <th>🏥 Медицина</th>
-                                <th>👕 Одяг</th>
-                                <th>🍔 Їжа</th>
-                                <th>📱 Технологія</th>
-                                <th>👶 Дитячі</th>
-                                <th>📊 Середнє</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr style="background: rgba(255, 107, 53, 0.05);">
-                                <td style="font-weight: bold; color: var(--primary);">🆕 Нові (22%)</td>
-                                <td style="text-align: center; color: var(--success); font-weight: bold;">58%</td>
-                                <td style="text-align: center;">32%</td>
-                                <td style="text-align: center;">18%</td>
-                                <td style="text-align: center; color: var(--success); font-weight: bold;">62%</td>
-                                <td style="text-align: center;">28%</td>
-                                <td style="text-align: center; font-weight: bold;">39.6%</td>
-                            </tr>
-                            <tr>
-                                <td style="font-weight: bold; color: var(--primary);">💪 Ядро (45%)</td>
-                                <td style="text-align: center; color: var(--success); font-weight: bold;">68%</td>
-                                <td style="text-align: center; color: var(--success); font-weight: bold;">64%</td>
-                                <td style="text-align: center;">45%</td>
-                                <td style="text-align: center; color: var(--success); font-weight: bold;">72%</td>
-                                <td style="text-align: center;">52%</td>
-                                <td style="text-align: center; font-weight: bold; color: var(--success);">60.2%</td>
-                            </tr>
-                            <tr style="background: rgba(255, 107, 53, 0.05);">
-                                <td style="font-weight: bold; color: var(--primary);">♻️ Реактив. (18%)</td>
-                                <td style="text-align: center;">48%</td>
-                                <td style="text-align: center;">42%</td>
-                                <td style="text-align: center;">28%</td>
-                                <td style="text-align: center;">55%</td>
-                                <td style="text-align: center;">35%</td>
-                                <td style="text-align: center; font-weight: bold;">41.6%</td>
-                            </tr>
-                            <tr>
-                                <td style="font-weight: bold; color: var(--primary);">🛡️ Утримання/Retention (15%)</td>
-                                <td style="text-align: center;">35%</td>
-                                <td style="text-align: center;">28%</td>
-                                <td style="text-align: center;">15%</td>
-                                <td style="text-align: center;">38%</td>
-                                <td style="text-align: center;">22%</td>
-                                <td style="text-align: center; font-weight: bold;">27.6%</td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <!-- DRILL-DOWN -->
+            <div id="campaignDrillView" style="display:none;">
+                <div style="margin-bottom:1rem;">
+                    <button onclick="closeCampaignDrill()" style="background:var(--bg-hover); border:1px solid var(--border); border-radius:6px; padding:0.4rem 1rem; cursor:pointer; font-weight:600; color:var(--text-secondary); font-size:0.78rem;">← Назад до списку</button>
                 </div>
-            </div>
-
-            <!-- Key Insights -->
-            <div class="section-title">💡 Ключові Висновки</div>
-            <div class="grid grid-3x1">
-                <div class="card">
-                    <div class="card-title">🎯 Найсильніші Пари</div>
-                    <div style="margin-top: 1rem; font-size: 0.9rem; line-height: 1.8;">
-                        <div><span style="color: var(--success); font-weight: bold;">✓</span> Ядро + Технологія: <strong>72%</strong></div>
-                        <div><span style="color: var(--success); font-weight: bold;">✓</span> Ядро + Медицина: <strong>68%</strong></div>
-                        <div><span style="color: var(--success); font-weight: bold;">✓</span> Нові + Технологія: <strong>62%</strong></div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-title">⚠️ Потребує Поліпшення</div>
-                    <div style="margin-top: 1rem; font-size: 0.9rem; line-height: 1.8;">
-                        <div><span style="color: var(--warning); font-weight: bold;">!</span> Утримання + Їжа: <strong>15%</strong></div>
-                        <div><span style="color: var(--warning); font-weight: bold;">!</span> Утримання + Дитячі: <strong>22%</strong></div>
-                        <div><span style="color: var(--warning); font-weight: bold;">!</span> Реактив. + Їжа: <strong>28%</strong></div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-title">📈 Тренди Зростання</div>
-                    <div style="margin-top: 1rem; font-size: 0.9rem; line-height: 1.8;">
-                        <div><span style="color: var(--success); font-weight: bold;">↑</span> Медицина: <strong>+6.2%</strong></div>
-                        <div><span style="color: var(--success); font-weight: bold;">↑</span> Технологія: <strong>+8.1%</strong></div>
-                        <div><span style="color: var(--warning); font-weight: bold;">↓</span> Їжа: <strong>-2.3%</strong></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Аналітика по Статусах Активності — примітка щодо Відтоку -->
-            <div class="section-title">📊 Аналітика по Статусах Активності</div>
-            <div style="margin-bottom: 1rem; padding: 0.75rem 1rem; background: rgba(243,156,18,0.08); border-left: 4px solid var(--warning); border-radius: 4px; font-size: 0.8rem; color: var(--text-secondary);">
-                ℹ️ <strong>Відтік (Churn)</strong> — підстатус <em>неактивних</em> клієнтів (31–60 днів без транзакцій). Не є підстатусом активних. Визначення згідно СОУ "Термінологія клієнтського активу".
-            </div>
-            <div class="card" style="padding: 0;">
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Статус</th>
-                                <th>Осіб</th>
-                                <th>% від ПОП</th>
-                                <th>Актив. 30дн</th>
-                                <th>Конверсія</th>
-                                <th>Утримання</th>
-                                <th>MAU</th>
-                                <th>NPS</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr style="background: rgba(39, 174, 96, 0.05);">
-                                <td><strong>🟢 Активні</strong></td>
-                                <td>28,450</td>
-                                <td>78.2%</td>
-                                <td>100%</td>
-                                <td>34.2%</td>
-                                <td>87%</td>
-                                <td>28,450</td>
-                                <td>7.8</td>
-                            </tr>
-                            <tr style="background: rgba(243, 156, 18, 0.05);">
-                                <td><strong>🟡 Неактивні</strong> <span style="font-size:0.7rem; color:var(--text-secondary);">(у т.ч. Відтік 31-60дн)</span></td>
-                                <td>6,230</td>
-                                <td>17.1%</td>
-                                <td>0%</td>
-                                <td>12.5%</td>
-                                <td>45%</td>
-                                <td>0</td>
-                                <td>4.2</td>
-                            </tr>
-                            <tr style="background: rgba(149, 165, 166, 0.05);">
-                                <td><strong>⚫ Архівовані</strong></td>
-                                <td>1,850</td>
-                                <td>5.1%</td>
-                                <td>0%</td>
-                                <td>2.1%</td>
-                                <td>12%</td>
-                                <td>0</td>
-                                <td>2.1</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Substatus Analysis -->
-            <div class="section-title">🔄 Аналітика по Підстатусам Активних</div>
-            <div class="card" style="padding: 0;">
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Підстатус</th>
-                                <th>Осіб</th>
-                                <th>% від Активних</th>
-                                <th>Ср. Боксиків</th>
-                                <th>Частота Транзакцій</th>
-                                <th>Перший Заказ</th>
-                                <th>LTV</th>
-                                <th>Статус</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr style="background: rgba(39, 174, 96, 0.05);">
-                                <td><strong>🆕 Новий</strong></td>
-                                <td>6,269</td>
-                                <td>22.0%</td>
-                                <td>142</td>
-                                <td>1.2 / місяць</td>
-                                <td>Перший 30дн</td>
-                                <td>3,200₴</td>
-                                <td><span class="badge badge-success">Зростає</span></td>
-                            </tr>
-                            <tr style="background: rgba(39, 174, 96, 0.05);">
-                                <td><strong>💪 Ядро</strong></td>
-                                <td>12,803</td>
-                                <td>45.0%</td>
-                                <td>356</td>
-                                <td>4.8 / місяць</td>
-                                <td>&gt; 2 місяців</td>
-                                <td>18,950₴</td>
-                                <td><span class="badge badge-success">Стійке</span></td>
-                            </tr>
-                            <tr style="background: rgba(52, 152, 219, 0.05);">
-                                <td><strong>♻️ Реактивований</strong></td>
-                                <td>5,128</td>
-                                <td>18.0%</td>
-                                <td>245</td>
-                                <td>2.1 / місяць</td>
-                                <td>Повернення</td>
-                                <td>8,750₴</td>
-                                <td><span class="badge badge-warning">Потребує поліпшення</span></td>
-                            </tr>
-                            <tr style="background: rgba(243, 156, 18, 0.08);">
-                                <td colspan="8" style="padding: 0.5rem 0.75rem; font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; background: #f8f9fa;">⏸️ Підстатус Неактивних</td>
-                            </tr>
-                            <tr style="background: rgba(231, 76, 60, 0.05);">
-                                <td><strong>⏸️ Відтік (Churn)</strong> <span style="font-size:0.7rem; color:var(--text-secondary);">31-60 днів без транзакцій</span></td>
-                                <td>4,250</td>
-                                <td>з неактивних: 68.2%</td>
-                                <td>89</td>
-                                <td>0.3 / місяць</td>
-                                <td>31-60 днів</td>
-                                <td>2,100₴</td>
-                                <td><span class="badge badge-danger">Критично</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Lifecycle Segments Analysis -->
-            <div class="section-title">🔄 Аналітика по Життєвому Циклу Клієнта</div>
-            <div class="grid grid-2x2">
-                <div class="card">
-                    <div class="card-title">Розподіл по Етапам ЖЦК</div>
-                    <div class="chart-container">
-                        <canvas id="chartLifecycleSegments"></canvas>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-title">Метрики по ЖЦК (RFM)</div>
-                    <div class="chart-container">
-                        <canvas id="chartRFMMetrics"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card" style="padding: 0;">
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Етап ЖЦК (RFM)</th>
-                                <th>Осіб</th>
-                                <th>%</th>
-                                <th>Частота (F)</th>
-                                <th>Давність (R)</th>
-                                <th>Вартість (M)</th>
-                                <th>Утримання</th>
-                                <th>Коефіцієнт Конверсії</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr style="background: rgba(52, 152, 219, 0.05);">
-                                <td><strong>🎓 Навчання</strong></td>
-                                <td>4,850</td>
-                                <td>13.3%</td>
-                                <td>1-2</td>
-                                <td>0-30 днів</td>
-                                <td>2,100₴</td>
-                                <td>62%</td>
-                                <td>25% → Залучення</td>
-                            </tr>
-                            <tr style="background: rgba(255, 107, 53, 0.05);">
-                                <td><strong>📢 Залучення</strong></td>
-                                <td>6,420</td>
-                                <td>17.6%</td>
-                                <td>2-4</td>
-                                <td>30-60 днів</td>
-                                <td>5,800₴</td>
-                                <td>74%</td>
-                                <td>35% → Стимуляція</td>
-                            </tr>
-                            <tr style="background: rgba(243, 156, 18, 0.05);">
-                                <td><strong>🔥 Стимуляція</strong></td>
-                                <td>7,240</td>
-                                <td>19.9%</td>
-                                <td>4-7</td>
-                                <td>60-120 днів</td>
-                                <td>9,200₴</td>
-                                <td>82%</td>
-                                <td>48% → Продажи</td>
-                            </tr>
-                            <tr style="background: rgba(46, 204, 113, 0.05);">
-                                <td><strong>💼 Продажи</strong></td>
-                                <td>5,680</td>
-                                <td>15.6%</td>
-                                <td>7-12</td>
-                                <td>90-150 днів</td>
-                                <td>15,400₴</td>
-                                <td>89%</td>
-                                <td>52% → Утримання</td>
-                            </tr>
-                            <tr style="background: rgba(46, 204, 113, 0.05);">
-                                <td><strong>🛡️ Утримання</strong></td>
-                                <td>4,260</td>
-                                <td>11.7%</td>
-                                <td>&gt;12</td>
-                                <td>0-180 днів</td>
-                                <td>22,100₴</td>
-                                <td>91%</td>
-                                <td>15% → Заснувші</td>
-                            </tr>
-                            <tr style="background: rgba(149, 165, 166, 0.05);">
-                                <td><strong>😴 Заснувші</strong></td>
-                                <td>2,850</td>
-                                <td>7.8%</td>
-                                <td>8-10</td>
-                                <td>180-365 днів</td>
-                                <td>12,500₴</td>
-                                <td>35%</td>
-                                <td>8% → Втрачені</td>
-                            </tr>
-                            <tr style="background: rgba(231, 76, 60, 0.05);">
-                                <td><strong>💔 Втрачені</strong></td>
-                                <td>1,620</td>
-                                <td>4.4%</td>
-                                <td>3-5</td>
-                                <td>&gt; 365 днів</td>
-                                <td>4,200₴</td>
-                                <td>5%</td>
-                                <td>2% → Повернення</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- RFM Components Analysis -->
-            <div class="section-title">📊 RFM Аналіз Компонентів</div>
-            <div class="grid grid-3x1">
-                <div class="card">
-                    <div class="card-title">📈 R - Recency (Давність)</div>
-                    <div style="margin-top: 1rem; font-size: 0.8rem; line-height: 2;">
-                        <div><strong>Визначення:</strong> Як давно був останній контакт клієнта</div>
-                        <div style="margin-top: 0.5rem;">
-                            <div>🟢 <strong>0-30 днів:</strong> 18,450 (50.6%) - Активні</div>
-                            <div>🟡 <strong>31-90 днів:</strong> 12,340 (33.8%) - Ризик</div>
-                            <div>🔴 <strong>&gt; 90 днів:</strong> 5,660 (15.5%) - Втрачаються</div>
+                <div class="card" style="margin-bottom:1rem;">
+                    <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
+                        <div id="drillCampaignIcon" style="font-size:1.5rem;"></div>
+                        <div>
+                            <div id="drillCampaignName" style="font-size:1rem; font-weight:700; color:var(--text-primary);"></div>
+                            <div id="drillCampaignMeta" style="font-size:0.72rem; color:var(--text-secondary); margin-top:0.15rem;"></div>
                         </div>
+                        <div id="drillCampaignBadges" style="margin-left:auto; display:flex; gap:0.5rem;"></div>
                     </div>
                 </div>
-                <div class="card">
-                    <div class="card-title">🔢 F - Frequency (Частота)</div>
-                    <div style="margin-top: 1rem; font-size: 0.8rem; line-height: 2;">
-                        <div><strong>Визначення:</strong> Як часто клієнт робить покупки</div>
-                        <div style="margin-top: 0.5rem;">
-                            <div>🟢 <strong>7+ разів/місяць:</strong> 9,940 (27.3%) - VIP</div>
-                            <div>🟡 <strong>2-6 разів/місяць:</strong> 16,850 (46.2%) - Постійні</div>
-                            <div>🔴 <strong>1 раз/місяць:</strong> 9,660 (26.5%) - Епізодичні</div>
-                        </div>
+
+                <!-- KPI -->
+                <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); margin-bottom:1rem;" id="drillCampaignKPI"></div>
+
+                <!-- Воронка -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1rem;">
+                    <div class="card">
+                        <div class="card-title" style="font-size:0.72rem; margin-bottom:0.75rem;">🎯 Воронка акції</div>
+                        <div class="funnel-container" id="drillCampaignFunnel"></div>
+                    </div>
+                    <div class="stat-section-box">
+                        <div class="stat-section-label">📊 Результати по сегментах аудиторії</div>
+                        <div class="chart-container"><canvas id="chartCampaignDrillSeg"></canvas></div>
                     </div>
                 </div>
-                <div class="card">
-                    <div class="card-title">💰 M - Monetary (Вартість)</div>
-                    <div style="margin-top: 1rem; font-size: 0.8rem; line-height: 2;">
-                        <div><strong>Визначення:</strong> Скільки грошей витратив клієнт</div>
-                        <div style="margin-top: 0.5rem;">
-                            <div>🟢 <strong>&gt; 15,000₴:</strong> 7,280 (20.0%) - Premium</div>
-                            <div>🟡 <strong>5,000-15,000₴:</strong> 18,920 (51.9%) - Середній</div>
-                            <div>🔴 <strong>&lt; 5,000₴:</strong> 10,250 (28.1%) - Бюджетний</div>
-                        </div>
+
+                <!-- Аудиторія по сегментах -->
+                <div class="section-title">👥 Деталі аудиторії</div>
+                <div class="card" style="padding:0; margin-bottom:1rem;">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Сегмент</th>
+                                    <th>Відправлено</th>
+                                    <th>Доставлено</th>
+                                    <th>Відкрили</th>
+                                    <th>Промокод</th>
+                                    <th>ЕН</th>
+                                    <th>Конв. → ЕН</th>
+                                </tr>
+                            </thead>
+                            <tbody id="drillCampaignSegTable"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
 
-            <!-- RFM Matrix -->
-            <div class="section-title">🔗 RFM Матриця: Recency × Frequency × Monetary</div>
-            <div class="card" style="padding: 0;">
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>RFM Сегмент</th>
-                                <th>R (Давність)</th>
-                                <th>F (Частота)</th>
-                                <th>M (Вартість)</th>
-                                <th>Осіб</th>
-                                <th>LTV</th>
-                                <th>Утримання</th>
-                                <th>Рекомендація</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr style="background: rgba(39, 174, 96, 0.1);">
-                                <td><strong>💎 Champions (RFH)</strong></td>
-                                <td>Свіжий</td>
-                                <td>Висока</td>
-                                <td>Висока</td>
-                                <td>2,450</td>
-                                <td>28,500₴</td>
-                                <td>95%</td>
-                                <td><span class="badge badge-success">Утримувати</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>⭐ Loyal (RFM)</strong></td>
-                                <td>Свіжий</td>
-                                <td>Висока</td>
-                                <td>Середня</td>
-                                <td>3,820</td>
-                                <td>9,200₴</td>
-                                <td>92%</td>
-                                <td><span class="badge badge-success">Утримувати</span></td>
-                            </tr>
-                            <tr style="background: rgba(52, 152, 219, 0.1);">
-                                <td><strong>🎯 Potential (RML)</strong></td>
-                                <td>Свіжий</td>
-                                <td>Середня</td>
-                                <td>Низька</td>
-                                <td>5,640</td>
-                                <td>3,200₴</td>
-                                <td>78%</td>
-                                <td><span class="badge badge-success">Розвивати</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>⏰ At Risk (rFH)</strong></td>
-                                <td>Давно</td>
-                                <td>Висока</td>
-                                <td>Висока</td>
-                                <td>1,680</td>
-                                <td>22,100₴</td>
-                                <td>45%</td>
-                                <td><span class="badge badge-warning">Повернути</span></td>
-                            </tr>
-                            <tr style="background: rgba(243, 156, 18, 0.1);">
-                                <td><strong>⚠️ Declining (rFM)</strong></td>
-                                <td>Давно</td>
-                                <td>Середня</td>
-                                <td>Середня</td>
-                                <td>4,920</td>
-                                <td>7,850₴</td>
-                                <td>32%</td>
-                                <td><span class="badge badge-warning">Активізувати</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>❌ Lost (rfL)</strong></td>
-                                <td>Давно</td>
-                                <td>Низька</td>
-                                <td>Низька</td>
-                                <td>5,800</td>
-                                <td>1,500₴</td>
-                                <td>8%</td>
-                                <td><span class="badge badge-danger">Переконвертувати</span></td>
-                            </tr>
-                            <tr style="background: rgba(52, 152, 219, 0.1);">
-                                <td><strong>🆕 New (RfL)</strong></td>
-                                <td>Свіжий</td>
-                                <td>Низька</td>
-                                <td>Низька</td>
-                                <td>3,550</td>
-                                <td>2,100₴</td>
-                                <td>62%</td>
-                                <td><span class="badge badge-success">Onboard</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="section-title">📈 RFM компоненти по Сегментах</div>
-            <div class="card" style="padding: 0;">
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Сегмент</th>
-                                <th>Osіб</th>
-                                <th>R - Avg (днів)</th>
-                                <th>F - Avg (раз/м)</th>
-                                <th>M - Avg (₴)</th>
-                                <th>RFM Скор</th>
-                                <th>Категорія</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr style="background: rgba(255, 107, 53, 0.05);">
-                                <td><strong>🆕 Новий</strong></td>
-                                <td>6,269</td>
-                                <td>12 днів</td>
-                                <td>1.2</td>
-                                <td>2,100₴</td>
-                                <td>4.2/10</td>
-                                <td><span class="badge badge-success">New</span></td>
-                            </tr>
-                            <tr style="background: rgba(39, 174, 96, 0.05);">
-                                <td><strong>💪 Ядро</strong></td>
-                                <td>12,803</td>
-                                <td>25 днів</td>
-                                <td>4.8</td>
-                                <td>18,950₴</td>
-                                <td>9.1/10</td>
-                                <td><span class="badge badge-success">Champions</span></td>
-                            </tr>
-                            <tr style="background: rgba(52, 152, 219, 0.05);">
-                                <td><strong>♻️ Реактивований</strong></td>
-                                <td>5,128</td>
-                                <td>48 днів</td>
-                                <td>2.1</td>
-                                <td>8,750₴</td>
-                                <td>6.5/10</td>
-                                <td><span class="badge badge-warning">Potential</span></td>
-                            </tr>
-                            <tr style="background: rgba(243, 156, 18, 0.05);">
-                                <td><strong>🟡 Неактивні</strong></td>
-                                <td>6,230</td>
-                                <td>92 днів</td>
-                                <td>0.8</td>
-                                <td>3,200₴</td>
-                                <td>3.1/10</td>
-                                <td><span class="badge badge-warning">Declining</span></td>
-                            </tr>
-                            <tr style="background: rgba(231, 76, 60, 0.05);">
-                                <td><strong>⏸️ Відтік</strong></td>
-                                <td>4,250</td>
-                                <td>72 днів</td>
-                                <td>0.3</td>
-                                <td>2,100₴</td>
-                                <td>2.2/10</td>
-                                <td><span class="badge badge-danger">At Risk</span></td>
-                            </tr>
-                            <tr style="background: rgba(149, 165, 166, 0.05);">
-                                <td><strong>⚫ Архівовані</strong></td>
-                                <td>1,850</td>
-                                <td>425 днів</td>
-                                <td>0.1</td>
-                                <td>800₴</td>
-                                <td>0.8/10</td>
-                                <td><span class="badge badge-danger">Lost</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </div>
 
         <!-- PAGE 1: ЛОЯЛЬНІСТЬ -->
@@ -1539,27 +1117,37 @@
             </div>
 
             <!-- ── ЗАВДАННЯ ── -->
-            <div class="section-title">✅ Завдання</div>
+            <div class="section-title">✅ Завдання → Промокод НП</div>
 
-            <div class="grid grid-3x1" style="margin-bottom:1rem;">
+            <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:0.5rem; margin-bottom:1rem;">
                 <div class="card">
                     <div class="card-title">Активних завдань</div>
-                    <div class="card-value">156 <span class="card-unit">завдань</span></div>
+                    <div class="card-value">156 <span class="card-unit">шт</span></div>
                     <div class="card-change positive">↑ +8</div>
                 </div>
                 <div class="card">
                     <div class="card-title">Всього виконань</div>
-                    <div class="card-value">11,948 <span class="card-unit">разів</span></div>
+                    <div class="card-value">11,948</div>
                     <div class="card-change positive">↑ +5.6%</div>
                 </div>
                 <div class="card">
-                    <div class="card-title">Сер. виконань на клієнта</div>
-                    <div class="card-value">0.4 <span class="card-unit">разів</span></div>
-                    <div class="card-change positive">↑ +0.05</div>
+                    <div class="card-title">🎯 Промокодів НП видано</div>
+                    <div class="card-value" style="color:var(--primary);">10,806</div>
+                    <div style="font-size:0.62rem; color:var(--text-secondary); margin-top:0.2rem;">90.4% від виконавших</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">🚚 Промокод НП → ЕН</div>
+                    <div class="card-value" style="color:var(--success);">6,259</div>
+                    <div style="font-size:0.62rem; color:var(--text-secondary); margin-top:0.2rem;">57.9% використали промокод</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">💸 Середній % знижки НП</div>
+                    <div class="card-value">-12<span class="card-unit">%</span></div>
+                    <div style="font-size:0.62rem; color:var(--text-secondary); margin-top:0.2rem;">по всіх активних завданнях</div>
                 </div>
             </div>
 
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1.5rem;">
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.75rem; margin-bottom:1.5rem;">
 
                 <div class="stat-section-box">
                     <div class="stat-section-label">Виконань по сегментах</div>
@@ -1573,7 +1161,18 @@
                 </div>
 
                 <div class="stat-section-box">
-                    <div class="stat-section-label">Виконань по місяцях</div>
+                    <div class="stat-section-label">🎯 Промокодів НП → ЕН по сегментах</div>
+                    <div class="seg-switcher" id="sw-taskspromo-loy">
+                        <button class="seg-btn active" onclick="switchLoy('taskspromo','activity',this)">Статус активності</button>
+                        <button class="seg-btn" onclick="switchLoy('taskspromo','substatus',this)">Підстатус активних</button>
+                        <button class="seg-btn" onclick="switchLoy('taskspromo','lifecycle',this)">Життєвий цикл</button>
+                        <button class="seg-btn" onclick="switchLoy('taskspromo','rfm',this)">RFM</button>
+                    </div>
+                    <div class="chart-container"><canvas id="chartTasksPromoSeg"></canvas></div>
+                </div>
+
+                <div class="stat-section-box">
+                    <div class="stat-section-label">Виконань та промокодів НП по місяцях</div>
                     <div class="chart-container"><canvas id="chartTasksMonths"></canvas></div>
                 </div>
 
@@ -1644,6 +1243,26 @@
                 </div>
             </div>
 
+            <!-- Partner charts -->
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.75rem; margin-bottom:1rem;">
+
+                <div class="stat-section-box">
+                    <div class="stat-section-label">📊 Партнерів по категоріях</div>
+                    <div class="chart-container"><canvas id="chartPartnerCats"></canvas></div>
+                </div>
+
+                <div class="stat-section-box">
+                    <div class="stat-section-label">🔄 Топ-5: конверсія → ЕН (%)</div>
+                    <div class="chart-container"><canvas id="chartPartnerEN"></canvas></div>
+                </div>
+
+                <div class="stat-section-box">
+                    <div class="stat-section-label">📦 Топ-5: боксиків витрачено</div>
+                    <div class="chart-container"><canvas id="chartPartnerBox"></canvas></div>
+                </div>
+
+            </div>
+
             <!-- LIST VIEW -->
             <div id="partnerListView">
                 <div class="section-title">🤝 Список Партнерів</div>
@@ -1677,10 +1296,12 @@
                                     <th>Всього пропоз.</th>
                                     <th>Актив. зараз</th>
                                     <th>В улюбленому</th>
-                                    <th>Скористались</th>
+                                    <th>Списали боксики</th>
+                                    <th>🏪 Промокод партнера отримали</th>
+                                    <th>Умова доставки НП</th>
+                                    <th>🚚 Конв. → ЕН</th>
                                     <th>Сер. боксиків/пропоз.</th>
                                     <th>Сер. час активн.</th>
-                                    <th>Конв. → ЕН</th>
                                     <th>ЕН</th>
                                     <th></th>
                                 </tr>
@@ -1937,11 +1558,11 @@
                                     <th>Телефон</th>
                                     <th>Сегмент</th>
                                     <th>ЖЦК</th>
-                                    <th>Боксики (баланс)</th>
-                                    <th>Боксики (витрачено)</th>
-                                    <th>Партнерів в улюбл.</th>
-                                    <th>Пропозицій відвідано</th>
-                                    <th>Боксики використано</th>
+                                    <th class="u-col">📦 Боксики (баланс)</th>
+                                    <th class="u-col">💸 Боксики (витрачено)</th>
+                                    <th>❤️ Партнерів в улюбл.</th>
+                                    <th>👁️ Пропозицій відвідано</th>
+                                    <th class="u-col">🎯 Боксики використано</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -1980,8 +1601,12 @@
                 <div class="section-title">📦 Боксики</div>
                 <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); margin-bottom:1rem;" id="drillBoxRow"></div>
 
+                <!-- Промокоди завдань НП -->
+                <div class="section-title">🎯 Промокоди завдань → Знижка НП</div>
+                <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); margin-bottom:1rem;" id="drillTaskPromoRow"></div>
+
                 <!-- Пропозиції партнерів -->
-                <div class="section-title">🏪 Пропозиції партнерів</div>
+                <div class="section-title">🏪 Пропозиції партнерів (боксики → промокод партнера)</div>
                 <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); margin-bottom:1rem;" id="drillOffersRow"></div>
 
                 <!-- Загальні пропозиції -->
@@ -2022,391 +1647,7 @@
         let charts = {};
 
         function initCharts() {
-            const chartConfig = {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        labels: {
-                            color: '#666666',
-                            font: { family: "'Segoe UI', sans-serif" }
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        grid: { color: '#e8e8e8' },
-                        ticks: { color: '#666666' }
-                    },
-                    x: {
-                        grid: { color: '#e8e8e8' },
-                        ticks: { color: '#666666' }
-                    }
-                }
-            };
-
-            // Overview Charts
-            // Chart: Overview Trend
-            const ctxTrend = document.getElementById('chartOverviewTrend');
-            if (ctxTrend) {
-                charts.overviewTrend = new Chart(ctxTrend, {
-                    type: 'line',
-                    data: {
-                        labels: ['Січень', 'Лютий', 'Березень', 'Квітень', 'Травень', 'Червень'],
-                        datasets: [
-                            {
-                                label: 'Активні Клієнти',
-                                data: [24500, 25200, 27100, 28000, 28450, 29100],
-                                borderColor: '#ff6b35',
-                                backgroundColor: 'rgba(255, 107, 53, 0.08)',
-                                tension: 0.4,
-                                fill: true,
-                                borderWidth: 3,
-                                yAxisID: 'y'
-                            },
-                            {
-                                label: 'Оборот Боксиків',
-                                data: [95000, 102000, 115000, 120000, 128000, 135000],
-                                borderColor: '#0d7c4f',
-                                backgroundColor: 'rgba(13, 124, 79, 0.08)',
-                                tension: 0.4,
-                                fill: true,
-                                borderWidth: 3,
-                                yAxisID: 'y1'
-                            }
-                        ]
-                    },
-                    options: {
-                        ...chartConfig,
-                        scales: {
-                            y: {
-                                ...chartConfig.scales.y,
-                                position: 'left',
-                                beginAtZero: true
-                            },
-                            y1: {
-                                type: 'linear',
-                                position: 'right',
-                                grid: { drawOnChartArea: false },
-                                ticks: { color: '#666666' }
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Chart: Conversion Funnel
-            const ctxConversion = document.getElementById('chartConversionFunnel');
-            if (ctxConversion) {
-                charts.conversionFunnel = new Chart(ctxConversion, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Клієнти', 'Відкрили', 'Скопіювали', 'Перейшли', 'Купили', 'ЕН'],
-                        datasets: [{
-                            label: 'Конверсія (%)',
-                            data: [100, 78, 56, 42, 28, 18],
-                            backgroundColor: ['#ff6b35', '#f39c12', '#27ae60', '#3498db', '#9b59b6', '#e74c3c'],
-                            borderRadius: 8,
-                            borderSkipped: false
-                        }]
-                    },
-                    options: chartConfig
-                });
-            }
-
-            // Chart: Lifecycle
-            const ctxLifecycle = document.getElementById('chartLifecycle');
-            if (ctxLifecycle) {
-                charts.lifecycle = new Chart(ctxLifecycle, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Ядро (45%)', 'Нові (22%)', 'Реактив. (18%)', 'На Утриманні (15%)'],
-                        datasets: [{
-                            data: [45, 22, 18, 15],
-                            backgroundColor: ['#27ae60', '#ff6b35', '#3498db', '#f39c12'],
-                            borderColor: '#ffffff',
-                            borderWidth: 2
-                        }]
-                    },
-                    options: chartConfig
-                });
-            }
-
-            // Chart: Activity Status
-            const ctxActivityStatus = document.getElementById('chartActivityStatus');
-            if (ctxActivityStatus) {
-                charts.activityStatus = new Chart(ctxActivityStatus, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Активні', 'Неактивні', 'Архівовані'],
-                        datasets: [{
-                            label: 'Клієнти',
-                            data: [28450, 12340, 8920],
-                            backgroundColor: ['#27ae60', '#f39c12', '#95a5a6'],
-                            borderRadius: 8,
-                            borderSkipped: false
-                        }]
-                    },
-                    options: chartConfig
-                });
-            }
-
-            // Chart: Box Status
-            const ctxBoxStatus = document.getElementById('chartBoxStatus');
-            if (ctxBoxStatus) {
-                charts.boxStatus = new Chart(ctxBoxStatus, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['На Балансі', 'Витрачено', 'В Розіграшах'],
-                        datasets: [{
-                            data: [128450, 45230, 12800],
-                            backgroundColor: ['#27ae60', '#ff6b35', '#f39c12'],
-                            borderColor: '#ffffff',
-                            borderWidth: 2
-                        }]
-                    },
-                    options: chartConfig
-                });
-            }
-
-            // Chart: Channels
-            const ctxChannels = document.getElementById('chartChannels');
-            if (ctxChannels) {
-                charts.channels = new Chart(ctxChannels, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Відділення', 'Термінал', 'Поштомати', 'АО', 'Міжнародна'],
-                        datasets: [{
-                            label: 'Ефективність (%)',
-                            data: [85, 92, 68, 75, 88],
-                            backgroundColor: ['#ff6b35', '#27ae60', '#3498db', '#f39c12', '#9b59b6'],
-                            borderRadius: 8,
-                            borderSkipped: false
-                        }]
-                    },
-                    options: chartConfig
-                });
-            }
-
-            // Chart 1: Accrual Distribution
-            const ctx1 = document.getElementById('chartAccrual');
-            if (ctx1) {
-                charts.accrual = new Chart(ctx1, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Через Відділення', 'Через Термінал', 'Через Поштомати', 'Через АО', 'Міжнародна Доставка'],
-                        datasets: [{
-                            data: [35.2, 22.6, 15.4, 11.1, 15.7],
-                            backgroundColor: ['#ff6b35', '#27ae60', '#3498db', '#f39c12', '#9b59b6'],
-                            borderColor: '#ffffff',
-                            borderWidth: 2
-                        }]
-                    },
-                    options: chartConfig
-                });
-            }
-
-            // Chart 2: Expense Distribution
-            const ctx2 = document.getElementById('chartExpense');
-            if (ctx2) {
-                charts.expense = new Chart(ctx2, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Магазини Партнерів', 'Розіграші', 'Повернення'],
-                        datasets: [{
-                            data: [64.5, 28.3, 7.2],
-                            backgroundColor: ['#ff6b35', '#e74c3c', '#bdc3c7'],
-                            borderColor: '#ffffff',
-                            borderWidth: 2
-                        }]
-                    },
-                    options: chartConfig
-                });
-            }
-
-            // Chart 3: Offers by Type
-            const ctx3 = document.getElementById('chartOffers');
-            if (ctx3) {
-                charts.offers = new Chart(ctx3, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Загальні', 'Персональні', 'Завдання', 'Розіграші'],
-                        datasets: [{
-                            label: 'Пропозицій',
-                            data: [1250, 890, 456, 251],
-                            backgroundColor: ['#ff6b35', '#27ae60', '#3498db', '#f39c12'],
-                            borderRadius: 8,
-                            borderSkipped: false
-                        }]
-                    },
-                    options: {
-                        ...chartConfig,
-                        indexAxis: 'y'
-                    }
-                });
-            }
-
-            // Chart 4: Bonus Distribution
-            const ctx4 = document.getElementById('chartBonus');
-            if (ctx4) {
-                charts.bonus = new Chart(ctx4, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Відкрили', 'Скопіювали', 'Перейшли', 'Купили'],
-                        datasets: [{
-                            label: 'Осіб',
-                            data: [28450, 18234, 11245, 7824],
-                            backgroundColor: ['#ff6b35', '#f39c12', '#27ae60', '#3498db'],
-                            borderRadius: 8,
-                            borderSkipped: false
-                        }]
-                    },
-                    options: chartConfig
-                });
-            }
-
-            // Chart 5: Monthly Activity
-            const ctx5 = document.getElementById('chartMonthly');
-            if (ctx5) {
-                charts.monthly = new Chart(ctx5, {
-                    type: 'line',
-                    data: {
-                        labels: ['Січень', 'Лютий', 'Березень', 'Квітень', 'Травень', 'Червень'],
-                        datasets: [{
-                            label: 'Активні Клієнти',
-                            data: [24500, 25200, 27100, 28000, 28450, 29100],
-                            borderColor: '#ff6b35',
-                            backgroundColor: 'rgba(255, 107, 53, 0.08)',
-                            tension: 0.4,
-                            fill: true,
-                            borderWidth: 3
-                        }]
-                    },
-                    options: {
-                        ...chartConfig,
-                        scales: {
-                            ...chartConfig.scales,
-                            y: {
-                                ...chartConfig.scales.y,
-                                beginAtZero: true
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Chart 6: Client Segments
-            const ctx6 = document.getElementById('chartSegments');
-            if (ctx6) {
-                charts.segments = new Chart(ctx6, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Ядро', 'Нові', 'Реактивовані', 'На Утриманні'],
-                        datasets: [{
-                            data: [45, 22, 18, 15],
-                            backgroundColor: ['#27ae60', '#ff6b35', '#3498db', '#f39c12'],
-                            borderColor: '#ffffff',
-                            borderWidth: 2
-                        }]
-                    },
-                    options: chartConfig
-                });
-            }
-
-            // Chart 7: Offer Types
-            const ctx7 = document.getElementById('chartOfferTypes');
-            if (ctx7) {
-                charts.offerTypes = new Chart(ctx7, {
-                    type: 'radar',
-                    data: {
-                        labels: ['Загальні', 'Персональні', 'Завдання', 'Розіграші', 'Скретч'],
-                        datasets: [{
-                            label: 'Користувачів',
-                            data: [8450, 6200, 4850, 3240, 2145],
-                            borderColor: '#ff6b35',
-                            backgroundColor: 'rgba(255, 107, 53, 0.12)',
-                            borderWidth: 2
-                        }]
-                    },
-                    options: {
-                        ...chartConfig,
-                        scales: {
-                            r: {
-                                grid: { color: '#e8e8e8' },
-                                ticks: { color: '#666666' }
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Chart: Lifecycle Segments
-            const ctxLifecycleSegments = document.getElementById('chartLifecycleSegments');
-            if (ctxLifecycleSegments) {
-                charts.lifecycleSegments = new Chart(ctxLifecycleSegments, {
-                    type: 'bar',
-                    data: {
-                        labels: ['🎓 Навчання', '📢 Залучення', '🔥 Стимуляція', '💼 Продажи', '🛡️ Утримання', '😴 Заснувші', '💔 Втрачені'],
-                        datasets: [{
-                            label: 'Осіб',
-                            data: [4850, 6420, 7240, 5680, 4260, 2850, 1620],
-                            backgroundColor: ['#3498db', '#ff6b35', '#f39c12', '#27ae60', '#27ae60', '#95a5a6', '#e74c3c'],
-                            borderRadius: 8,
-                            borderSkipped: false
-                        }]
-                    },
-                    options: chartConfig
-                });
-            }
-
-            // Chart: RFM Metrics
-            const ctxRFMMetrics = document.getElementById('chartRFMMetrics');
-            if (ctxRFMMetrics) {
-                charts.rfmMetrics = new Chart(ctxRFMMetrics, {
-                    type: 'line',
-                    data: {
-                        labels: ['🎓 Навчання', '📢 Залучення', '🔥 Стимуляція', '💼 Продажи', '🛡️ Утримання', '😴 Заснувші', '💔 Втрачені'],
-                        datasets: [
-                            {
-                                label: 'Частота (F)',
-                                data: [1.5, 3, 5.5, 9.5, 14, 9, 4],
-                                borderColor: '#ff6b35',
-                                backgroundColor: 'rgba(255, 107, 53, 0.08)',
-                                tension: 0.4,
-                                borderWidth: 2,
-                                yAxisID: 'y'
-                            },
-                            {
-                                label: 'LTV (тис₴)',
-                                data: [2.1, 5.8, 9.2, 15.4, 22.1, 12.5, 4.2],
-                                borderColor: '#27ae60',
-                                backgroundColor: 'rgba(39, 174, 96, 0.08)',
-                                tension: 0.4,
-                                borderWidth: 2,
-                                yAxisID: 'y1'
-                            }
-                        ]
-                    },
-                    options: {
-                        ...chartConfig,
-                        scales: {
-                            y: {
-                                ...chartConfig.scales.y,
-                                position: 'left',
-                                beginAtZero: true
-                            },
-                            y1: {
-                                type: 'linear',
-                                position: 'right',
-                                grid: { drawOnChartArea: false },
-                                ticks: { color: '#666666' }
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Update last update time
+            // Chart init delegated to initOverviewCharts, initLoyaltyCharts, etc.
             updateLastUpdateTime();
         }
 
@@ -2427,7 +1668,7 @@
             event.target.classList.add('active');
 
             // Scroll to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
         }
 
         // ── GLOBAL FILTERS ─────────────────────────────────────────────
@@ -2536,19 +1777,16 @@
             });
         }
 
-        function updateDashboard() { applyGlobalFilters(); }
-        // ── END GLOBAL FILTERS ─────────────────────────────────────────
-
         // ── PARTNERS DATA ──────────────────────────────────────────────
         const PARTNERS = [
-            { id:1,  name:'Аптека Доброго Дня',  icon:'💊', category:'Медицина',      firstOffer:'2023-03-12', totalOffers:48,  activeOffers:{general:12,personal:5,tasks:3,giveaways:2}, favorites:3240, users:2180, boxikSpent:18640, avgBoxikPerOffer:387, avgActivedays:18, convEN:true,  convRate:58, months:[{m:'Лютий',fav:290,box:1620,promo:740,link:980,spent:14200},{m:'Березень',fav:310,box:1740,promo:790,link:1050,spent:15800},{m:'Квітень',fav:340,box:1920,promo:850,link:1120,spent:17200},{m:'Травень',fav:360,box:2010,promo:890,link:1180,spent:18640},{m:'Червень',fav:380,box:2180,promo:940,link:1240,spent:19800}], segments:[{s:'🆕 Новий',fav:480,box:320,promo:145,link:210,spent:2740},{s:'💪 Ядро',fav:1620,box:1240,promo:560,link:740,spent:9320},{s:'♻️ Реактив.',fav:680,box:420,promo:195,link:280,spent:3980},{s:'🟡 Неактивні',fav:460,box:200,promo:90,link:130,spent:2600}] },
-            { id:2,  name:'Rozetka',              icon:'🛒', category:'Технологія',   firstOffer:'2022-11-05', totalOffers:124, activeOffers:{general:28,personal:12,tasks:6,giveaways:4}, favorites:5840, users:4120, boxikSpent:51380, avgBoxikPerOffer:412, avgActivedays:25, convEN:true,  convRate:62, months:[{m:'Лютий',fav:520,box:3640,promo:1820,link:2140,spent:44200},{m:'Березень',fav:560,box:3980,promo:1980,link:2350,spent:47600},{m:'Квітень',fav:600,box:4280,promo:2140,link:2560,spent:50200},{m:'Травень',fav:630,box:4520,promo:2240,link:2680,spent:51380},{m:'Червень',fav:680,box:4840,promo:2420,link:2890,spent:54200}], segments:[{s:'🆕 Новий',fav:820,box:580,promo:290,link:340,spent:7220},{s:'💪 Ядро',fav:2920,box:2240,promo:1120,link:1340,spent:27640},{s:'♻️ Реактив.',fav:1240,box:820,promo:410,link:490,spent:9820},{s:'🟡 Неактивні',fav:860,box:480,promo:240,link:290,spent:6700}] },
-            { id:3,  name:'ZARA',                 icon:'👗', category:'Одяг',          firstOffer:'2023-01-20', totalOffers:62,  activeOffers:{general:15,personal:8,tasks:2,giveaways:1}, favorites:2860, users:1940, boxikSpent:23820, avgBoxikPerOffer:386, avgActivedays:22, convEN:true,  convRate:45, months:[{m:'Лютий',fav:240,box:1780,promo:840,link:1020,spent:18400},{m:'Березень',fav:260,box:1940,promo:920,link:1110,spent:20200},{m:'Квітень',fav:275,box:2060,promo:980,link:1190,spent:21600},{m:'Травень',fav:285,box:2180,promo:1040,link:1260,spent:23820},{m:'Червень',fav:310,box:2340,promo:1110,link:1340,spent:25400}], segments:[{s:'🆕 Новий',fav:400,box:270,promo:130,link:160,spent:3340},{s:'💪 Ядро',fav:1430,box:1040,promo:500,link:610,spent:12840},{s:'♻️ Реактив.',fav:600,box:380,promo:180,link:220,spent:4420},{s:'🟡 Неактивні',fav:430,box:250,promo:120,link:150,spent:3220}] },
-            { id:4,  name:'McDonald\'s',           icon:'🍔', category:'Їжа',           firstOffer:'2023-06-14', totalOffers:38,  activeOffers:{general:10,personal:3,tasks:1,giveaways:0}, favorites:1420, users:980,  boxikSpent:12840, avgBoxikPerOffer:338, avgActivedays:14, convEN:false, convRate:32, months:[{m:'Лютий',fav:110,box:840,promo:320,link:580,spent:9800},{m:'Березень',fav:125,box:920,promo:360,link:640,spent:10600},{m:'Квітень',fav:134,box:980,promo:385,link:680,spent:11400},{m:'Травень',fav:142,box:1020,promo:400,link:720,spent:12840},{m:'Червень',fav:158,box:1120,promo:440,link:790,spent:13800}], segments:[{s:'🆕 Новий',fav:200,box:140,promo:53,link:81,spent:1800},{s:'💪 Ядро',fav:710,box:540,promo:205,link:298,spent:6980},{s:'♻️ Реактив.',fav:300,box:190,promo:72,link:105,spent:2380},{s:'🟡 Неактивні',fav:210,box:150,promo:70,link:96,spent:1680}] },
-            { id:5,  name:'Дитячий Світ',         icon:'🧸', category:'Дитячі товари', firstOffer:'2023-02-28', totalOffers:55,  activeOffers:{general:14,personal:6,tasks:4,giveaways:2}, favorites:2140, users:1480, boxikSpent:19240, avgBoxikPerOffer:350, avgActivedays:20, convEN:true,  convRate:48, months:[{m:'Лютий',fav:186,box:1340,promo:620,link:780,spent:14800},{m:'Березень',fav:200,box:1460,promo:680,link:855,spent:16200},{m:'Квітень',fav:212,box:1560,promo:720,link:910,spent:17400},{m:'Травень',fav:222,box:1640,promo:762,link:960,spent:19240},{m:'Червень',fav:240,box:1760,promo:820,link:1030,spent:20600}], segments:[{s:'🆕 Новий',fav:300,box:207,promo:96,link:122,spent:2700},{s:'💪 Ядро',fav:1070,box:822,promo:382,link:482,spent:10440},{s:'♻️ Реактив.',fav:450,box:295,promo:137,link:173,spent:3660},{s:'🟡 Неактивні',fav:320,box:176,promo:82,link:103,spent:2440}] },
-            { id:6,  name:'Comfy',                icon:'📺', category:'Технологія',   firstOffer:'2022-09-15', totalOffers:89,  activeOffers:{general:20,personal:9,tasks:5,giveaways:3}, favorites:4120, users:2980, boxikSpent:38640, avgBoxikPerOffer:434, avgActivedays:27, convEN:true,  convRate:56, months:[{m:'Лютий',fav:368,box:2840,promo:1380,link:1640,spent:33200},{m:'Березень',fav:398,box:3080,promo:1500,link:1780,spent:35600},{m:'Квітень',fav:420,box:3280,promo:1600,link:1900,spent:37400},{m:'Травень',fav:438,box:3460,promo:1690,link:2000,spent:38640},{m:'Червень',fav:472,box:3720,promo:1820,link:2150,spent:41200}], segments:[{s:'🆕 Новий',fav:578,box:418,promo:193,link:230,spent:5420},{s:'💪 Ядро',fav:2060,box:1640,promo:757,link:900,spent:20840},{s:'♻️ Реактив.',fav:874,box:596,promo:275,link:328,spent:7360},{s:'🟡 Неактивні',fav:608,box:346,promo:165,link:202,spent:5020}] },
-            { id:7,  name:'Медлайн',              icon:'🏥', category:'Медицина',      firstOffer:'2023-05-10', totalOffers:32,  activeOffers:{general:8,personal:4,tasks:2,giveaways:1}, favorites:1680, users:1120, boxikSpent:14280, avgBoxikPerOffer:446, avgActivedays:21, convEN:true,  convRate:54, months:[{m:'Лютий',fav:148,box:1040,promo:480,link:610,spent:11800},{m:'Березень',fav:159,box:1140,promo:524,link:666,spent:12600},{m:'Квітень',fav:168,box:1220,promo:562,link:714,spent:13400},{m:'Травень',fav:176,box:1280,promo:590,link:749,spent:14280},{m:'Червень',fav:190,box:1380,promo:636,link:808,spent:15200}], segments:[{s:'🆕 Новий',fav:235,box:157,promo:72,link:92,spent:2000},{s:'💪 Ядро',fav:840,box:648,promo:299,link:380,spent:7560},{s:'♻️ Реактив.',fav:354,box:235,promo:108,link:138,spent:2940},{s:'🟡 Неактивні',fav:251,box:140,promo:65,link:83,spent:1780}] },
-            { id:8,  name:'Бюро пригод Totem',   icon:'🎯', category:'Дитячі товари', firstOffer:'2023-08-01', totalOffers:18,  activeOffers:{general:5,personal:2,tasks:3,giveaways:1}, favorites:860,  users:580,  boxikSpent:7240, avgBoxikPerOffer:402, avgActivedays:15, convEN:true,  convRate:41, months:[{m:'Лютий',fav:72,box:480,promo:218,link:284,spent:5800},{m:'Березень',fav:78,box:526,promo:238,link:310,spent:6240},{m:'Квітень',fav:84,box:562,promo:254,link:332,spent:6720},{m:'Травень',fav:88,box:592,promo:268,link:350,spent:7240},{m:'Червень',fav:96,box:640,promo:290,link:378,spent:7800}], segments:[{s:'🆕 Новий',fav:121,box:81,promo:37,link:48,spent:1016},{s:'💪 Ядро',fav:430,box:322,promo:147,link:192,spent:3960},{s:'♻️ Реактив.',fav:181,box:116,promo:53,link:69,spent:1440},{s:'🟡 Неактивні',fav:128,box:63,promo:31,link:40,spent:824}] },
+            { id:1,  name:'Аптека Доброго Дня',  icon:'💊', category:'Медицина',      npCondition:false, firstOffer:'2023-03-12', totalOffers:48,  activeOffers:{general:12,personal:5,tasks:3,giveaways:2}, favorites:3240, users:2180, boxikSpent:18640, avgBoxikPerOffer:387, avgActivedays:18, convEN:true,  convRate:58, months:[{m:'Лютий',fav:290,box:1620,promo:740,link:980,spent:14200},{m:'Березень',fav:310,box:1740,promo:790,link:1050,spent:15800},{m:'Квітень',fav:340,box:1920,promo:850,link:1120,spent:17200},{m:'Травень',fav:360,box:2010,promo:890,link:1180,spent:18640},{m:'Червень',fav:380,box:2180,promo:940,link:1240,spent:19800}], segments:[{s:'🆕 Новий',fav:480,box:320,promo:145,link:210,spent:2740},{s:'💪 Ядро',fav:1620,box:1240,promo:560,link:740,spent:9320},{s:'♻️ Реактив.',fav:680,box:420,promo:195,link:280,spent:3980},{s:'🟡 Неактивні',fav:460,box:200,promo:90,link:130,spent:2600}] },
+            { id:2,  name:'Rozetka',              icon:'🛒', category:'Технологія',    npCondition:true,  firstOffer:'2022-11-05', totalOffers:124, activeOffers:{general:28,personal:12,tasks:6,giveaways:4}, favorites:5840, users:4120, boxikSpent:51380, avgBoxikPerOffer:412, avgActivedays:25, convEN:true,  convRate:62, months:[{m:'Лютий',fav:520,box:3640,promo:1820,link:2140,spent:44200},{m:'Березень',fav:560,box:3980,promo:1980,link:2350,spent:47600},{m:'Квітень',fav:600,box:4280,promo:2140,link:2560,spent:50200},{m:'Травень',fav:630,box:4520,promo:2240,link:2680,spent:51380},{m:'Червень',fav:680,box:4840,promo:2420,link:2890,spent:54200}], segments:[{s:'🆕 Новий',fav:820,box:580,promo:290,link:340,spent:7220},{s:'💪 Ядро',fav:2920,box:2240,promo:1120,link:1340,spent:27640},{s:'♻️ Реактив.',fav:1240,box:820,promo:410,link:490,spent:9820},{s:'🟡 Неактивні',fav:860,box:480,promo:240,link:290,spent:6700}] },
+            { id:3,  name:'ZARA',                 icon:'👗', category:'Одяг',           npCondition:false, firstOffer:'2023-01-20', totalOffers:62,  activeOffers:{general:15,personal:8,tasks:2,giveaways:1}, favorites:2860, users:1940, boxikSpent:23820, avgBoxikPerOffer:386, avgActivedays:22, convEN:true,  convRate:45, months:[{m:'Лютий',fav:240,box:1780,promo:840,link:1020,spent:18400},{m:'Березень',fav:260,box:1940,promo:920,link:1110,spent:20200},{m:'Квітень',fav:275,box:2060,promo:980,link:1190,spent:21600},{m:'Травень',fav:285,box:2180,promo:1040,link:1260,spent:23820},{m:'Червень',fav:310,box:2340,promo:1110,link:1340,spent:25400}], segments:[{s:'🆕 Новий',fav:400,box:270,promo:130,link:160,spent:3340},{s:'💪 Ядро',fav:1430,box:1040,promo:500,link:610,spent:12840},{s:'♻️ Реактив.',fav:600,box:380,promo:180,link:220,spent:4420},{s:'🟡 Неактивні',fav:430,box:250,promo:120,link:150,spent:3220}] },
+            { id:4,  name:'McDonald\'s',           icon:'🍔', category:'Їжа',            npCondition:false, firstOffer:'2023-06-14', totalOffers:38,  activeOffers:{general:10,personal:3,tasks:1,giveaways:0}, favorites:1420, users:980,  boxikSpent:12840, avgBoxikPerOffer:338, avgActivedays:14, convEN:false, convRate:32, months:[{m:'Лютий',fav:110,box:840,promo:320,link:580,spent:9800},{m:'Березень',fav:125,box:920,promo:360,link:640,spent:10600},{m:'Квітень',fav:134,box:980,promo:385,link:680,spent:11400},{m:'Травень',fav:142,box:1020,promo:400,link:720,spent:12840},{m:'Червень',fav:158,box:1120,promo:440,link:790,spent:13800}], segments:[{s:'🆕 Новий',fav:200,box:140,promo:53,link:81,spent:1800},{s:'💪 Ядро',fav:710,box:540,promo:205,link:298,spent:6980},{s:'♻️ Реактив.',fav:300,box:190,promo:72,link:105,spent:2380},{s:'🟡 Неактивні',fav:210,box:150,promo:70,link:96,spent:1680}] },
+            { id:5,  name:'Дитячий Світ',         icon:'🧸', category:'Дитячі товари',  npCondition:true,  firstOffer:'2023-02-28', totalOffers:55,  activeOffers:{general:14,personal:6,tasks:4,giveaways:2}, favorites:2140, users:1480, boxikSpent:19240, avgBoxikPerOffer:350, avgActivedays:20, convEN:true,  convRate:48, months:[{m:'Лютий',fav:186,box:1340,promo:620,link:780,spent:14800},{m:'Березень',fav:200,box:1460,promo:680,link:855,spent:16200},{m:'Квітень',fav:212,box:1560,promo:720,link:910,spent:17400},{m:'Травень',fav:222,box:1640,promo:762,link:960,spent:19240},{m:'Червень',fav:240,box:1760,promo:820,link:1030,spent:20600}], segments:[{s:'🆕 Новий',fav:300,box:207,promo:96,link:122,spent:2700},{s:'💪 Ядро',fav:1070,box:822,promo:382,link:482,spent:10440},{s:'♻️ Реактив.',fav:450,box:295,promo:137,link:173,spent:3660},{s:'🟡 Неактивні',fav:320,box:176,promo:82,link:103,spent:2440}] },
+            { id:6,  name:'Comfy',                icon:'📺', category:'Технологія',    npCondition:true,  firstOffer:'2022-09-15', totalOffers:89,  activeOffers:{general:20,personal:9,tasks:5,giveaways:3}, favorites:4120, users:2980, boxikSpent:38640, avgBoxikPerOffer:434, avgActivedays:27, convEN:true,  convRate:56, months:[{m:'Лютий',fav:368,box:2840,promo:1380,link:1640,spent:33200},{m:'Березень',fav:398,box:3080,promo:1500,link:1780,spent:35600},{m:'Квітень',fav:420,box:3280,promo:1600,link:1900,spent:37400},{m:'Травень',fav:438,box:3460,promo:1690,link:2000,spent:38640},{m:'Червень',fav:472,box:3720,promo:1820,link:2150,spent:41200}], segments:[{s:'🆕 Новий',fav:578,box:418,promo:193,link:230,spent:5420},{s:'💪 Ядро',fav:2060,box:1640,promo:757,link:900,spent:20840},{s:'♻️ Реактив.',fav:874,box:596,promo:275,link:328,spent:7360},{s:'🟡 Неактивні',fav:608,box:346,promo:165,link:202,spent:5020}] },
+            { id:7,  name:'Медлайн',              icon:'🏥', category:'Медицина',       npCondition:false, firstOffer:'2023-05-10', totalOffers:32,  activeOffers:{general:8,personal:4,tasks:2,giveaways:1}, favorites:1680, users:1120, boxikSpent:14280, avgBoxikPerOffer:446, avgActivedays:21, convEN:true,  convRate:54, months:[{m:'Лютий',fav:148,box:1040,promo:480,link:610,spent:11800},{m:'Березень',fav:159,box:1140,promo:524,link:666,spent:12600},{m:'Квітень',fav:168,box:1220,promo:562,link:714,spent:13400},{m:'Травень',fav:176,box:1280,promo:590,link:749,spent:14280},{m:'Червень',fav:190,box:1380,promo:636,link:808,spent:15200}], segments:[{s:'🆕 Новий',fav:235,box:157,promo:72,link:92,spent:2000},{s:'💪 Ядро',fav:840,box:648,promo:299,link:380,spent:7560},{s:'♻️ Реактив.',fav:354,box:235,promo:108,link:138,spent:2940},{s:'🟡 Неактивні',fav:251,box:140,promo:65,link:83,spent:1780}] },
+            { id:8,  name:'Бюро пригод Totem',   icon:'🎯', category:'Дитячі товари',  npCondition:true,  firstOffer:'2023-08-01', totalOffers:18,  activeOffers:{general:5,personal:2,tasks:3,giveaways:1}, favorites:860,  users:580,  boxikSpent:7240, avgBoxikPerOffer:402, avgActivedays:15, convEN:true,  convRate:41, months:[{m:'Лютий',fav:72,box:480,promo:218,link:284,spent:5800},{m:'Березень',fav:78,box:526,promo:238,link:310,spent:6240},{m:'Квітень',fav:84,box:562,promo:254,link:332,spent:6720},{m:'Травень',fav:88,box:592,promo:268,link:350,spent:7240},{m:'Червень',fav:96,box:640,promo:290,link:378,spent:7800}], segments:[{s:'🆕 Новий',fav:121,box:81,promo:37,link:48,spent:1016},{s:'💪 Ядро',fav:430,box:322,promo:147,link:192,spent:3960},{s:'♻️ Реактив.',fav:181,box:116,promo:53,link:69,spent:1440},{s:'🟡 Неактивні',fav:128,box:63,promo:31,link:40,spent:824}] },
         ];
 
         let filteredPartners = [...PARTNERS];
@@ -2562,6 +1800,11 @@
                 const enBadge = p.convEN
                     ? '<span class="badge badge-success">Так</span>'
                     : '<span class="badge badge-danger">Ні</span>';
+                const npBadge = p.npCondition
+                    ? '<span class="badge badge-success">✅ Так</span>'
+                    : '<span class="badge badge-danger">❌ Ні</span>';
+                // promo = users who got partner promo (last month data)
+                const lastMonth = p.months[p.months.length-1];
                 tbody.innerHTML += `
                     <tr style="cursor:pointer;" onclick="openPartnerDrill(${p.id})">
                         <td><strong>${p.icon} ${p.name}</strong></td>
@@ -2571,9 +1814,11 @@
                         <td>${totalActive}</td>
                         <td>${p.favorites.toLocaleString('uk-UA')}</td>
                         <td>${p.users.toLocaleString('uk-UA')}</td>
+                        <td>${lastMonth.promo.toLocaleString('uk-UA')}</td>
+                        <td>${npBadge}</td>
+                        <td><strong style="color:${p.convRate>=50?'var(--success)':p.convRate>=30?'var(--warning)':'var(--danger)'}">${p.convRate}%</strong></td>
                         <td>${p.avgBoxikPerOffer}</td>
                         <td>${p.avgActivedays} дн.</td>
-                        <td>${p.convRate}%</td>
                         <td>${enBadge}</td>
                         <td style="color:var(--accent); font-weight:700; white-space:nowrap; font-size:0.75rem;">Детальніше →</td>
                     </tr>`;
@@ -2598,7 +1843,7 @@
             if (!p) return;
             document.getElementById('partnerListView').style.display = 'none';
             document.getElementById('partnerDrillView').style.display = 'block';
-            window.scrollTo({top: 0, behavior: 'smooth'});
+            
 
             const totalActive = p.activeOffers.general + p.activeOffers.personal + p.activeOffers.tasks + p.activeOffers.giveaways;
             const dateFormatted = new Date(p.firstOffer).toLocaleDateString('uk-UA', {day:'2-digit',month:'2-digit',year:'numeric'});
@@ -2614,14 +1859,15 @@
 
             // KPI row
             document.getElementById('drillKpiRow').innerHTML = `
-                <div class="card"><div class="card-title">Всього пропозицій</div><div class="card-value">${p.totalOffers}</div></div>
-                <div class="card"><div class="card-title">Активних зараз</div><div class="card-value">${totalActive}</div></div>
-                <div class="card"><div class="card-title">В улюбленому</div><div class="card-value">${p.favorites.toLocaleString('uk-UA')}</div></div>
-                <div class="card"><div class="card-title">Скористались</div><div class="card-value">${p.users.toLocaleString('uk-UA')}</div></div>
-                <div class="card"><div class="card-title">Боксиків витрачено</div><div class="card-value">${p.boxikSpent.toLocaleString('uk-UA')}</div></div>
-                <div class="card"><div class="card-title">Сер. боксиків/пропоз.</div><div class="card-value">${p.avgBoxikPerOffer}</div></div>
-                <div class="card"><div class="card-title">Сер. час активності</div><div class="card-value">${p.avgActivedays} <span class="card-unit">дн.</span></div></div>
-                <div class="card"><div class="card-title">Конверсія → ЕН</div><div class="card-value">${p.convRate}<span class="card-unit">%</span></div></div>
+                <div class="card"><div class="card-title">📋 Всього пропозицій</div><div class="card-value">${p.totalOffers}</div></div>
+                <div class="card"><div class="card-title">🟢 Активних зараз</div><div class="card-value">${totalActive}</div></div>
+                <div class="card"><div class="card-title">❤️ В улюбленому</div><div class="card-value">${p.favorites.toLocaleString('uk-UA')}</div></div>
+                <div class="card"><div class="card-title">📦 Списали боксики</div><div class="card-value">${p.users.toLocaleString('uk-UA')}</div></div>
+                <div class="card"><div class="card-title">🏪 Промокод партнера</div><div class="card-value">${last.promo.toLocaleString('uk-UA')}</div><div style="font-size:0.6rem;color:var(--text-secondary);">знижка в магазині партнера</div></div>
+                <div class="card"><div class="card-title">🚚 Умова доставки НП</div><div class="card-value" style="font-size:1rem;">${p.npCondition?'<span style="color:var(--success)">✅ Так</span>':'<span style="color:var(--danger)">❌ Ні</span>'}</div><div style="font-size:0.6rem;color:var(--text-secondary);">${p.npCondition?'промокод діє при доставці НП':'без прив\'язки до НП'}</div></div>
+                <div class="card"><div class="card-title">📊 Боксиків витрачено</div><div class="card-value">${p.boxikSpent.toLocaleString('uk-UA')}</div></div>
+                <div class="card"><div class="card-title">📐 Сер. боксиків/пропоз.</div><div class="card-value">${p.avgBoxikPerOffer}</div></div>
+                <div class="card"><div class="card-title">🚚 Конверсія → ЕН</div><div class="card-value" style="color:${p.convRate>=50?'var(--success)':p.convRate>=30?'var(--warning)':'var(--danger)'};">${p.convRate}<span class="card-unit">%</span></div></div>
             `;
 
             // Offers row
@@ -2633,11 +1879,10 @@
             `;
 
             // Usage row - last month values
-            const last = p.months[p.months.length - 1];
             document.getElementById('drillUsageRow').innerHTML = `
-                <div class="card"><div class="card-title">📦 Списали боксики</div><div class="card-value">${last.box.toLocaleString('uk-UA')}</div><div style="font-size:0.75rem;color:var(--text-secondary);margin-top:0.25rem;">за ${last.m}</div></div>
-                <div class="card"><div class="card-title">📋 Скопіювали промокод</div><div class="card-value">${last.promo.toLocaleString('uk-UA')}</div><div style="font-size:0.75rem;color:var(--text-secondary);margin-top:0.25rem;">за ${last.m}</div></div>
-                <div class="card"><div class="card-title">🔗 Перейшли на сайт</div><div class="card-value">${last.link.toLocaleString('uk-UA')}</div><div style="font-size:0.75rem;color:var(--text-secondary);margin-top:0.25rem;">за ${last.m}</div></div>
+                <div class="card"><div class="card-title">📦 Списали боксики</div><div class="card-value">${last.box.toLocaleString('uk-UA')}</div><div style="font-size:0.7rem;color:var(--text-secondary);margin-top:0.2rem;">за ${last.m}</div></div>
+                <div class="card"><div class="card-title">🏪 Промокод партнера отримали</div><div class="card-value">${last.promo.toLocaleString('uk-UA')}</div><div style="font-size:0.7rem;color:var(--text-secondary);margin-top:0.2rem;">знижка в магазині • за ${last.m}</div></div>
+                <div class="card"><div class="card-title">🔗 Перейшли на сайт партнера</div><div class="card-value">${last.link.toLocaleString('uk-UA')}</div><div style="font-size:0.7rem;color:var(--text-secondary);margin-top:0.2rem;">за ${last.m}</div></div>
             `;
 
             // Segments table
@@ -2752,28 +1997,107 @@
             renderClientTable();
         }
 
+        // ── UNIT SWITCHER ──────────────────────────────────────────────
+        let activeUnit = 'count';
+
+        const UNITS = {
+            count:  { label:'',    sym:'шт',   factor:1,      hint:'' },
+            boxiky: { label:'📦', sym:'бокс.', factor:2.4,    hint:'Показники перераховані в боксики' },
+            uah:    { label:'₴',  sym:'₴',     factor:18.5,   hint:'Перерахунок у гривні за курсом 1 бокс = 18.5 ₴' },
+            promo:  { label:'🎟', sym:'прм',   factor:0.42,   hint:'Частка промокодів від загальних взаємодій' },
+            en:     { label:'🚚', sym:'ЕН',    factor:0.18,   hint:'Еквівалент згенерованих ЕН від партнерів' },
+        };
+
+        function cv(val) {
+            // convert a base numeric value to active unit
+            if (activeUnit === 'count') return val;
+            return Math.round(val * UNITS[activeUnit].factor);
+        }
+        function sym() { return UNITS[activeUnit].sym; }
+        function fmt(val) { return cv(val).toLocaleString('uk-UA'); }
+
+        function setUnit(unit, btn) {
+            activeUnit = unit;
+            document.querySelectorAll('.unit-chip').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            const hint = document.getElementById('unitHint');
+            if (hint) hint.textContent = UNITS[unit].hint;
+            renderClientTable();
+            redrawAllCharts();
+        }
+
+        function redrawAllCharts() {
+            const dim = 'activity'; // default dimension
+            const loyLabels = LOY_SEG[dim];
+            const segLabels = SEG_DATA[dim].labels;
+            const s = sym();
+
+            // Loyalty charts
+            if (document.getElementById('chartBoxBalance') && segCharts['chartBoxBalance'])
+                makeBarChart('chartBoxBalance', loyLabels, [{ label:`На балансі, ${s}`, data: BOX_BAL[dim].map(cv) }]);
+            if (document.getElementById('chartBoxMonthly') && segCharts['chartBoxMonthly'])
+                makeLine('chartBoxMonthly', MONTHS, [
+                    { label:`Нараховано, ${s}`, data:[6240,6820,7150,7480,7820,8140,8420,8680,8920].map(cv) },
+                    { label:`Витрачено, ${s}`,  data:[3480,3840,4020,4280,4540,4820,5040,5240,5480].map(cv) },
+                ]);
+            if (document.getElementById('chartTasksSeg') && segCharts['chartTasksSeg'])
+                makeBarChart('chartTasksSeg', loyLabels, [{ label:`Виконань, ${s}`, data: TASKS_SEG[dim].map(cv) }]);
+            if (document.getElementById('chartTasksMonths') && segCharts['chartTasksMonths'])
+                makeLine('chartTasksMonths', MONTHS, [{ label:`Виконань, ${s}`, data:[820,960,1080,1120,1180,1240,1320,1420,1480].map(cv) }]);
+            if (document.getElementById('chartRaffleSeg') && segCharts['chartRaffleSeg'])
+                makeBarChart('chartRaffleSeg', loyLabels, [{ label:`Боксиків, ${s}`, data: RAFFLE_SEG[dim].map(cv) }]);
+            if (document.getElementById('chartRaffleMonths') && segCharts['chartRaffleMonths'])
+                makeLine('chartRaffleMonths', MONTHS, [{ label:`Боксиків, ${s}`, data:[980,1120,1240,1320,1420,1540,1640,1780,1920].map(cv) }]);
+
+            // Customer segment charts
+            if (document.getElementById('chartRaffleBar') && segCharts['chartRaffleBar']) {
+                makeBarChart('chartRaffleBar', segLabels, [
+                    { label:`Заходили, ${s}`,    data: RAFFLE[dim].visits.map(cv) },
+                    { label:`Брали участь, ${s}`, data: RAFFLE[dim].part.map(cv) },
+                ]);
+                makeBarChart('chartRaffleBox', segLabels, [{ label:`Боксиків, ${s}`, data: RAFFLE[dim].box.map(cv) }]);
+            }
+            if (document.getElementById('chartTasksVisits') && segCharts['chartTasksVisits']) {
+                makeBarChart('chartTasksVisits', segLabels, [{ label:`Заходили, ${s}`, data: TASKS[dim].visits.map(cv) }]);
+                makeBarChart('chartTasksAvg',    segLabels, [
+                    { label:'Активних (сер.)',  data: TASKS[dim].active },
+                    { label:'Виконаних (сер.)', data: TASKS[dim].done },
+                ]);
+            }
+            if (document.getElementById('chartFavVisits') && segCharts['chartFavVisits'])
+                makeBarChart('chartFavVisits', segLabels, [
+                    { label:`Заходили, ${s}`,   data: FAV[dim].visits.map(cv) },
+                    { label:'Партнерів (сер.)', data: FAV[dim].partners },
+                ]);
+            if (document.getElementById('chartScratchUsage') && segCharts['chartScratchUsage'])
+                makeBarChart('chartScratchUsage', segLabels, [{ label:`Разів, ${s}`, data: SCRATCH[dim].times.map(cv) }]);
+        }
+        // ── END UNIT SWITCHER ──────────────────────────────────────────
+
+        // ── COLUMN PICKER (removed) — renderClientTable uses activeUnit ─
         function renderClientTable() {
             const tbody = document.getElementById('clientTableBody');
             const total = filteredClients.length;
-            const pages = Math.ceil(total / CLIENT_PAGE_SIZE);
+            const pages = Math.max(1, Math.ceil(total / CLIENT_PAGE_SIZE));
             const start = (clientPage - 1) * CLIENT_PAGE_SIZE;
             const slice = filteredClients.slice(start, start + CLIENT_PAGE_SIZE);
+            const s = sym();
 
             tbody.innerHTML = '';
             slice.forEach(c => {
-                const segLabel = `${SEG_ICONS[c.segment]} ${c.segment}`;
-                const lcLabel  = `${LC_ICONS[c.lifecycle]} ${c.lifecycle}`;
+                const segLabel = `${SEG_ICONS[c.segment] || ''} ${c.segment}`;
+                const lcLabel  = `${LC_ICONS[c.lifecycle] || ''} ${c.lifecycle}`;
                 tbody.innerHTML += `
                     <tr onclick="openClientDrill(${c.id})">
                         <td><strong>${c.lastName} ${c.firstName}</strong></td>
                         <td style="color:var(--text-secondary);">${c.phone}</td>
                         <td>${segLabel}</td>
                         <td>${lcLabel}</td>
-                        <td><strong>${c.balance.toLocaleString('uk-UA')}</strong></td>
-                        <td>${c.spent.toLocaleString('uk-UA')}</td>
+                        <td><strong>${fmt(c.balance)}</strong> <span style="font-size:0.65rem;color:var(--text-secondary);">${s}</span></td>
+                        <td>${fmt(c.spent)} <span style="font-size:0.65rem;color:var(--text-secondary);">${s}</span></td>
                         <td>${c.favPartners}</td>
                         <td>${c.offersVisited}</td>
-                        <td>${c.boxUsed}</td>
+                        <td>${fmt(c.boxUsed)} <span style="font-size:0.65rem;color:var(--text-secondary);">${s}</span></td>
                         <td style="color:var(--accent);font-weight:700;white-space:nowrap;font-size:0.75rem;">Детальніше →</td>
                     </tr>`;
             });
@@ -2796,7 +2120,7 @@
             if (!c) return;
             document.getElementById('clientListView').style.display  = 'none';
             document.getElementById('clientDrillView').style.display = 'block';
-            window.scrollTo({top: 0, behavior: 'smooth'});
+            
 
             // Avatar initials
             document.getElementById('drillClientAvatar').textContent =
@@ -2811,19 +2135,28 @@
 
             // Боксики
             document.getElementById('drillBoxRow').innerHTML = `
-                <div class="card"><div class="card-title">📦 На балансі</div><div class="card-value" style="color:var(--primary);">${c.balance.toLocaleString('uk-UA')}</div></div>
-                <div class="card"><div class="card-title">💸 Витрачено</div><div class="card-value" style="color:var(--accent);">${c.spent.toLocaleString('uk-UA')}</div></div>
-                <div class="card"><div class="card-title">💡 Баланс + витрати</div><div class="card-value">${(c.balance + c.spent).toLocaleString('uk-UA')}</div></div>
+                <div class="card"><div class="card-title">📦 На балансі</div><div class="card-value" style="color:var(--primary);">${fmt(c.balance)}</div></div>
+                <div class="card"><div class="card-title">💸 Витрачено у партнерів</div><div class="card-value" style="color:var(--accent);">${fmt(c.spent)}</div></div>
+                <div class="card"><div class="card-title">💡 Всього (баланс+витрати)</div><div class="card-value">${fmt(c.balance + c.spent)}</div></div>
                 <div class="card"><div class="card-title">📊 % витрат</div><div class="card-value">${Math.round(c.spent/(c.balance+c.spent)*100)}<span class="card-unit">%</span></div></div>
+            `;
+
+            // Промокоди завдань НП
+            document.getElementById('drillTaskPromoRow').innerHTML = `
+                <div class="card"><div class="card-title">✅ Завдань виконано</div><div class="card-value" style="color:var(--primary);">${c.generalBoxUsed}</div><div style="font-size:0.6rem;color:var(--text-secondary);margin-top:0.15rem;">завдань виконано клієнтом</div></div>
+                <div class="card"><div class="card-title">🎯 Промокод НП отримано</div><div class="card-value" style="color:var(--success);">${Math.round(c.generalBoxUsed * 0.9)}</div><div style="font-size:0.6rem;color:var(--text-secondary);margin-top:0.15rem;">знижка на відправку/отримання НП</div></div>
+                <div class="card"><div class="card-title">🚚 Зробив ЕН з промокодом НП</div><div class="card-value">${c.hadEN ? '<span style="color:var(--success)">✅ Так</span>' : '<span style="color:var(--text-secondary)">❌ Ні</span>'}</div></div>
+                ${c.lastPromoDays !== null ? `<div class="card"><div class="card-title">⏱ Останній промокод НП</div><div class="card-value">${c.lastPromoDays}<span class="card-unit"> дн. тому</span></div></div>` : ''}
+                <div class="card"><div class="card-title">📊 Промо НП на місяць</div><div class="card-value">${c.promoPerMonth}</div></div>
             `;
 
             // Пропозиції партнерів
             document.getElementById('drillOffersRow').innerHTML = `
-                <div class="card"><div class="card-title">🏪 Партнерів в улюблених</div><div class="card-value" style="color:var(--primary);">${c.favPartners}</div></div>
-                <div class="card"><div class="card-title">👁️ Пропозицій відвідано</div><div class="card-value">${c.offersVisited}</div></div>
-                <div class="card"><div class="card-title">📦 Боксики використано</div><div class="card-value" style="color:var(--accent);">${c.boxUsed}</div></div>
-                <div class="card"><div class="card-title">📋 Промокодів скопійовано</div><div class="card-value">${c.promoCount}</div></div>
-                <div class="card"><div class="card-title">🔗 Переходів на сайт</div><div class="card-value">${c.linkCount}</div></div>
+                <div class="card"><div class="card-title">❤️ Партнерів в улюблених</div><div class="card-value" style="color:var(--primary);">${c.favPartners}</div></div>
+                <div class="card"><div class="card-title">👁️ Пропозицій партнерів відвідано</div><div class="card-value">${c.offersVisited}</div></div>
+                <div class="card"><div class="card-title">📦 Боксиків списано</div><div class="card-value" style="color:var(--accent);">${fmt(c.boxUsed)}</div></div>
+                <div class="card"><div class="card-title">🏪 Промокод партнера отримано</div><div class="card-value">${c.promoCount}</div><div style="font-size:0.6rem;color:var(--text-secondary);margin-top:0.15rem;">знижка в магазині партнера</div></div>
+                <div class="card"><div class="card-title">🔗 Переходів на сайт партнера</div><div class="card-value">${c.linkCount}</div></div>
             `;
 
             // Загальні пропозиції
@@ -2857,7 +2190,296 @@
             document.getElementById('clientDrillView').style.display = 'none';
         }
 
-        // ── LOYALTY CHARTS ─────────────────────────────────────────────
+        // ── CAMPAIGNS DATA ─────────────────────────────────────────────
+        const CAMPAIGNS = [
+            { id:1, name:'Весняна знижка на поштомати', channel:'Viber', icon:'💬',
+              audience:'Клієнти що не користувались поштоматами 60+ днів', status:'done',
+              promoType:'🎯 Промокод НП', sent:12400, delivered:11100, opened:7897, promo:3472, en:2840,
+              segments:[
+                {s:'🆕 Новий',sent:2480,del:2230,open:1420,promo:620,en:480},
+                {s:'💪 Ядро',sent:6200,del:5550,open:4240,promo:1980,en:1640},
+                {s:'♻️ Реактив.',sent:2480,del:2230,open:1480,promo:620,en:520},
+                {s:'🟡 Неактивні',sent:1240,del:1090,open:757,promo:252,en:200},
+              ]},
+            { id:2, name:'Rozetka: -200₴ для лояльних', channel:'Push', icon:'🔔',
+              audience:'Champions та Loyal RFM сегменти', status:'done',
+              promoType:'🏪 Промокод партнера', sent:8200, delivered:7544, opened:4899, promo:2214, en:1240,
+              segments:[
+                {s:'💎 Champions',sent:2460,del:2263,open:1793,promo:850,en:520},
+                {s:'⭐ Loyal',sent:3280,del:3018,open:2018,promo:920,en:480},
+                {s:'🎯 Potential',sent:2460,del:2263,open:1088,promo:444,en:240},
+              ]},
+            { id:3, name:'Реактивація: перша ЕН зі знижкою', channel:'Email', icon:'📧',
+              audience:'Неактивні 30-90 днів з попередніми покупками', status:'done',
+              promoType:'🎯 Промокод НП', sent:5600, delivered:4536, opened:1814, promo:908, en:726,
+              segments:[
+                {s:'🟡 Неактивні',sent:4200,del:3402,open:1361,promo:681,en:545},
+                {s:'😴 Заснувші',sent:1400,del:1134,open:453,promo:227,en:181},
+              ]},
+            { id:4, name:'АЛЛО: техніка зі знижкою', channel:'Viber', icon:'💬',
+              audience:'Активні клієнти що купували техніку', status:'active',
+              promoType:'🏪 Промокод партнера', sent:9800, delivered:8820, opened:5733, promo:2352, en:1420,
+              segments:[
+                {s:'🆕 Новий',sent:1960,del:1764,open:1058,promo:412,en:240},
+                {s:'💪 Ядро',sent:5880,del:5292,open:3520,promo:1456,en:880},
+                {s:'♻️ Реактив.',sent:1960,del:1764,open:1155,promo:484,en:300},
+              ]},
+            { id:5, name:'SMS: нагадування про боксики', channel:'SMS', icon:'💬',
+              audience:'Клієнти з балансом 100+ боксиків що не витрачали 30+ днів', status:'done',
+              promoType:'🏪 Промокод партнера', sent:15200, delivered:14136, opened:5655, promo:1696, en:966,
+              segments:[
+                {s:'💪 Ядро',sent:7600,del:7068,open:2968,promo:898,en:520},
+                {s:'♻️ Реактив.',sent:4560,del:4241,open:1696,promo:508,en:290},
+                {s:'🟡 Неактивні',sent:3040,del:2827,open:991,promo:290,en:156},
+              ]},
+            { id:6, name:'Завдання: 5 відправок = -15% НП', channel:'Push', icon:'🔔',
+              audience:'Нові клієнти перші 30 днів', status:'active',
+              promoType:'🎯 Промокод НП', sent:6400, delivered:5888, opened:4122, promo:2240, en:1960,
+              segments:[
+                {s:'🆕 Новий',sent:6400,del:5888,open:4122,promo:2240,en:1960},
+              ]},
+        ];
+
+        let filteredCampaigns = [...CAMPAIGNS];
+
+        const CHANNEL_ICONS = { Viber:'💬', Push:'🔔', Email:'📧', SMS:'📱' };
+
+        function filterCampaigns() {
+            const ch = document.getElementById('campaignChannelFilter').value;
+            const st = document.getElementById('campaignStatusFilter').value;
+            const s  = (document.getElementById('campaignSearch').value || '').toLowerCase();
+            filteredCampaigns = CAMPAIGNS.filter(c =>
+                (ch === 'all' || c.channel === ch) &&
+                (st === 'all' || c.status === st) &&
+                (!s || c.name.toLowerCase().includes(s))
+            );
+            renderCampaignTable();
+        }
+
+        function renderCampaignTable() {
+            const tbody = document.getElementById('campaignTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            filteredCampaigns.forEach(c => {
+                const convEN = Math.round(c.en / c.promo * 100);
+                const statusBadge = c.status === 'active'
+                    ? '<span class="badge badge-success">🟢 Активна</span>'
+                    : '<span class="badge" style="background:var(--bg-hover);color:var(--text-secondary);">✅ Завершена</span>';
+                tbody.innerHTML += `<tr onclick="openCampaignDrill(${c.id})">
+                    <td><strong>${c.name}</strong><br><span style="font-size:0.62rem;color:var(--text-secondary);">${c.promoType}</span></td>
+                    <td>${c.icon} ${c.channel}</td>
+                    <td style="font-size:0.68rem; color:var(--text-secondary); max-width:160px;">${c.audience}</td>
+                    <td>${c.sent.toLocaleString('uk-UA')}</td>
+                    <td>${c.delivered.toLocaleString('uk-UA')} <span style="font-size:0.65rem;color:var(--text-secondary);">${Math.round(c.delivered/c.sent*100)}%</span></td>
+                    <td>${c.opened.toLocaleString('uk-UA')} <span style="font-size:0.65rem;color:var(--text-secondary);">${Math.round(c.opened/c.sent*100)}%</span></td>
+                    <td>${c.promo.toLocaleString('uk-UA')} <span style="font-size:0.65rem;color:var(--text-secondary);">${Math.round(c.promo/c.sent*100)}%</span></td>
+                    <td><strong>${c.en.toLocaleString('uk-UA')}</strong></td>
+                    <td><strong style="color:${convEN>30?'var(--success)':convEN>15?'var(--warning)':'var(--danger)'}">${convEN}%</strong></td>
+                    <td>${statusBadge}</td>
+                    <td style="color:var(--accent);font-weight:700;font-size:0.75rem;white-space:nowrap;">Детальніше →</td>
+                </tr>`;
+            });
+        }
+
+        function openCampaignDrill(id) {
+            const c = CAMPAIGNS.find(x => x.id === id);
+            if (!c) return;
+            document.getElementById('campaignListView').style.display = 'none';
+            document.getElementById('campaignDrillView').style.display = 'block';
+
+            document.getElementById('drillCampaignIcon').textContent = c.icon;
+            document.getElementById('drillCampaignName').textContent = c.name;
+            document.getElementById('drillCampaignMeta').textContent = `${c.channel} · ${c.audience}`;
+            document.getElementById('drillCampaignBadges').innerHTML =
+                `<span class="badge badge-success" style="font-size:0.75rem;">${c.promoType}</span>
+                 <span class="badge" style="background:var(--bg-hover);color:var(--text-secondary);font-size:0.75rem;">${c.status==='active'?'🟢 Активна':'✅ Завершена'}</span>`;
+
+            const convEN = Math.round(c.en / c.promo * 100);
+            document.getElementById('drillCampaignKPI').innerHTML = `
+                <div class="card"><div class="card-title">📨 Відправлено</div><div class="card-value">${c.sent.toLocaleString('uk-UA')}</div></div>
+                <div class="card"><div class="card-title">✅ Доставлено</div><div class="card-value">${Math.round(c.delivered/c.sent*100)}<span class="card-unit">%</span></div></div>
+                <div class="card"><div class="card-title">👁️ Відкрили</div><div class="card-value">${Math.round(c.opened/c.sent*100)}<span class="card-unit">%</span></div></div>
+                <div class="card"><div class="card-title">🎟 Промокод</div><div class="card-value">${c.promo.toLocaleString('uk-UA')}</div></div>
+                <div class="card"><div class="card-title">🚚 ЕН</div><div class="card-value" style="color:var(--primary);">${c.en.toLocaleString('uk-UA')}</div></div>
+                <div class="card"><div class="card-title">🎯 Промокод → ЕН</div><div class="card-value" style="color:${convEN>30?'var(--success)':convEN>15?'var(--warning)':'var(--danger)'};">${convEN}<span class="card-unit">%</span></div></div>
+            `;
+
+            // Funnel
+            const steps = [
+                {label:'Відправлено', val:c.sent, pct:100},
+                {label:'Доставлено',  val:c.delivered, pct:Math.round(c.delivered/c.sent*100)},
+                {label:'Відкрили',    val:c.opened, pct:Math.round(c.opened/c.sent*100)},
+                {label:'Промокод',    val:c.promo, pct:Math.round(c.promo/c.sent*100)},
+                {label:'ЕН',          val:c.en, pct:Math.round(c.en/c.sent*100)},
+            ];
+            document.getElementById('drillCampaignFunnel').innerHTML = steps.map(s =>
+                `<div class="funnel-step">
+                    <div class="funnel-label" style="font-size:0.65rem; min-width:90px;">${s.label}</div>
+                    <div class="funnel-bar" style="width:${s.pct}%; background:linear-gradient(90deg,#8e44ad,#9b59b6)"><span style="font-size:0.65rem;">${s.val.toLocaleString('uk-UA')}</span></div>
+                    <div class="funnel-value" style="font-size:0.65rem;">${s.pct}%</div>
+                </div>`
+            ).join('');
+
+            // Segment table
+            document.getElementById('drillCampaignSegTable').innerHTML = c.segments.map(s => {
+                const conv = s.en > 0 ? Math.round(s.en/s.promo*100) : 0;
+                return `<tr>
+                    <td><strong>${s.s}</strong></td>
+                    <td>${s.sent.toLocaleString('uk-UA')}</td>
+                    <td>${s.del.toLocaleString('uk-UA')} (${Math.round(s.del/s.sent*100)}%)</td>
+                    <td>${s.open.toLocaleString('uk-UA')} (${Math.round(s.open/s.sent*100)}%)</td>
+                    <td>${s.promo.toLocaleString('uk-UA')}</td>
+                    <td><strong>${s.en.toLocaleString('uk-UA')}</strong></td>
+                    <td><strong style="color:${conv>30?'var(--success)':conv>15?'var(--warning)':'var(--danger)'};">${conv}%</strong></td>
+                </tr>`;
+            }).join('');
+
+            // Segment chart
+            makeBarChart('chartCampaignDrillSeg',
+                c.segments.map(s => s.s),
+                [
+                    { label:'Промокод', data: c.segments.map(s => s.promo) },
+                    { label:'ЕН',       data: c.segments.map(s => s.en) },
+                ]
+            );
+        }
+
+        function closeCampaignDrill() {
+            document.getElementById('campaignListView').style.display = 'block';
+            document.getElementById('campaignDrillView').style.display = 'none';
+        }
+
+        function initCampaignCharts() {
+            renderCampaignTable();
+
+            // Канали
+            makeBarChart('chartCampaignChannels',
+                ['💬 Viber','🔔 Push','📧 Email','📱 SMS'],
+                [
+                    { label:'Відкрили %', data:[64,56,40,38] },
+                    { label:'Промокод → ЕН %', data:[28,24,18,14] },
+                ]
+            );
+
+            // ЕН по місяцях
+            makeLine('chartCampaignEN', MONTHS, [
+                { label:'💬 Viber', data:[820,940,1080,1240,1380,1520,1640,1780,1960] },
+                { label:'🔔 Push',  data:[620,720,840,960,1040,1120,1240,1360,1480] },
+                { label:'📧 Email', data:[280,320,360,400,440,480,520,580,640] },
+                { label:'📱 SMS',   data:[180,210,240,270,300,330,360,400,440] },
+            ]);
+        }
+        // ── END CAMPAIGNS ──────────────────────────────────────────────
+
+        // ── OVERVIEW CHARTS ────────────────────────────────────────────
+        function initOverviewCharts() {
+            // Динаміка ЕН від трьох каналів
+            makeLine('chartOverviewTrend', MONTHS, [
+                { label:'✅ Завдання → ЕН', data:[3840,4120,4580,5040,5420,5840,6120,6580,6259] },
+                { label:'🏪 Партнер → ЕН',  data:[2840,3120,3480,3840,4120,4480,4720,4980,5121] },
+                { label:'📢 Акції → ЕН',    data:[6840,7420,8120,8640,9120,9640,10120,10480,10848] },
+            ]);
+
+            // Radar: активність сегментів
+            if (segCharts['chartOverviewRadar']) segCharts['chartOverviewRadar'].destroy();
+            const rCtx = document.getElementById('chartOverviewRadar');
+            if (rCtx) {
+                segCharts['chartOverviewRadar'] = new Chart(rCtx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Боксики', 'Промокоди', 'Розіграші', 'Завдання', 'Улюблене', 'ЕН'],
+                        datasets: [
+                            { label:'🆕 Новий',       data:[42,28,35,25,38,18], borderColor:'#ff6b35', backgroundColor:'rgba(255,107,53,0.1)', borderWidth:2, pointRadius:3 },
+                            { label:'💪 Ядро',        data:[88,72,84,78,85,62], borderColor:'#0d7c4f', backgroundColor:'rgba(13,124,79,0.1)',   borderWidth:2, pointRadius:3 },
+                            { label:'♻️ Реактивован.', data:[65,48,58,52,62,42], borderColor:'#3498db', backgroundColor:'rgba(52,152,219,0.1)', borderWidth:2, pointRadius:3 },
+                            { label:'🟡 Неактивні',   data:[22,12,18,10,20,8],  borderColor:'#f39c12', backgroundColor:'rgba(243,156,18,0.1)',   borderWidth:2, pointRadius:3 },
+                        ]
+                    },
+                    options: {
+                        responsive:true, maintainAspectRatio:false,
+                        plugins:{ legend:{ position:'bottom', labels:{ color:'#666', font:{family:"'Segoe UI',sans-serif"}, boxWidth:10, padding:6, font:{size:10} }}},
+                        scales:{ r:{ ticks:{ display:false }, grid:{ color:'#e0e0e0' }, pointLabels:{ font:{size:10}, color:'#555' }}}
+                    }
+                });
+            }
+
+            // Топ партнерів по клієнтах
+            makeHBar('chartTopPartners',
+                ['Rozetka','Comfy','Аптека Доброго Дня','ZARA','Дитячий Світ','McDonald\'s','Медлайн','Totem'],
+                [4120, 2980, 2180, 1940, 1480, 980, 1120, 580]
+            );
+
+            // ЖЦК розподіл
+            makeBarChart('chartOverviewLC',
+                ['🎓 Навчання','📢 Залучення','🔥 Стимуляція','💼 Продажі','🛡️ Утримання','😴 Заснувші','💔 Втрачені'],
+                [{ label:'Клієнтів', data:[2840,4120,6240,5480,4820,2980,1970] }]
+            );
+
+            // RFM розподіл
+            makeBarChart('chartOverviewRFM',
+                ['💎 Champions','⭐ Loyal','🎯 Potential','⏰ At Risk','⚠️ Declining','❌ Lost','🆕 New'],
+                [{ label:'Клієнтів', data:[3840,4280,5120,3640,2480,1820,7270] }]
+            );
+
+            // Heatmap таблиця
+            const HEAT = {
+                'Статус активності': {
+                    '🟢 Активний':  [12840,18640,9820,7240,11480],
+                    '🟡 Неактивний':[2480, 4820, 2140,1840,2960],
+                    '⚫ Архівний':  [480,  920,  420, 380, 560],
+                },
+                'Підстатус активних': {
+                    '🆕 Новий':        [2120, 3840, 1980,1420,2640],
+                    '💪 Ядро':         [7640,12480, 5820,4280,7240],
+                    '♻️ Реактивований':[3080, 6320, 2980,1980,3240],
+                },
+            };
+            const cats = ['🏥 Медицина','📱 Технологія','👕 Одяг','🍔 Їжа','👶 Дитячі'];
+            const allVals = Object.values(HEAT).flatMap(g => Object.values(g).flat());
+            const maxV = Math.max(...allVals);
+            const tbody = document.getElementById('heatmapBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            Object.entries(HEAT).forEach(([group, rows]) => {
+                const gr = document.createElement('tr');
+                gr.innerHTML = `<td colspan="6" style="padding:0.3rem 0.5rem; font-size:0.6rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; background:var(--bg-hover); letter-spacing:0.5px;">${group}</td>`;
+                tbody.appendChild(gr);
+                Object.entries(rows).forEach(([seg, vals]) => {
+                    const tr = document.createElement('tr');
+                    const cells = vals.map(v => {
+                        const pct = v / maxV;
+                        const bg = `rgba(13,124,79,${(pct * 0.7 + 0.05).toFixed(2)})`;
+                        const color = pct > 0.5 ? 'white' : 'var(--text-primary)';
+                        return `<td style="padding:0.3rem 0.4rem;text-align:center;background:${bg};color:${color};font-weight:600;font-size:0.7rem;">${(v/1000).toFixed(1)}K</td>`;
+                    }).join('');
+                    tr.innerHTML = `<td style="padding:0.35rem 0.5rem;font-size:0.72rem;white-space:nowrap;">${seg}</td>${cells}`;
+                    tbody.appendChild(tr);
+                });
+            });
+        }
+
+        // ── PARTNER PAGE CHARTS ────────────────────────────────────────
+        function initPartnerCharts() {
+            // Партнерів по категоріях
+            makeHBar('chartPartnerCats',
+                ['🍔 Їжа','👕 Одяг','📱 Технологія','🏥 Медицина','👶 Дитячі товари'],
+                [42, 38, 28, 24, 16],
+                ['#ff6b35','#3498db','#9b59b6','#0d7c4f','#f39c12']
+            );
+            // Топ-5 конверсія ЕН
+            makeHBar('chartPartnerEN',
+                ['Rozetka','Comfy','Аптека Доброго Дня','Дитячий Світ','ZARA'],
+                [62, 56, 58, 48, 45],
+                ['#0d7c4f','#0d7c4f','#0d7c4f','#f39c12','#f39c12']
+            );
+            // Топ-5 боксиків
+            makeHBar('chartPartnerBox',
+                ['Rozetka','Comfy','Аптека Доброго Дня','ZARA','Медлайн'],
+                [51380, 38640, 18640, 23820, 14280],
+                ['#ff6b35','#e74c3c','#3498db','#9b59b6','#1abc9c']
+            );
+        }
+        // ── END OVERVIEW & PARTNER CHARTS ─────────────────────────────
         const LOY_SEG = {
             activity:  ['🟢 Активний','🟡 Неактивний','⚫ Архівний'],
             substatus: ['🆕 Новий','💪 Ядро','♻️ Реактивований'],
@@ -3150,13 +2772,18 @@
             renderClientTable();
             initSegmentCharts();
             initLoyaltyCharts();
+            initOverviewCharts();
+            initPartnerCharts();
+            initCampaignCharts();
             setInterval(updateLastUpdateTime, 60000);
             // patch switchPage
             const _sp = window.switchPage;
             window.switchPage = function(pageId) {
                 _sp.call(this, pageId);
                 if (pageId === 'economics') { initLoyaltyCharts(); }
-                if (pageId === 'partners') { renderPartnerTable(); closePartnerDrill(); }
+                if (pageId === 'campaigns') { initCampaignCharts(); closeCampaignDrill(); }
+                if (pageId === 'overview')  { initOverviewCharts(); }
+                if (pageId === 'partners') { renderPartnerTable(); closePartnerDrill(); initPartnerCharts(); }
                 if (pageId === 'customers') { renderClientTable(); closeClientDrill(); initSegmentCharts(); }
             };
         });
