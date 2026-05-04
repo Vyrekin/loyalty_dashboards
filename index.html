@@ -72,19 +72,75 @@
         /* Navigation Tabs */
         .nav-tabs {
             display: flex;
+            align-items: center;
+            justify-content: space-between;
             gap: 0.5rem;
             background: var(--bg-card);
-            padding: 0.5rem 1rem;
+            padding: 0.4rem 1rem;
             border-bottom: 2px solid var(--border);
-            overflow-x: auto;
             position: sticky;
             top: 62px;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .nav-tabs-left { display:flex; gap:0.5rem; overflow-x:auto; }
+        .nav-tabs-right {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            flex-shrink: 0;
+            padding-left: 0.75rem;
+            border-left: 1px solid var(--border);
+        }
+        .nav-tabs-right .unit-chip {
+            padding: 0.2rem 0.55rem;
+            font-size: 0.62rem;
+        }
+        .nav-tabs-right .unit-label {
+            font-size: 0.58rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            white-space: nowrap;
+        }
+
+        /* Sticky filters panel */
+        .sticky-filters {
+            position: sticky;
+            top: 105px;
             z-index: 99;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 0 0 8px 8px;
+            border-top: none;
+            padding: 0.5rem 1rem;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.06);
+            margin-bottom: 0.75rem;
+        }
+        .sticky-filters select,
+        .sticky-filters input {
+            font-size: 0.65rem !important;
+            padding: 0.18rem 0.4rem !important;
+            height: auto !important;
+        }
+        .sticky-filters .filter-label {
+            font-size: 0.55rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 0.1rem;
+            white-space: nowrap;
+        }
+        .sticky-filters .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.1rem;
+            min-width: 100px;
         }
 
         .nav-tab {
-            padding: 0.45rem 1rem;
+            padding: 0.35rem 0.65rem;
             background: transparent;
             color: var(--text-secondary);
             border: 2px solid transparent;
@@ -93,7 +149,7 @@
             font-weight: 600;
             transition: all 0.3s ease;
             white-space: nowrap;
-            font-size: 0.78rem;
+            font-size: 0.68rem;
         }
 
         .nav-tab:hover {
@@ -294,6 +350,65 @@
         .chart-large {
             height: 300px;
         }
+
+        /* ── INFO MODAL ─────────────────────────────────────────────── */
+        .info-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 16px; height: 16px; border-radius: 50%;
+            background: rgba(13,124,79,0.12); border: 1px solid rgba(13,124,79,0.3);
+            color: var(--primary); font-size: 0.6rem; font-weight: 700;
+            cursor: pointer; margin-left: 5px; flex-shrink: 0;
+            transition: all 0.15s; vertical-align: middle; line-height: 1;
+        }
+        .info-btn:hover { background: var(--primary); color: white; }
+        .info-modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.45); z-index: 9999;
+            align-items: center; justify-content: center;
+        }
+        .info-modal-overlay.open { display: flex; }
+        .info-modal {
+            background: var(--bg-card); border-radius: 12px;
+            padding: 1.5rem; max-width: 520px; width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            max-height: 80vh; overflow-y: auto; position: relative;
+        }
+        .info-modal h3 {
+            font-size: 0.9rem; font-weight: 700; color: var(--text-primary);
+            margin: 0 0 1rem 0; padding-right: 1.5rem;
+            border-bottom: 2px solid var(--primary); padding-bottom: 0.5rem;
+        }
+        .info-modal .info-row {
+            display: grid; grid-template-columns: 140px 1fr;
+            gap: 0.3rem 0.75rem; font-size: 0.75rem; margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
+        }
+        .info-modal .info-row:last-child { border-bottom: none; margin-bottom: 0; }
+        .info-modal .info-label { font-weight: 700; color: var(--text-primary); }
+        .info-modal .info-value { color: var(--text-secondary); }
+        .info-modal .info-formula {
+            background: rgba(13,124,79,0.06); border-left: 3px solid var(--primary);
+            border-radius: 4px; padding: 0.4rem 0.6rem;
+            font-size: 0.7rem; color: var(--text-primary);
+            font-family: monospace; margin-top: 0.25rem;
+        }
+        .info-modal-close {
+            position: absolute; top: 1rem; right: 1rem;
+            background: var(--bg-hover); border: 1px solid var(--border);
+            border-radius: 6px; padding: 0.2rem 0.6rem;
+            cursor: pointer; font-size: 0.75rem; color: var(--text-secondary);
+        }
+        .info-modal-close:hover { background: var(--danger); color: white; }
+
+        /* Inline drill panel animation */
+        tr[id^="pdrill-"] td, tr[id^="cdrill-"] td { border: none !important; }
+        tr[id^="pdrill-"] > td > div, tr[id^="cdrill-"] > td > div { animation: fadeIn 0.25s ease; }
+        .unit-chip {
+            padding: 0.2rem 0.55rem; border-radius: 20px; font-size: 0.65rem; font-weight: 600;
+            border: 1px solid var(--border); background: var(--bg-hover); color: var(--text-secondary);
+            cursor: pointer; transition: all 0.2s;
+        }
+        .unit-chip.active { background: var(--primary); color: white; border-color: var(--primary); }
 
         /* Section Title */
         .section-title {
@@ -552,6 +667,21 @@
         .pulse {
             animation: pulse 2s infinite;
         }
+
+        /* Segment switcher & stat boxes (global) */
+        .seg-switcher { display:flex; gap:0.3rem; flex-wrap:wrap; margin-bottom:0.6rem; }
+        .seg-btn {
+            padding:0.2rem 0.55rem; border-radius:20px; font-size:0.65rem; font-weight:600;
+            border:1px solid var(--border); background:var(--bg-hover); color:var(--text-secondary);
+            cursor:pointer; transition:all 0.2s;
+        }
+        .seg-btn.active { background:var(--accent); color:white; border-color:var(--accent); }
+        .stat-row { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:0.75rem; }
+        @media(max-width:1000px){ .stat-row{ grid-template-columns:1fr; } }
+        .stat-charts { display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; }
+        @media(max-width:700px){ .stat-charts{ grid-template-columns:1fr; } }
+        .stat-section-box { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:0.85rem; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
+        .stat-section-label { font-size:0.8rem; font-weight:700; color:var(--text-primary); margin-bottom:0.5rem; display:flex; align-items:center; gap:0.4rem; }
     </style>
 </head>
 <body>
@@ -568,26 +698,33 @@
         </div>
     </div>
 
-    <!-- Navigation -->
+    <!-- Navigation + Units -->
     <div class="nav-tabs">
-        <button class="nav-tab active" onclick="switchPage('overview')">📊 Загальна</button>
-        <button class="nav-tab" onclick="switchPage('economics')">💰 Лояльність</button>
-        <button class="nav-tab" onclick="switchPage('campaigns')">📢 Акції</button>
-        <button class="nav-tab" onclick="switchPage('partners')">🤝 Партнери</button>
-        <button class="nav-tab" onclick="switchPage('customers')">👥 Клієнт</button>
+        <div class="nav-tabs-left">
+            <button class="nav-tab active" onclick="switchPage('overview')">📊 Загальна</button>
+            <button class="nav-tab" onclick="switchPage('economics')">💰 Лояльність</button>
+            <button class="nav-tab" onclick="switchPage('campaigns')">📢 Акції</button>
+            <button class="nav-tab" onclick="switchPage('partners')">🤝 Партнери</button>
+            <button class="nav-tab" onclick="switchPage('customers')">👥 Клієнт</button>
+        </div>
+        <div class="nav-tabs-right">
+            <span class="unit-label">📐 Одиниці:</span>
+            <button class="unit-chip active" onclick="setUnit('count',this)">🔢 Кількість</button>
+            <button class="unit-chip" onclick="setUnit('boxiky',this)">📦 Боксики</button>
+            <button class="unit-chip" onclick="setUnit('uah',this)">₴ Гривні</button>
+            <button class="unit-chip" onclick="setUnit('promo',this)">🎟 Промокоди</button>
+            <button class="unit-chip" onclick="setUnit('en',this)">🚚 ЕН</button>
+        </div>
     </div>
 
     <!-- Main Container -->
     <div class="container">
-        <!-- Control Panel -->
-        <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:0.75rem 1rem; margin-bottom:1rem; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
-
-            <!-- Row 1: глобальні фільтри сегментації -->
-            <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; margin-bottom:0.5rem;">
-                <span style="font-size:0.65rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap;">🔘 Сегментація:</span>
-
-                <div style="display:flex; flex-direction:column; gap:0.2rem; min-width:140px;">
-                    <span style="font-size:0.6rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.4px;">Статус активності</span>
+        <!-- Sticky Compact Filters -->
+        <div class="sticky-filters">
+            <div style="display:flex; gap:0.5rem; align-items:flex-end; flex-wrap:wrap; margin-bottom:0.4rem;">
+                <span style="font-size:0.58rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px; padding-bottom:0.2rem; white-space:nowrap;">🔘 Сегментація:</span>
+                <div class="filter-group" style="min-width:120px;">
+                    <span class="filter-label">Статус активності</span>
                     <select id="activityFilter" onchange="applyGlobalFilters()">
                         <option value="all">Усі</option>
                         <option value="active">🟢 Активний</option>
@@ -595,9 +732,8 @@
                         <option value="archive">⚫ Архівний</option>
                     </select>
                 </div>
-
-                <div style="display:flex; flex-direction:column; gap:0.2rem; min-width:160px;">
-                    <span style="font-size:0.6rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.4px;">Підстатус активних</span>
+                <div class="filter-group" style="min-width:130px;">
+                    <span class="filter-label">Підстатус активних</span>
                     <select id="substatusFilter" onchange="applyGlobalFilters()">
                         <option value="all">Усі</option>
                         <option value="new">🆕 Новий</option>
@@ -605,9 +741,8 @@
                         <option value="reactivated">♻️ Реактивований</option>
                     </select>
                 </div>
-
-                <div style="display:flex; flex-direction:column; gap:0.2rem; min-width:160px;">
-                    <span style="font-size:0.6rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.4px;">Життєвий цикл</span>
+                <div class="filter-group" style="min-width:130px;">
+                    <span class="filter-label">Життєвий цикл</span>
                     <select id="lifecycleFilter" onchange="applyGlobalFilters()">
                         <option value="all">Усі</option>
                         <option value="education">🎓 Навчання</option>
@@ -619,9 +754,8 @@
                         <option value="lost">💔 Втрачені</option>
                     </select>
                 </div>
-
-                <div style="display:flex; flex-direction:column; gap:0.2rem; min-width:160px;">
-                    <span style="font-size:0.6rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.4px;">RFM категорія</span>
+                <div class="filter-group" style="min-width:130px;">
+                    <span class="filter-label">RFM категорія</span>
                     <select id="rfmFilter" onchange="applyGlobalFilters()">
                         <option value="all">Усі</option>
                         <option value="champions">💎 Champions</option>
@@ -633,98 +767,66 @@
                         <option value="new">🆕 New</option>
                     </select>
                 </div>
-
-                <div style="display:flex; flex-direction:column; gap:0.2rem; min-width:120px;">
-                    <span style="font-size:0.6rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.4px;">Період</span>
-                    <select id="monthFilter" onchange="applyGlobalFilters()">
-                        <option value="1">1 місяць</option>
-                        <option value="3" selected>3 місяці</option>
-                        <option value="6">6 місяців</option>
-                        <option value="12">12 місяців</option>
-                    </select>
-                </div>
-
-                <div style="display:flex; flex-direction:column; gap:0.2rem; min-width:130px;">
-                    <span style="font-size:0.6rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.4px;">Категорія партнера</span>
+                <div class="filter-group" style="min-width:100px;">
+                    <span class="filter-label">Категорія партнера</span>
                     <select id="categoryFilter" onchange="applyGlobalFilters()">
                         <option value="all">Усі</option>
                         <option value="health">🏥 Медицина</option>
-                        <option value="kids">👶 Дитячі товари</option>
+                        <option value="kids">👶 Дитячі</option>
                         <option value="clothes">👕 Одяг</option>
                         <option value="food">🍔 Їжа</option>
                         <option value="tech">📱 Технологія</option>
                     </select>
                 </div>
-
-                <div style="margin-left:auto;">
-                    <button onclick="resetGlobalFilters()" style="background:var(--bg-hover); border:1px solid var(--border); border-radius:6px; padding:0.3rem 0.75rem; cursor:pointer; font-size:0.7rem; color:var(--text-secondary); font-weight:600;">↺ Скинути</button>
+                <div class="filter-group" style="min-width:80px;">
+                    <span class="filter-label">Період</span>
+                    <select id="periodFilter" onchange="applyGlobalFilters()">
+                        <option value="1m">1 місяць</option>
+                        <option value="3m" selected>3 місяці</option>
+                        <option value="6m">6 місяців</option>
+                        <option value="12m">12 місяців</option>
+                    </select>
                 </div>
+                <button onclick="resetGlobalFilters()" style="background:var(--bg-hover); border:1px solid var(--border); border-radius:5px; padding:0.18rem 0.6rem; cursor:pointer; font-size:0.62rem; color:var(--text-secondary); font-weight:600; white-space:nowrap; margin-bottom:0.05rem;">↺ Скинути</button>
+                <div id="activeFilterTags" style="display:flex; gap:0.25rem; flex-wrap:wrap; align-items:center;"></div>
             </div>
-
-            <!-- Divider -->
-            <div style="border-top:1px dashed var(--border); margin:0.5rem 0;"></div>
-
-            <!-- Row 1.5: одиниці вимірювання -->
-            <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; margin-bottom:0.5rem;">
-                <span style="font-size:0.65rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap;">📐 Одиниці:</span>
-                <button class="unit-chip active" onclick="setUnit('count',this)">🔢 Кількість</button>
-                <button class="unit-chip" onclick="setUnit('boxiky',this)">📦 Боксики</button>
-                <button class="unit-chip" onclick="setUnit('uah',this)">₴ Гривні</button>
-                <button class="unit-chip" onclick="setUnit('promo',this)">🎟 Промокоди</button>
-                <button class="unit-chip" onclick="setUnit('en',this)">🚚 ЕН</button>
-                <span id="unitHint" style="font-size:0.65rem; color:var(--text-secondary); font-style:italic;"></span>
-            </div>
-            <style>
-                .unit-chip { padding:0.25rem 0.7rem; border-radius:20px; font-size:0.68rem; font-weight:600; border:1px solid var(--border); background:var(--bg-hover); color:var(--text-secondary); cursor:pointer; transition:all 0.15s; white-space:nowrap; }
-                .unit-chip.active { background:var(--primary); color:#fff; border-color:var(--primary); }
-                .unit-chip:hover:not(.active) { border-color:var(--primary); color:var(--primary); }
-            </style>
-
-            <!-- Divider -->
-            <div style="border-top:1px dashed var(--border); margin:0.5rem 0;"></div>
-
-            <!-- Row 2: швидкі фільтри по поведінці клієнтів -->
+            <div style="border-top:1px dashed var(--border); margin:0.3rem 0 0.4rem;"></div>
             <div style="display:flex; gap:0.5rem; align-items:flex-end; flex-wrap:wrap;">
-                <span style="font-size:0.65rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap; padding-bottom:0.35rem;">⚡ Клієнти:</span>
-
-                <div style="display:flex; flex-direction:column; gap:0.2rem; min-width:130px;">
-                    <span style="font-size:0.6rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.4px;">Заходив на партнера</span>
+                <span style="font-size:0.58rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px; padding-bottom:0.2rem; white-space:nowrap;">⚡ Клієнти:</span>
+                <div class="filter-group" style="min-width:110px;">
+                    <span class="filter-label">Заходив на партнера</span>
                     <select id="qVisitedPartner" onchange="applyGlobalFilters()">
                         <option value="all">Всі</option>
                         <option value="yes">✅ Так</option>
                         <option value="no">❌ Ні</option>
                     </select>
                 </div>
-
-                <div style="display:flex; flex-direction:column; gap:0.2rem; min-width:160px;">
-                    <span style="font-size:0.6rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.4px;">🎯 Промокод НП (завдання)</span>
+                <div class="filter-group" style="min-width:140px;">
+                    <span class="filter-label">🎯 Промокод НП (завдання)</span>
                     <select id="qCopiedPromoNP" onchange="applyGlobalFilters()">
                         <option value="all">Всі</option>
                         <option value="yes">✅ Отримав</option>
                         <option value="no">❌ Не отримував</option>
                     </select>
                 </div>
-
-                <div style="display:flex; flex-direction:column; gap:0.2rem; min-width:160px;">
-                    <span style="font-size:0.6rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.4px;">🏪 Промокод партнера</span>
+                <div class="filter-group" style="min-width:130px;">
+                    <span class="filter-label">🏪 Промокод партнера</span>
                     <select id="qCopiedPromo" onchange="applyGlobalFilters()">
                         <option value="all">Всі</option>
                         <option value="yes">✅ Отримав</option>
                         <option value="no">❌ Не отримував</option>
                     </select>
                 </div>
-
-                <div style="display:flex; flex-direction:column; gap:0.2rem; min-width:120px;">
-                    <span style="font-size:0.6rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.4px;">Була ЕН</span>
+                <div class="filter-group" style="min-width:90px;">
+                    <span class="filter-label">Була ЕН</span>
                     <select id="qHadEN" onchange="applyGlobalFilters()">
                         <option value="all">Всі</option>
                         <option value="yes">✅ Так</option>
                         <option value="no">❌ Ні</option>
                     </select>
                 </div>
-
-                <div style="display:flex; flex-direction:column; gap:0.2rem; min-width:160px;">
-                    <span style="font-size:0.6rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.4px;">Останнє копіювання промо</span>
+                <div class="filter-group" style="min-width:140px;">
+                    <span class="filter-label">Останнє копіювання промо</span>
                     <select id="qLastPromo" onchange="applyGlobalFilters()">
                         <option value="all">Будь-коли</option>
                         <option value="7">Останні 7 днів</option>
@@ -733,25 +835,20 @@
                         <option value="90+">Більше 90 днів тому</option>
                     </select>
                 </div>
-
-                <div style="display:flex; flex-direction:column; gap:0.2rem; min-width:170px;">
-                    <span style="font-size:0.6rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.4px;">К-ть копіювань промо/міс</span>
+                <div class="filter-group" style="min-width:130px;">
+                    <span class="filter-label">К-ть копіювань промо/міс</span>
                     <select id="qPromoFreq" onchange="applyGlobalFilters()">
                         <option value="all">Будь-яка</option>
-                        <option value="0">0 (не копіював)</option>
-                        <option value="1-3">1–3 на місяць</option>
-                        <option value="4-10">4–10 на місяць</option>
-                        <option value="10+">Більше 10 на місяць</option>
+                        <option value="0">0</option>
+                        <option value="1-3">1–3</option>
+                        <option value="4-10">4–10</option>
+                        <option value="10+">10+</option>
                     </select>
                 </div>
-
-                <div style="display:flex; flex-direction:column; gap:0.2rem; min-width:200px;">
-                    <span style="font-size:0.6rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.4px;">🔍 Пошук (партнер / телефон)</span>
+                <div class="filter-group" style="min-width:160px;">
+                    <span class="filter-label">🔍 Пошук (партнер / телефон)</span>
                     <input type="text" id="searchInput" placeholder="Партнер або номер..." oninput="applyGlobalFilters()">
                 </div>
-
-                <!-- Active filter tags -->
-                <div id="activeFilterTags" style="display:flex; gap:0.3rem; flex-wrap:wrap; align-items:center;"></div>
             </div>
         </div>
 
@@ -759,6 +856,10 @@
         <div id="overview" class="page active">
 
             <!-- ── КЛЮЧОВІ ІНСАЙТИ ── -->
+            <div style="display:flex; align-items:center; gap:0.4rem; margin-bottom:0.5rem;">
+                <span style="font-size:0.72rem; font-weight:700; color:var(--text-primary);">💡 Ключові інсайти</span>
+                <button class="info-btn" onclick="showInfo('overview-insights')">i</button>
+            </div>
             <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:0.5rem; margin-bottom:1rem;">
                 <div style="background:rgba(39,174,96,0.08); border:1px solid rgba(39,174,96,0.3); border-left:4px solid var(--success); border-radius:8px; padding:0.65rem 0.9rem;">
                     <div style="font-size:0.6rem; font-weight:700; color:var(--success); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.2rem;">✅ Завдання працюють</div>
@@ -788,6 +889,10 @@
             </div>
 
             <!-- ── KPI ── -->
+            <div style="display:flex; align-items:center; gap:0.4rem; margin-bottom:0.4rem;">
+                <span style="font-size:0.72rem; font-weight:700; color:var(--text-primary);">📊 Ключові показники</span>
+                <button class="info-btn" onclick="showInfo('overview-kpi')">i</button>
+            </div>
             <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:0.5rem; margin-bottom:1rem;">
                 <div class="card"><div class="card-title">👥 Активних клієнтів</div><div class="card-value">28,450</div><div class="card-change positive">↑ +4.8%</div></div>
                 <div class="card"><div class="card-title">📦 Боксиків на балансі</div><div class="card-value">128K</div><div class="card-change positive">↑ +6.2%</div></div>
@@ -811,6 +916,10 @@
             </div>
 
             <!-- ── ВОРОНКИ ── -->
+            <div style="display:flex; align-items:center; gap:0.4rem; margin-bottom:0.5rem;">
+                <span style="font-size:0.72rem; font-weight:700; color:var(--text-primary);">🔽 Воронки конверсії</span>
+                <button class="info-btn" onclick="showInfo('overview-funnels')">i</button>
+            </div>
             <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.75rem; margin-bottom:1rem;">
 
                 <!-- Воронка завдань -->
@@ -858,17 +967,20 @@
                     <div class="chart-container"><canvas id="chartOverviewTrend"></canvas></div>
                 </div>
                 <div class="stat-section-box">
-                    <div class="stat-section-label">🌡️ Сегмент × Категорія партнера (боксиків списано)</div>
-                    <div style="overflow-x:auto; margin-top:0.4rem;">
-                        <table style="width:100%; font-size:0.68rem; border-collapse:collapse;">
+                    <div style="display:flex; align-items:center; gap:0.4rem; margin-bottom:0.6rem;">
+                        <div class="stat-section-label" style="margin-bottom:0;">🌡️ Сегмент × Категорія партнера — боксиків списано</div>
+                        <button class="info-btn" onclick="showInfo('overview-heatmap')">i</button>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table style="width:100%; font-size:0.67rem; border-collapse:collapse;">
                             <thead>
-                                <tr>
-                                    <th style="padding:0.3rem 0.4rem; text-align:left; color:var(--text-secondary); font-size:0.6rem; white-space:nowrap;">Сегмент</th>
-                                    <th style="padding:0.3rem 0.35rem; text-align:center; font-size:0.6rem;">🏥</th>
-                                    <th style="padding:0.3rem 0.35rem; text-align:center; font-size:0.6rem;">📱</th>
-                                    <th style="padding:0.3rem 0.35rem; text-align:center; font-size:0.6rem;">👕</th>
-                                    <th style="padding:0.3rem 0.35rem; text-align:center; font-size:0.6rem;">🍔</th>
-                                    <th style="padding:0.3rem 0.35rem; text-align:center; font-size:0.6rem;">👶</th>
+                                <tr style="background:var(--bg-hover);">
+                                    <th style="padding:0.35rem 0.5rem; text-align:left; color:var(--text-secondary); font-weight:600; white-space:nowrap; min-width:110px;">Сегмент</th>
+                                    <th style="padding:0.35rem 0.4rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:130px;">🏥 Медицина</th>
+                                    <th style="padding:0.35rem 0.4rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:130px;">📱 Технологія</th>
+                                    <th style="padding:0.35rem 0.4rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:130px;">👕 Одяг</th>
+                                    <th style="padding:0.35rem 0.4rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:100px;">🍔 Їжа</th>
+                                    <th style="padding:0.35rem 0.4rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:130px;">👶 Дитячі товари</th>
                                 </tr>
                             </thead>
                             <tbody id="heatmapBody"></tbody>
@@ -882,10 +994,26 @@
                     <div class="stat-section-label">🏆 Топ партнерів по ЕН що генерують</div>
                     <div class="chart-container"><canvas id="chartTopPartners"></canvas></div>
                 </div>
+
+                <!-- Активність сегментів — таблиця замість радару -->
                 <div class="stat-section-box">
-                    <div class="stat-section-label">📊 Активність сегментів (радар)</div>
-                    <div class="chart-container"><canvas id="chartOverviewRadar"></canvas></div>
+                    <div class="stat-section-label">📊 Активність сегментів по механіках</div>
+                    <table style="width:100%; font-size:0.66rem; border-collapse:collapse;">
+                        <thead>
+                            <tr style="background:var(--bg-hover);">
+                                <th style="padding:0.28rem 0.4rem; text-align:left; font-weight:600; color:var(--text-secondary);">Механіка</th>
+                                <th style="padding:0.28rem 0.3rem; text-align:center; font-weight:600; color:#ff6b35;" title="Новий">🆕 Новий</th>
+                                <th style="padding:0.28rem 0.3rem; text-align:center; font-weight:600; color:#0d7c4f;" title="Ядро">💪 Ядро</th>
+                                <th style="padding:0.28rem 0.3rem; text-align:center; font-weight:600; color:#3498db;" title="Реактивований">♻️ Реакт.</th>
+                                <th style="padding:0.28rem 0.3rem; text-align:center; font-weight:600; color:#f39c12;" title="Неактивні">🟡 Неакт.</th>
+                            </tr>
+                        </thead>
+                        <tbody id="segActivityBody"></tbody>
+                    </table>
+                    <div style="margin-top:0.4rem; font-size:0.58rem; color:var(--text-secondary); font-style:italic;">% — відносна активність, 100% = максимум по механіці</div>
                 </div>
+
+                <!-- RFM — виправлені підписи без emoji -->
                 <div class="stat-section-box">
                     <div class="stat-section-label">💎 Розподіл по RFM</div>
                     <div class="chart-container"><canvas id="chartOverviewRFM"></canvas></div>
@@ -919,7 +1047,7 @@
             </div>
 
             <!-- Список акцій -->
-            <div class="section-title">📋 Список акцій</div>
+            <div class="section-title">📋 Список акцій <button class="info-btn" onclick="showInfo('campaigns-list')" style="margin-left:4px;">i</button></div>
             <div style="margin-bottom:0.6rem; padding:0.5rem 0.75rem; background:rgba(255,107,53,0.07); border-left:3px solid var(--accent); border-radius:4px; font-size:0.75rem; color:var(--text-secondary);">
                 👆 Натисніть на рядок акції, щоб побачити детальну воронку
             </div>
@@ -1025,7 +1153,7 @@
         <div id="economics" class="page">
 
             <!-- ── БОКСИКИ ── -->
-            <div class="section-title">📦 Боксики</div>
+            <div class="section-title">📦 Боксики <button class="info-btn" onclick="showInfo('loy-boxiky')" style="margin-left:4px;">i</button></div>
 
             <!-- KPI row -->
             <div class="grid grid-3x1" style="margin-bottom:1rem;">
@@ -1061,7 +1189,8 @@
                 </div>
 
                 <div class="stat-section-box">
-                    <div class="stat-section-label">Нараховано по типах</div>
+                    <div class="stat-section-label" id="labelBoxAccrual">Нараховано по типах</div>
+                    <div style="font-size:0.6rem; color:var(--text-secondary); margin-bottom:0.4rem;" id="hintBoxAccrual">боксиків нараховано за поточний місяць по каналу відправки</div>
                     <div class="chart-container"><canvas id="chartBoxAccrual"></canvas></div>
                 </div>
 
@@ -1071,7 +1200,8 @@
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1.5rem;">
 
                 <div class="stat-section-box">
-                    <div class="stat-section-label">Витрачено по типах</div>
+                    <div class="stat-section-label" id="labelBoxSpent">Витрачено по типах</div>
+                    <div style="font-size:0.6rem; color:var(--text-secondary); margin-bottom:0.4rem;" id="hintBoxSpent">боксиків витрачено за поточний місяць по напрямку</div>
                     <div class="chart-container"><canvas id="chartBoxSpent"></canvas></div>
                 </div>
 
@@ -1083,7 +1213,7 @@
             </div>
 
             <!-- ── КЕШБЕК ── -->
-            <div class="section-title">💳 Кешбек</div>
+            <div class="section-title">💳 Кешбек <button class="info-btn" onclick="showInfo('loy-cashback')" style="margin-left:4px;">i</button></div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1.5rem;">
 
                 <div class="grid grid-2x2" style="margin:0;">
@@ -1117,7 +1247,7 @@
             </div>
 
             <!-- ── ЗАВДАННЯ ── -->
-            <div class="section-title">✅ Завдання → Промокод НП</div>
+            <div class="section-title">✅ Завдання → Промокод НП <button class="info-btn" onclick="showInfo('loy-tasks')" style="margin-left:4px;">i</button></div>
 
             <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:0.5rem; margin-bottom:1rem;">
                 <div class="card">
@@ -1179,7 +1309,7 @@
             </div>
 
             <!-- ── РОЗІГРАШІ ── -->
-            <div class="section-title">🎲 Розіграші</div>
+            <div class="section-title">🎲 Розіграші <button class="info-btn" onclick="showInfo('loy-raffles')" style="margin-left:4px;">i</button></div>
 
             <div class="grid grid-3x1" style="margin-bottom:1rem;">
                 <div class="card">
@@ -1223,417 +1353,258 @@
 
         <!-- PAGE 2: PARTNERS -->
         <div id="partners" class="page">
-
-            <!-- KPI summary -->
-            <div class="grid grid-3x1">
-                <div class="card">
-                    <div class="card-title">Активних Партнерів</div>
-                    <div class="card-value">148 <span class="card-unit">магазинів</span></div>
-                    <div class="card-change positive">↑ +12 нових</div>
+        <!-- ── METRIC SWITCHER (top-right reference style) ── -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.5rem;">
+            <div>
+                <div style="font-size:0.75rem; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:0.4rem;">
+                    🤝 Партнери лояльності
+                    <button class="info-btn" onclick="showInfo('partners-table')">i</button>
                 </div>
-                <div class="card">
-                    <div class="card-title">Активних Пропозицій</div>
-                    <div class="card-value">2,847 <span class="card-unit">пропозиції</span></div>
-                    <div class="card-change positive">↑ +8.3%</div>
-                </div>
-                <div class="card">
-                    <div class="card-title">Конверсія → ЕН</div>
-                    <div class="card-value">42.5 <span class="card-unit">%</span></div>
-                    <div class="card-change positive">↑ +3.1%</div>
+                <div style="font-size:0.65rem; color:var(--text-secondary); margin-top:0.1rem;">Повна аналітика по кожному партнеру</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap;">
+                <span style="font-size:0.6rem; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:0.4px;">Обрати показник:</span>
+                <div id="partnerMetricSwitcher" style="display:flex; gap:0.3rem; flex-wrap:wrap;">
+                    <button class="seg-btn active" onclick="switchPartnerMetric('boxik',this)">📦 Боксики</button>
+                    <button class="seg-btn" onclick="switchPartnerMetric('users',this)">👥 Скористались</button>
+                    <button class="seg-btn" onclick="switchPartnerMetric('fav',this)">❤️ В улюбленому</button>
+                    <button class="seg-btn" onclick="switchPartnerMetric('en',this)">🚚 ЕН</button>
                 </div>
             </div>
+        </div>
 
-            <!-- Partner charts -->
-            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.75rem; margin-bottom:1rem;">
-
-                <div class="stat-section-box">
-                    <div class="stat-section-label">📊 Партнерів по категоріях</div>
-                    <div class="chart-container"><canvas id="chartPartnerCats"></canvas></div>
+        <!-- ── KPI ROW + MoM block (reference style) ── -->
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr auto; gap:0.6rem; margin-bottom:0.75rem; align-items:start;">
+            <div class="card"><div class="card-title">🤝 Всього партнерів</div><div class="card-value">8 <span class="card-unit">активних</span></div><div class="card-change positive">↑ +1 новий</div></div>
+            <div class="card"><div class="card-title">📦 Боксиків витрачено</div><div class="card-value" id="pkpi-box">84,120 <span class="card-unit">шт</span></div><div class="card-change positive">↑ +6.4%</div></div>
+            <div class="card"><div class="card-title">👥 Скористались</div><div class="card-value" id="pkpi-users">9,470 <span class="card-unit">осіб</span></div><div class="card-change positive">↑ +5.1%</div></div>
+            <div class="card"><div class="card-title">🚚 ЕН від партнерів</div><div class="card-value" id="pkpi-en">11,240 <span class="card-unit">шт</span></div><div class="card-change positive">↑ +8.2%</div></div>
+            <!-- MoM block (reference style) -->
+            <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:0.6rem 0.9rem; box-shadow:0 2px 8px rgba(0,0,0,0.05); min-width:160px;">
+                <div style="font-size:0.6rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; margin-bottom:0.4rem;">MoM для поточного місяця</div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.3rem; text-align:center;">
+                    <div style="font-size:0.6rem; color:var(--text-secondary);">Попередній</div>
+                    <div style="font-size:0.6rem; color:var(--text-secondary);">Поточний</div>
+                    <div style="font-size:1rem; font-weight:700; color:var(--text-primary);">10,384</div>
+                    <div style="font-size:1rem; font-weight:700; color:var(--primary);">11,240</div>
+                    <div style="font-size:0.65rem; background:rgba(39,174,96,0.15); color:var(--success); border-radius:4px; padding:0.1rem 0.3rem;">↑ +8.2%</div>
+                    <div style="font-size:0.65rem; color:var(--text-secondary);">ЕН</div>
                 </div>
-
-                <div class="stat-section-box">
-                    <div class="stat-section-label">🔄 Топ-5: конверсія → ЕН (%)</div>
-                    <div class="chart-container"><canvas id="chartPartnerEN"></canvas></div>
-                </div>
-
-                <div class="stat-section-box">
-                    <div class="stat-section-label">📦 Топ-5: боксиків витрачено</div>
-                    <div class="chart-container"><canvas id="chartPartnerBox"></canvas></div>
-                </div>
-
             </div>
+        </div>
 
-            <!-- LIST VIEW -->
-            <div id="partnerListView">
-                <div class="section-title">🤝 Список Партнерів</div>
-                <div style="margin-bottom: 0.6rem; padding: 0.5rem 0.75rem; background: rgba(255,107,53,0.07); border-left: 3px solid var(--accent); border-radius: 4px; font-size: 0.75rem; color: var(--text-secondary);">
-                    👆 Натисніть на рядок партнера, щоб побачити детальну аналітику
+        <!-- ── SUMMARY CHART ROW ── -->
+        <div style="display:grid; grid-template-columns:2fr 1fr; gap:0.75rem; margin-bottom:0.75rem;">
+            <div class="stat-section-box">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+                    <div style="display:flex; align-items:center; gap:0.4rem;">
+                        <div class="stat-section-label" id="partnerSummaryLabel" style="margin-bottom:0;">📈 Динаміка по партнерах (боксики по місяцях)</div>
+                        <button class="info-btn" onclick="showInfo('partners-summary')">i</button>
+                    </div>
+                    <div style="display:flex; gap:0.3rem;">
+                        <button class="seg-btn active" id="ptimeBtn-month" onclick="switchPartnerTime('month',this)">Місяць</button>
+                        <button class="seg-btn" id="ptimeBtn-quarter" onclick="switchPartnerTime('quarter',this)">Квартал</button>
+                    </div>
                 </div>
-                <div style="margin-bottom: 1rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-                    <input type="text" id="partnerSearch" placeholder="🔍 Пошук партнера..." oninput="filterPartnerTable()" style="max-width: 280px;">
-                    <select id="partnerCategoryFilter" onchange="filterPartnerTable()" style="max-width: 200px;">
-                        <option value="all">Усі категорії</option>
-                        <option value="Медицина">🏥 Медицина</option>
-                        <option value="Одяг">👕 Одяг</option>
-                        <option value="Їжа">🍔 Їжа</option>
-                        <option value="Технологія">📱 Технологія</option>
-                        <option value="Дитячі товари">👶 Дитячі товари</option>
-                    </select>
-                    <select id="partnerENFilter" onchange="filterPartnerTable()" style="max-width: 200px;">
-                        <option value="all">Конвертує в ЕН: усі</option>
-                        <option value="yes">✅ Так</option>
-                        <option value="no">❌ Ні</option>
-                    </select>
-                </div>
-                <div class="card" style="padding: 0;">
-                    <div class="table-container">
-                        <table id="partnerTable">
-                            <thead>
-                                <tr>
-                                    <th>Партнер</th>
-                                    <th>Категорія</th>
-                                    <th>Дата 1-ї пропозиції</th>
-                                    <th>Всього пропоз.</th>
-                                    <th>Актив. зараз</th>
-                                    <th>В улюбленому</th>
-                                    <th>Списали боксики</th>
-                                    <th>🏪 Промокод партнера отримали</th>
-                                    <th>Умова доставки НП</th>
-                                    <th>🚚 Конв. → ЕН</th>
-                                    <th>Сер. боксиків/пропоз.</th>
-                                    <th>Сер. час активн.</th>
-                                    <th>ЕН</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody id="partnerTableBody">
-                            </tbody>
-                        </table>
+                <div style="position:relative; height:200px;"><canvas id="chartPartnerSummary"></canvas></div>
+                <!-- YoY + MoM row under chart (reference style) -->
+                <div id="partnerYoYRow" style="display:grid; grid-template-columns:repeat(5,1fr); gap:0.3rem; margin-top:0.5rem; padding-top:0.5rem; border-top:1px solid var(--border);">
+                    <div style="text-align:center;">
+                        <div style="font-size:0.58rem; color:var(--text-secondary);">Лютий</div>
+                        <div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem;">YoY +18%</div>
+                        <div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem; margin-top:0.15rem;">MoM +5%</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <div style="font-size:0.58rem; color:var(--text-secondary);">Березень</div>
+                        <div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem;">YoY +22%</div>
+                        <div style="font-size:0.7rem; font-weight:700; background:rgba(231,76,60,0.15); color:var(--danger); border-radius:3px; padding:0.1rem; margin-top:0.15rem;">MoM -3%</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <div style="font-size:0.58rem; color:var(--text-secondary);">Квітень</div>
+                        <div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem;">YoY +15%</div>
+                        <div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem; margin-top:0.15rem;">MoM +7%</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <div style="font-size:0.58rem; color:var(--text-secondary);">Травень</div>
+                        <div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem;">YoY +19%</div>
+                        <div style="font-size:0.7rem; font-weight:700; background:rgba(231,76,60,0.15); color:var(--danger); border-radius:3px; padding:0.1rem; margin-top:0.15rem;">MoM -1%</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <div style="font-size:0.58rem; color:var(--text-secondary);">Червень</div>
+                        <div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem;">YoY +24%</div>
+                        <div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem; margin-top:0.15rem;">MoM +8%</div>
                     </div>
                 </div>
             </div>
-
-            <!-- DRILL-DOWN VIEW -->
-            <div id="partnerDrillView" style="display:none;">
-                <div style="margin-bottom: 1.5rem;">
-                    <button onclick="closePartnerDrill()" style="background: var(--bg-hover); border: 2px solid var(--border); border-radius: 8px; padding: 0.5rem 1.25rem; cursor: pointer; font-weight: 600; color: var(--text-secondary); font-size: 0.85rem;">← Назад до списку</button>
-                </div>
-
-                <!-- Partner header -->
-                <div class="card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, #f8fff8, #fff);">
-                    <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
-                        <div id="drillPartnerIcon" style="font-size: 1.8rem; width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; background: var(--bg-hover); border-radius: 10px;"></div>
-                        <div>
-                            <div id="drillPartnerName" style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary);"></div>
-                            <div id="drillPartnerMeta" style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.2rem;"></div>
-                        </div>
-                        <div style="margin-left: auto; display: flex; gap: 1rem; flex-wrap: wrap;" id="drillPartnerBadges"></div>
-                    </div>
-                </div>
-
-                <!-- KPI row -->
-                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin-bottom: 1.5rem;" id="drillKpiRow"></div>
-
-                <!-- Offers breakdown -->
-                <div class="section-title">📋 Пропозиції</div>
-                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin-bottom: 2rem;" id="drillOffersRow"></div>
-
-                <!-- Usage stats -->
-                <div class="section-title">👥 Скористались пропозиціями</div>
-                <div class="grid grid-3x1" style="margin-bottom: 2rem;" id="drillUsageRow"></div>
-
-                <!-- By segments table -->
-                <div class="section-title">📊 По сегментах клієнтів</div>
-                <div class="card" style="padding: 0; margin-bottom: 2rem;">
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Сегмент</th>
-                                    <th>В улюбленому</th>
-                                    <th>Списали боксики</th>
-                                    <th>Скопіювали промокод</th>
-                                    <th>Перейшли на сайт</th>
-                                    <th>Боксиків витрачено</th>
-                                </tr>
-                            </thead>
-                            <tbody id="drillSegmentsTable"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- By months table -->
-                <div class="section-title">📅 По місяцях</div>
-                <div class="card" style="padding: 0; margin-bottom: 2rem;">
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Місяць</th>
-                                    <th>В улюбленому</th>
-                                    <th>Списали боксики</th>
-                                    <th>Скопіювали промокод</th>
-                                    <th>Перейшли на сайт</th>
-                                    <th>Боксиків витрачено</th>
-                                </tr>
-                            </thead>
-                            <tbody id="drillMonthsTable"></tbody>
-                        </table>
-                    </div>
-                </div>
-
+            <div class="stat-section-box">
+                <div class="stat-section-label">🏆 Частка боксиків по категоріях</div>
+                <div style="position:relative; height:200px;"><canvas id="chartPartnerCatShare"></canvas></div>
             </div>
+        </div>
+
+        <!-- ── FILTERS ── -->
+        <div style="display:flex; gap:0.6rem; flex-wrap:wrap; align-items:center; margin-bottom:0.6rem;">
+            <input type="text" id="partnerSearch" placeholder="🔍 Пошук партнера..." oninput="filterPartnerTable()" style="max-width:220px;">
+            <select id="partnerCategoryFilter" onchange="filterPartnerTable()" style="max-width:160px;">
+                <option value="all">Всі категорії</option>
+                <option value="Технологія">📱 Технологія</option>
+                <option value="Медицина">🏥 Медицина</option>
+                <option value="Одяг">👕 Одяг</option>
+                <option value="Їжа">🍔 Їжа</option>
+                <option value="Дитячі товари">👶 Дитячі товари</option>
+            </select>
+            <select id="partnerENFilter" onchange="filterPartnerTable()" style="max-width:160px;">
+                <option value="all">Всі (ЕН)</option>
+                <option value="yes">✅ Конвертує в ЕН</option>
+                <option value="no">❌ Не конвертує</option>
+            </select>
+            <div style="margin-left:auto; font-size:0.7rem; color:var(--text-secondary);">👆 Натисніть на рядок, щоб розгорнути деталі</div>
+        </div>
+
+        <!-- ── FULL CANVAS TABLE ── -->
+        <div class="card" style="padding:0;">
+            <div class="table-container">
+                <table id="partnerMainTable" style="font-size:0.72rem; table-layout:fixed; width:100%;">
+                    <thead>
+                        <tr>
+                            <th style="width:150px;">Партнер</th>
+                            <th style="width:90px;">Категорія</th>
+                            <th style="width:70px;">❤️ Улюблене</th>
+                            <th style="width:80px;">📦 Списали бокс.</th>
+                            <th style="width:90px;">🏪 Промокод партнера</th>
+                            <th style="width:90px;">📊 Бокс. витрачено</th>
+                            <th style="width:65px;">Умова НП</th>
+                            <th style="width:80px;">🚚 Конв. → ЕН</th>
+                            <th style="width:65px; text-align:center;">MoM%</th>
+                        </tr>
+                    </thead>
+                    <tbody id="partnerMainTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+        <!-- inline drill panel rendered here by JS -->
         </div>
 
         <!-- PAGE 3: CUSTOMERS -->
         <div id="customers" class="page">
 
-            <!-- Summary KPIs -->
-            <div class="grid grid-3x1">
-                <div class="card">
-                    <div class="card-title">Активних Клієнтів</div>
-                    <div class="card-value">28,450 <span class="card-unit">осіб</span></div>
-                    <div class="card-change positive">↑ +4.8%</div>
+        <!-- ── METRIC SWITCHER ── -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.5rem;">
+            <div>
+                <div style="font-size:0.75rem; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:0.4rem;">
+                    👥 Клієнти в програмі лояльності
+                    <button class="info-btn" onclick="showInfo('clients-table')">i</button>
                 </div>
-                <div class="card">
-                    <div class="card-title">Сер. боксиків на балансі</div>
-                    <div class="card-value">287 <span class="card-unit">шт</span></div>
-                    <div class="card-change positive">↑ +5.2%</div>
-                </div>
-                <div class="card">
-                    <div class="card-title">Конверсія в пропозиції</div>
-                    <div class="card-value">34.2 <span class="card-unit">%</span></div>
-                    <div class="card-change positive">↑ +2.1%</div>
+                <div style="font-size:0.65rem; color:var(--text-secondary); margin-top:0.1rem;">Поведінка клієнтів в розділі "Доставка бонусів"</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap;">
+                <span style="font-size:0.6rem; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:0.4px;">Обрати показник:</span>
+                <div id="clientMetricSwitcher" style="display:flex; gap:0.3rem; flex-wrap:wrap;">
+                    <button class="seg-btn active" onclick="switchClientMetric('boxik',this)">📦 Боксики</button>
+                    <button class="seg-btn" onclick="switchClientMetric('activity',this)">📊 Активність</button>
+                    <button class="seg-btn" onclick="switchClientMetric('tasks',this)">✅ Завдання</button>
+                    <button class="seg-btn" onclick="switchClientMetric('raffles',this)">🎁 Розіграші</button>
                 </div>
             </div>
+        </div>
 
-            <!-- ── РОЗДІЛ СТАТИСТИКИ — ГРАФІКИ ── -->
-
-            <style>
-                .seg-switcher { display:flex; gap:0.3rem; flex-wrap:wrap; margin-bottom:0.6rem; }
-                .seg-btn {
-                    padding:0.2rem 0.55rem; border-radius:20px; font-size:0.65rem; font-weight:600;
-                    border:1px solid var(--border); background:var(--bg-hover); color:var(--text-secondary);
-                    cursor:pointer; transition:all 0.2s;
-                }
-                .seg-btn.active { background:var(--accent); color:white; border-color:var(--accent); }
-                /* Two sections side by side */
-                .stat-row { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1rem; }
-                @media(max-width:1000px){ .stat-row{ grid-template-columns:1fr; } }
-                /* Two charts inside a section */
-                .stat-charts { display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; }
-                @media(max-width:700px){ .stat-charts{ grid-template-columns:1fr; } }
-                .stat-section-box { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:0.85rem; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
-                .stat-section-label { font-size:0.8rem; font-weight:700; color:var(--text-primary); margin-bottom:0.5rem; display:flex; align-items:center; gap:0.4rem; }
-            </style>
-
-            <!-- ROW 1: Розіграші + Завдання -->
-            <div class="stat-row">
-
-                <!-- РОЗІГРАШІ -->
-                <div class="stat-section-box">
-                    <div class="stat-section-label">🎁 Розіграші</div>
-                    <div class="seg-switcher" id="sw-raffle">
-                        <button class="seg-btn active" onclick="switchSeg('raffle','activity',this)">Статус активності</button>
-                        <button class="seg-btn" onclick="switchSeg('raffle','substatus',this)">Підстатус активних</button>
-                        <button class="seg-btn" onclick="switchSeg('raffle','lifecycle',this)">Життєвий цикл</button>
-                        <button class="seg-btn" onclick="switchSeg('raffle','rfm',this)">RFM</button>
-                    </div>
-                    <div class="stat-charts">
-                        <div class="card" style="padding:0.6rem;">
-                            <div class="card-title">Заходили та брали участь</div>
-                            <div class="chart-container"><canvas id="chartRaffleBar"></canvas></div>
-                        </div>
-                        <div class="card" style="padding:0.6rem;">
-                            <div class="card-title">Боксиків витрачено</div>
-                            <div class="chart-container"><canvas id="chartRaffleBox"></canvas></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ЗАВДАННЯ -->
-                <div class="stat-section-box">
-                    <div class="stat-section-label">✅ Завдання</div>
-                    <div class="seg-switcher" id="sw-tasks">
-                        <button class="seg-btn active" onclick="switchSeg('tasks','activity',this)">Статус активності</button>
-                        <button class="seg-btn" onclick="switchSeg('tasks','substatus',this)">Підстатус активних</button>
-                        <button class="seg-btn" onclick="switchSeg('tasks','lifecycle',this)">Життєвий цикл</button>
-                        <button class="seg-btn" onclick="switchSeg('tasks','rfm',this)">RFM</button>
-                    </div>
-                    <div class="stat-charts">
-                        <div class="card" style="padding:0.6rem;">
-                            <div class="card-title">Заходили (разів)</div>
-                            <div class="chart-container"><canvas id="chartTasksVisits"></canvas></div>
-                        </div>
-                        <div class="card" style="padding:0.6rem;">
-                            <div class="card-title">Активних vs Виконаних (сер.)</div>
-                            <div class="chart-container"><canvas id="chartTasksAvg"></canvas></div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- ROW 2: Улюблене + Скретч-карти -->
-            <div class="stat-row">
-
-                <!-- УЛЮБЛЕНЕ -->
-                <div class="stat-section-box">
-                    <div class="stat-section-label">❤️ Улюблене</div>
-                    <div class="seg-switcher" id="sw-fav">
-                        <button class="seg-btn active" onclick="switchSeg('fav','activity',this)">Статус активності</button>
-                        <button class="seg-btn" onclick="switchSeg('fav','substatus',this)">Підстатус активних</button>
-                        <button class="seg-btn" onclick="switchSeg('fav','lifecycle',this)">Життєвий цикл</button>
-                        <button class="seg-btn" onclick="switchSeg('fav','rfm',this)">RFM</button>
-                    </div>
-                    <div class="stat-charts">
-                        <div class="card" style="padding:0.6rem;">
-                            <div class="card-title">Заходили та партнерів в розділі (сер.)</div>
-                            <div class="chart-container"><canvas id="chartFavVisits"></canvas></div>
-                        </div>
-                        <div class="card" style="padding:0.6rem;">
-                            <div class="card-title">Топ країн у фільтрі</div>
-                            <div class="chart-container"><canvas id="chartFavCountries"></canvas></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- СКРЕТЧ-КАРТИ -->
-                <div class="stat-section-box">
-                    <div class="stat-section-label">🎰 Скретч-карти</div>
-                    <div class="seg-switcher" id="sw-scratch">
-                        <button class="seg-btn active" onclick="switchSeg('scratch','activity',this)">Статус активності</button>
-                        <button class="seg-btn" onclick="switchSeg('scratch','substatus',this)">Підстатус активних</button>
-                        <button class="seg-btn" onclick="switchSeg('scratch','lifecycle',this)">Життєвий цикл</button>
-                        <button class="seg-btn" onclick="switchSeg('scratch','rfm',this)">RFM</button>
-                    </div>
-                    <div class="stat-charts">
-                        <div class="card" style="padding:0.6rem;">
-                            <div class="card-title">Активних vs Використаних</div>
-                            <div class="chart-container"><canvas id="chartScratchStatus"></canvas></div>
-                        </div>
-                        <div class="card" style="padding:0.6rem;">
-                            <div class="card-title">Разів використовували</div>
-                            <div class="chart-container"><canvas id="chartScratchUsage"></canvas></div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- CLIENT LIST VIEW -->
-            <div id="clientListView">
-                <div class="section-title">👥 Клієнти по Сегментах</div>
-
-                <div style="margin-bottom: 0.6rem; padding: 0.5rem 0.75rem; background: rgba(255,107,53,0.07); border-left: 3px solid var(--accent); border-radius: 4px; font-size: 0.75rem; color: var(--text-secondary);">
-                    👆 Натисніть на рядок клієнта, щоб побачити його детальну аналітику
-                </div>
-
-                <div style="margin-bottom: 0.75rem; display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
-                    <input type="text" id="clientSearch" placeholder="🔍 Пошук по телефону або імені..." oninput="filterClientTable()" style="max-width: 280px;">
-                    <select id="clientSegmentFilter" onchange="filterClientTable()" style="max-width: 180px;">
-                        <option value="all">Всі сегменти</option>
-                        <option value="Новий">🆕 Новий</option>
-                        <option value="Ядро">💪 Ядро</option>
-                        <option value="Реактивований">♻️ Реактивований</option>
-                        <option value="Неактивний">🟡 Неактивний</option>
-                    </select>
-                    <select id="clientLifecycleFilter" onchange="filterClientTable()" style="max-width: 180px;">
-                        <option value="all">Всі ЖЦК</option>
-                        <option value="Навчання">🎓 Навчання</option>
-                        <option value="Залучення">📢 Залучення</option>
-                        <option value="Стимуляція">🔥 Стимуляція</option>
-                        <option value="Продажі">💼 Продажі</option>
-                        <option value="Утримання">🛡️ Утримання</option>
-                        <option value="Заснувші">😴 Заснувші</option>
-                    </select>
-                </div>
-
-                <div class="card" style="padding: 0;">
-                    <div class="table-container">
-                        <table id="clientTable">
-                            <thead>
-                                <tr>
-                                    <th>Клієнт</th>
-                                    <th>Телефон</th>
-                                    <th>Сегмент</th>
-                                    <th>ЖЦК</th>
-                                    <th class="u-col">📦 Боксики (баланс)</th>
-                                    <th class="u-col">💸 Боксики (витрачено)</th>
-                                    <th>❤️ Партнерів в улюбл.</th>
-                                    <th>👁️ Пропозицій відвідано</th>
-                                    <th class="u-col">🎯 Боксики використано</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody id="clientTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Pagination -->
-                <div style="display:flex; align-items:center; gap:0.75rem; margin-top:0.75rem; font-size:0.78rem; color:var(--text-secondary);">
-                    <button onclick="clientPagePrev()" id="clientPrevBtn" style="background:var(--bg-hover); border:1px solid var(--border); border-radius:6px; padding:0.3rem 0.75rem; cursor:pointer; font-size:0.75rem;">← Попередня</button>
-                    <span id="clientPageInfo"></span>
-                    <button onclick="clientPageNext()" id="clientNextBtn" style="background:var(--bg-hover); border:1px solid var(--border); border-radius:6px; padding:0.3rem 0.75rem; cursor:pointer; font-size:0.75rem;">Наступна →</button>
+        <!-- ── KPI ROW + MoM block ── -->
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr auto; gap:0.6rem; margin-bottom:0.75rem; align-items:start;">
+            <div class="card"><div class="card-title">👥 Активних клієнтів</div><div class="card-value">28,450 <span class="card-unit">осіб</span></div><div class="card-change positive">↑ +4.8%</div></div>
+            <div class="card"><div class="card-title">📦 Сер. боксиків на балансі</div><div class="card-value">287 <span class="card-unit">шт</span></div><div class="card-change positive">↑ +5.2%</div></div>
+            <div class="card"><div class="card-title">🏪 Конверсія в пропозиції</div><div class="card-value">34.2 <span class="card-unit">%</span></div><div class="card-change positive">↑ +2.1%</div></div>
+            <div class="card"><div class="card-title">✅ Виконали завдання</div><div class="card-value">38 <span class="card-unit">%</span></div><div class="card-change positive">↑ +3.4%</div></div>
+            <!-- MoM block -->
+            <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:0.6rem 0.9rem; box-shadow:0 2px 8px rgba(0,0,0,0.05); min-width:160px;">
+                <div style="font-size:0.6rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; margin-bottom:0.4rem;">MoM для поточного місяця</div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.3rem; text-align:center;">
+                    <div style="font-size:0.6rem; color:var(--text-secondary);">Попередній</div>
+                    <div style="font-size:0.6rem; color:var(--text-secondary);">Поточний</div>
+                    <div style="font-size:1rem; font-weight:700; color:var(--text-primary);">27,130</div>
+                    <div style="font-size:1rem; font-weight:700; color:var(--primary);">28,450</div>
+                    <div style="font-size:0.65rem; background:rgba(39,174,96,0.15); color:var(--success); border-radius:4px; padding:0.1rem 0.3rem;">↑ +4.8%</div>
+                    <div style="font-size:0.65rem; color:var(--text-secondary);">клієнтів</div>
                 </div>
             </div>
+        </div>
 
-            <!-- CLIENT DRILL-DOWN VIEW -->
-            <div id="clientDrillView" style="display:none;">
-                <div style="margin-bottom:1rem;">
-                    <button onclick="closeClientDrill()" style="background:var(--bg-hover); border:1px solid var(--border); border-radius:6px; padding:0.4rem 1rem; cursor:pointer; font-weight:600; color:var(--text-secondary); font-size:0.78rem;">← Назад до списку</button>
-                </div>
-
-                <!-- Client header -->
-                <div class="card" style="margin-bottom:1rem;">
-                    <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
-                        <div id="drillClientAvatar" style="width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.2rem; font-weight:700; color:white; background:linear-gradient(135deg,var(--primary),var(--accent)); flex-shrink:0;"></div>
-                        <div>
-                            <div id="drillClientName" style="font-size:1rem; font-weight:700; color:var(--text-primary);"></div>
-                            <div id="drillClientMeta" style="font-size:0.72rem; color:var(--text-secondary); margin-top:0.15rem;"></div>
-                        </div>
-                        <div style="margin-left:auto; display:flex; gap:0.5rem; flex-wrap:wrap;" id="drillClientBadges"></div>
+        <!-- ── SUMMARY CHART ROW ── -->
+        <div style="display:grid; grid-template-columns:2fr 1fr; gap:0.75rem; margin-bottom:0.75rem;">
+            <div class="stat-section-box">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+                    <div style="display:flex; align-items:center; gap:0.4rem;">
+                        <div class="stat-section-label" id="clientSummaryLabel" style="margin-bottom:0;">📈 Динаміка клієнтів по сегментах (по місяцях)</div>
+                        <button class="info-btn" onclick="showInfo('clients-summary')">i</button>
+                    </div>
+                    <div style="display:flex; gap:0.3rem;">
+                        <button class="seg-btn active" id="ctimeBtn-month" onclick="switchClientTime('month',this)">Місяць</button>
+                        <button class="seg-btn" id="ctimeBtn-quarter" onclick="switchClientTime('quarter',this)">Квартал</button>
                     </div>
                 </div>
-
-                <!-- Боксики -->
-                <div class="section-title">📦 Боксики</div>
-                <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); margin-bottom:1rem;" id="drillBoxRow"></div>
-
-                <!-- Промокоди завдань НП -->
-                <div class="section-title">🎯 Промокоди завдань → Знижка НП</div>
-                <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); margin-bottom:1rem;" id="drillTaskPromoRow"></div>
-
-                <!-- Пропозиції партнерів -->
-                <div class="section-title">🏪 Пропозиції партнерів (боксики → промокод партнера)</div>
-                <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); margin-bottom:1rem;" id="drillOffersRow"></div>
-
-                <!-- Загальні пропозиції -->
-                <div class="section-title">📋 Загальні пропозиції</div>
-                <div class="grid" style="grid-template-columns:repeat(4,1fr); margin-bottom:1rem;" id="drillGeneralRow"></div>
-
-                <!-- Активність по партнерах (топ) -->
-                <div class="section-title">📊 Топ партнерів клієнта</div>
-                <div class="card" style="padding:0; margin-bottom:1rem;">
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Партнер</th>
-                                    <th>Категорія</th>
-                                    <th>Відвідань</th>
-                                    <th>Боксиків витрачено</th>
-                                    <th>Промокодів скопійовано</th>
-                                    <th>В улюбленому</th>
-                                </tr>
-                            </thead>
-                            <tbody id="drillClientPartners"></tbody>
-                        </table>
-                    </div>
+                <div style="position:relative; height:200px;"><canvas id="chartClientSummary"></canvas></div>
+                <!-- YoY + MoM row (reference style) -->
+                <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:0.3rem; margin-top:0.5rem; padding-top:0.5rem; border-top:1px solid var(--border);">
+                    <div style="text-align:center;"><div style="font-size:0.58rem; color:var(--text-secondary);">Лютий</div><div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem;">YoY +14%</div><div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem; margin-top:0.15rem;">MoM +3%</div></div>
+                    <div style="text-align:center;"><div style="font-size:0.58rem; color:var(--text-secondary);">Березень</div><div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem;">YoY +17%</div><div style="font-size:0.7rem; font-weight:700; background:rgba(231,76,60,0.15); color:var(--danger); border-radius:3px; padding:0.1rem; margin-top:0.15rem;">MoM -2%</div></div>
+                    <div style="text-align:center;"><div style="font-size:0.58rem; color:var(--text-secondary);">Квітень</div><div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem;">YoY +12%</div><div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem; margin-top:0.15rem;">MoM +5%</div></div>
+                    <div style="text-align:center;"><div style="font-size:0.58rem; color:var(--text-secondary);">Травень</div><div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem;">YoY +16%</div><div style="font-size:0.7rem; font-weight:700; background:rgba(231,76,60,0.15); color:var(--danger); border-radius:3px; padding:0.1rem; margin-top:0.15rem;">MoM -1%</div></div>
+                    <div style="text-align:center;"><div style="font-size:0.58rem; color:var(--text-secondary);">Червень</div><div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem;">YoY +19%</div><div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem; margin-top:0.15rem;">MoM +5%</div></div>
                 </div>
             </div>
+            <div class="stat-section-box">
+                <div class="stat-section-label">🎯 Розподіл по сегментах (поточний місяць)</div>
+                <div style="position:relative; height:200px;"><canvas id="chartClientSegShare"></canvas></div>
+            </div>
+        </div>
 
+        <!-- ── UNIT SWITCHER ── -->
+        <div style="display:flex; gap:0.4rem; flex-wrap:wrap; align-items:center; margin-bottom:0.5rem;">
+            <span style="font-size:0.6rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase;">Одиниці:</span>
+            <button class="unit-chip active" onclick="setUnit('count',this)">Кількість</button>
+            <button class="unit-chip" onclick="setUnit('boxiky',this)">📦 Боксики</button>
+            <button class="unit-chip" onclick="setUnit('uah',this)">₴ Гривні</button>
+            <button class="unit-chip" onclick="setUnit('en',this)">🚚 ЕН</button>
+        </div>
+
+        <!-- ── FILTERS ── -->
+        <div style="display:flex; gap:0.6rem; flex-wrap:wrap; align-items:center; margin-bottom:0.6rem;">
+            <input type="text" id="clientSearch" placeholder="🔍 Телефон або ім'я..." oninput="filterClientTable()" style="max-width:220px;">
+            <select id="clientSegmentFilter" onchange="filterClientTable()" style="max-width:160px;">
+                <option value="all">Всі підстатуси</option>
+                <option value="Новий">🆕 Новий</option>
+                <option value="Ядро">💪 Ядро</option>
+                <option value="Реактивований">♻️ Реактивований</option>
+                <option value="Неактивний">🟡 Неактивний</option>
+            </select>
+            <select id="clientLifecycleFilter" onchange="filterClientTable()" style="max-width:160px;">
+                <option value="all">Всі ЖЦК</option>
+                <option value="Навчання">🎓 Навчання</option>
+                <option value="Залучення">📢 Залучення</option>
+                <option value="Стимуляція">🔥 Стимуляція</option>
+                <option value="Продажі">💼 Продажі</option>
+                <option value="Утримання">🛡️ Утримання</option>
+                <option value="Заснувші">😴 Заснувші</option>
+            </select>
+            <div style="margin-left:auto; font-size:0.7rem; color:var(--text-secondary);">👆 Натисніть на рядок, щоб розгорнути деталі клієнта</div>
+        </div>
+
+        <!-- ── FULL CANVAS TABLE ── -->
+        <div class="card" style="padding:0;">
+            <div class="table-container">
+                <table id="clientMainTable" style="font-size:0.72rem; table-layout:fixed; width:100%;">
+                    <thead id="clientMainTableHead"></thead>
+                    <tbody id="clientMainTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div style="display:flex; align-items:center; gap:0.75rem; margin-top:0.6rem; font-size:0.78rem; color:var(--text-secondary);">
+            <button onclick="clientPagePrev()" id="clientPrevBtn" style="background:var(--bg-hover); border:1px solid var(--border); border-radius:6px; padding:0.3rem 0.75rem; cursor:pointer; font-size:0.75rem;">← Попередня</button>
+            <span id="clientPageInfo"></span>
+            <button onclick="clientPageNext()" id="clientNextBtn" style="background:var(--bg-hover); border:1px solid var(--border); border-radius:6px; padding:0.3rem 0.75rem; cursor:pointer; font-size:0.75rem;">Наступна →</button>
+        </div>
+        <!-- inline drill panel rendered by JS below table -->
         </div>
 
         <!-- Footer -->
@@ -1683,6 +1654,7 @@
                 search:         (document.getElementById('searchInput')?.value        || '').toLowerCase(),
                 visitedPartner: document.getElementById('qVisitedPartner')?.value     || 'all',
                 copiedPromo:    document.getElementById('qCopiedPromo')?.value        || 'all',
+                copiedPromoNP:  document.getElementById('qCopiedPromoNP')?.value      || 'all',
                 hadEN:          document.getElementById('qHadEN')?.value              || 'all',
                 lastPromo:      document.getElementById('qLastPromo')?.value          || 'all',
                 promoFreq:      document.getElementById('qPromoFreq')?.value          || 'all',
@@ -1709,6 +1681,9 @@
                 if (f.visitedPartner === 'no'  &&  c.visitedPartner) return false;
                 if (f.copiedPromo === 'yes' && !c.copiedPromo) return false;
                 if (f.copiedPromo === 'no'  &&  c.copiedPromo) return false;
+                // Промокод НП (завдання) — використовуємо hadEN як наближення
+                if (f.copiedPromoNP === 'yes' && c.generalBoxUsed === 0) return false;
+                if (f.copiedPromoNP === 'no'  && c.generalBoxUsed > 0)  return false;
                 if (f.hadEN === 'yes' && !c.hadEN) return false;
                 if (f.hadEN === 'no'  &&  c.hadEN) return false;
                 if (f.lastPromo !== 'all') {
@@ -1735,7 +1710,7 @@
 
         function resetGlobalFilters() {
             ['activityFilter','substatusFilter','lifecycleFilter','rfmFilter','monthFilter','categoryFilter',
-             'qVisitedPartner','qCopiedPromo','qHadEN','qLastPromo','qPromoFreq'].forEach(id => {
+             'qVisitedPartner','qCopiedPromo','qCopiedPromoNP','qHadEN','qLastPromo','qPromoFreq'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.value = el.options[0].value;
             });
@@ -1753,7 +1728,8 @@
             lifecycle:      { education:'🎓 Навчання', engagement:'📢 Залучення', stimulation:'🔥 Стимуляція', 'cross-sell':'💼 Продажі', retention:'🛡️ Утримання', lapset:'😴 Заснувші', lost:'💔 Втрачені' },
             rfm:            { champions:'💎 Champions', loyal:'⭐ Loyal', potential:'🎯 Potential', 'at-risk':'⏰ At Risk', declining:'⚠️ Declining', lost:'❌ Lost', new:'🆕 New' },
             visitedPartner: { yes:'Заходив на партнера', no:'Не заходив' },
-            copiedPromo:    { yes:'Копіював промо', no:'Не копіював' },
+            copiedPromo:    { yes:'🏪 Промокод партнера: отримав', no:'🏪 Промокод партнера: не отримував' },
+            copiedPromoNP:  { yes:'🎯 Промокод НП: отримав', no:'🎯 Промокод НП: не отримував' },
             hadEN:          { yes:'Була ЕН', no:'Без ЕН' },
             lastPromo:      { '7':'Промо < 7 днів', '30':'Промо < 30 днів', '90':'Промо < 90 днів', '90+':'Промо > 90 днів' },
             promoFreq:      { '0':'0 промо/міс', '1-3':'1–3 промо/міс', '4-10':'4–10 промо/міс', '10+':'>10 промо/міс' },
@@ -1763,7 +1739,7 @@
             const container = document.getElementById('activeFilterTags');
             if (!container) return;
             container.innerHTML = '';
-            const idMap = { activity:'activityFilter', substatus:'substatusFilter', lifecycle:'lifecycleFilter', rfm:'rfmFilter', visitedPartner:'qVisitedPartner', copiedPromo:'qCopiedPromo', hadEN:'qHadEN', lastPromo:'qLastPromo', promoFreq:'qPromoFreq' };
+            const idMap = { activity:'activityFilter', substatus:'substatusFilter', lifecycle:'lifecycleFilter', rfm:'rfmFilter', visitedPartner:'qVisitedPartner', copiedPromo:'qCopiedPromo', copiedPromoNP:'qCopiedPromoNP', hadEN:'qHadEN', lastPromo:'qLastPromo', promoFreq:'qPromoFreq' };
             Object.entries(TAG_LABELS).forEach(([key, map]) => {
                 const val = f[key];
                 if (val && val !== 'all' && map[val]) {
@@ -1790,45 +1766,208 @@
         ];
 
         let filteredPartners = [...PARTNERS];
+        let activePartnerDrillId = null;
 
-        function renderPartnerTable() {
-            const tbody = document.getElementById('partnerTableBody');
-            tbody.innerHTML = '';
-            filteredPartners.forEach(p => {
-                const totalActive = p.activeOffers.general + p.activeOffers.personal + p.activeOffers.tasks + p.activeOffers.giveaways;
-                const dateFormatted = new Date(p.firstOffer).toLocaleDateString('uk-UA', {day:'2-digit',month:'2-digit',year:'numeric'});
-                const enBadge = p.convEN
-                    ? '<span class="badge badge-success">Так</span>'
-                    : '<span class="badge badge-danger">Ні</span>';
-                const npBadge = p.npCondition
-                    ? '<span class="badge badge-success">✅ Так</span>'
-                    : '<span class="badge badge-danger">❌ Ні</span>';
-                // promo = users who got partner promo (last month data)
-                const lastMonth = p.months[p.months.length-1];
-                tbody.innerHTML += `
-                    <tr style="cursor:pointer;" onclick="openPartnerDrill(${p.id})">
-                        <td><strong>${p.icon} ${p.name}</strong></td>
-                        <td>${p.category}</td>
-                        <td>${dateFormatted}</td>
-                        <td>${p.totalOffers}</td>
-                        <td>${totalActive}</td>
-                        <td>${p.favorites.toLocaleString('uk-UA')}</td>
-                        <td>${p.users.toLocaleString('uk-UA')}</td>
-                        <td>${lastMonth.promo.toLocaleString('uk-UA')}</td>
-                        <td>${npBadge}</td>
-                        <td><strong style="color:${p.convRate>=50?'var(--success)':p.convRate>=30?'var(--warning)':'var(--danger)'}">${p.convRate}%</strong></td>
-                        <td>${p.avgBoxikPerOffer}</td>
-                        <td>${p.avgActivedays} дн.</td>
-                        <td>${enBadge}</td>
-                        <td style="color:var(--accent); font-weight:700; white-space:nowrap; font-size:0.75rem;">Детальніше →</td>
-                    </tr>`;
+        // ── PARTNER METRIC SWITCHER ──────────────────────────────────
+        let activePartnerMetric = 'boxik';
+        function switchPartnerMetric(m, btn) {
+            activePartnerMetric = m;
+            document.querySelectorAll('#partnerMetricSwitcher .seg-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            renderPartnerTable();
+            initPartnerSummaryChart();
+        }
+
+        let activePartnerTime = 'month';
+        function switchPartnerTime(t, btn) {
+            activePartnerTime = t;
+            document.getElementById('ptimeBtn-month').classList.toggle('active', t==='month');
+            document.getElementById('ptimeBtn-quarter').classList.toggle('active', t==='quarter');
+            initPartnerSummaryChart();
+        }
+
+        function initPartnerSummaryChart() {
+            if (segCharts['chartPartnerSummary']) segCharts['chartPartnerSummary'].destroy();
+            const ctx = document.getElementById('chartPartnerSummary');
+            if (!ctx) return;
+            const isQ = activePartnerTime === 'quarter';
+            const labels = isQ ? ['Q3 2024','Q4 2024','Q1 2025','Q2 2025'] : ['Лютий','Березень','Квітень','Травень','Червень'];
+            const dataMap = {
+                boxik: {
+                    month: [[1800,2100,2400,2200,2600],[900,1050,1200,1100,1300],[600,700,800,750,900],[450,520,600,570,650],[320,380,440,420,500],[280,330,380,360,420],[210,250,290,270,310],[180,210,240,225,265]],
+                    quarter: [[5400,8100,6600,7800],[2700,4050,3300,3900],[1800,2700,2200,2550],[1350,2025,1650,1905]]
+                },
+                users: {
+                    month: [[380,440,500,470,540],[190,220,250,235,270],[130,150,170,160,185],[95,110,125,118,135],[68,78,90,85,98],[58,67,77,73,84],[44,51,59,55,63],[38,44,51,47,54]],
+                    quarter: [[1140,1710,1320,1560],[570,855,660,780],[390,585,450,525],[285,428,332,390]]
+                },
+                fav: {
+                    month: [[420,490,560,530,610],[320,370,420,400,460],[210,240,275,260,300],[158,182,208,198,228],[112,130,148,140,162],[98,113,130,123,142],[74,85,98,93,107],[64,73,84,79,91]],
+                    quarter: [[1260,1890,1470,1740],[960,1440,1120,1320],[630,945,720,855],[474,711,558,663]]
+                },
+                en: {
+                    month: [[280,330,380,360,420],[140,165,190,180,210],[95,110,126,119,137],[71,83,95,90,104],[50,58,67,63,73],[44,51,59,55,63],[33,38,44,42,48],[28,33,38,36,42]],
+                    quarter: [[840,1260,1060,1218],[420,630,528,594],[285,428,332,390],[213,320,250,297]]
+                }
+            };
+            const colors = COLORS8;
+            const pnames = PARTNERS.map(p => p.icon + ' ' + p.name);
+            const dsets = filteredPartners.map((p, i) => ({
+                label: p.icon + ' ' + p.name,
+                data: (dataMap[activePartnerMetric][activePartnerTime][i] || []).slice(0, labels.length),
+                backgroundColor: colors[i % colors.length],
+                borderRadius: 4
+            }));
+            const metricLabels = {boxik:'Боксики',users:'Скористались',fav:'Улюблене',en:'ЕН'};
+            document.getElementById('partnerSummaryLabel').textContent = `📈 Динаміка по партнерах — ${metricLabels[activePartnerMetric]} (${activePartnerTime==='quarter'?'квартально':'по місяцях'})`;
+            segCharts['chartPartnerSummary'] = new Chart(ctx, {
+                type: 'bar',
+                data: { labels, datasets: dsets },
+                options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ labels:{ color:'#666', font:{size:10}, boxWidth:10, padding:6 }}}, scales:{ x:{stacked:true,ticks:{color:'#666',font:{size:10}}}, y:{stacked:true,ticks:{color:'#666',font:{size:10}},grid:{color:'#e8e8e8'}} } }
             });
         }
 
+        function renderPartnerTable() {
+            const tbody = document.getElementById('partnerMainTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            const momData = [-5.4, +8.2, +3.1, -2.8, +11.4, +6.7, +4.2, -1.9];
+            filteredPartners.forEach((p, idx) => {
+                const totalActive = p.activeOffers.general + p.activeOffers.personal + p.activeOffers.tasks + p.activeOffers.giveaways;
+                const lastMonth = p.months[p.months.length - 1];
+                const enBadge = p.convEN ? '<span class="badge badge-success">✅</span>' : '<span class="badge badge-danger">❌</span>';
+                const npBadge = p.npCondition ? '<span class="badge badge-success">✅</span>' : '<span class="badge badge-danger">❌</span>';
+                const mom = momData[idx % momData.length];
+                const momHtml = `<span style="font-size:0.7rem; font-weight:700; padding:0.15rem 0.4rem; border-radius:4px; background:${mom>=0?'rgba(39,174,96,0.15)':'rgba(231,76,60,0.15)'}; color:${mom>=0?'var(--success)':'var(--danger)'};">${mom>=0?'●':'●'} ${mom>0?'+':''}${mom}%</span>`;
+                const isOpen = activePartnerDrillId === p.id;
+                const rowStyle = isOpen ? 'background:rgba(255,107,53,0.06); border-left:3px solid var(--accent);' : 'cursor:pointer;';
+
+                const row = document.createElement('tr');
+                row.id = `prow-${p.id}`;
+                row.style.cssText = rowStyle;
+                row.innerHTML = `
+                    <td onclick="togglePartnerDrill(${p.id})"><strong>${p.icon} ${p.name}</strong> <span style="font-size:0.6rem; color:var(--accent);">${isOpen?'▲':'▼'}</span></td>
+                    <td onclick="togglePartnerDrill(${p.id})">${p.category}</td>
+                    <td onclick="togglePartnerDrill(${p.id})">${p.favorites.toLocaleString('uk-UA')}</td>
+                    <td onclick="togglePartnerDrill(${p.id})">${p.users.toLocaleString('uk-UA')}</td>
+                    <td onclick="togglePartnerDrill(${p.id})">${lastMonth.promo.toLocaleString('uk-UA')}</td>
+                    <td onclick="togglePartnerDrill(${p.id})"><strong>${p.boxikSpent.toLocaleString('uk-UA')}</strong></td>
+                    <td onclick="togglePartnerDrill(${p.id})">${npBadge}</td>
+                    <td onclick="togglePartnerDrill(${p.id})"><strong style="color:${p.convRate>=50?'var(--success)':p.convRate>=30?'var(--warning)':'var(--danger)'}">${p.convRate}%</strong></td>
+                    <td style="text-align:center;">${momHtml}</td>
+                `;
+                tbody.appendChild(row);
+
+                // Inline drill panel row
+                const drillRow = document.createElement('tr');
+                drillRow.id = `pdrill-${p.id}`;
+                drillRow.style.display = isOpen ? '' : 'none';
+                drillRow.innerHTML = `<td colspan="9" style="padding:0; background:rgba(255,107,53,0.03);">
+                    <div style="padding:1rem 1.25rem; border-top:2px solid var(--accent);" id="pdrill-content-${p.id}"></div>
+                </td>`;
+                tbody.appendChild(drillRow);
+
+                if (isOpen) renderPartnerDrillContent(p);
+            });
+        }
+
+        function togglePartnerDrill(id) {
+            if (activePartnerDrillId === id) {
+                activePartnerDrillId = null;
+            } else {
+                activePartnerDrillId = id;
+            }
+            renderPartnerTable();
+        }
+
+        function renderPartnerDrillContent(p) {
+            const el = document.getElementById(`pdrill-content-${p.id}`);
+            if (!el) return;
+            const last = p.months[p.months.length - 1];
+            const totalActive = p.activeOffers.general + p.activeOffers.personal + p.activeOffers.tasks + p.activeOffers.giveaways;
+
+            // Header
+            let html = `<div style="display:flex; align-items:center; gap:1rem; margin-bottom:0.9rem; flex-wrap:wrap;">
+                <div style="font-size:1.4rem;">${p.icon}</div>
+                <div>
+                    <div style="font-size:0.95rem; font-weight:700; color:var(--text-primary);">${p.name}</div>
+                    <div style="font-size:0.68rem; color:var(--text-secondary);">${p.category} · 1-а пропозиція: ${new Date(p.firstOffer).toLocaleDateString('uk-UA')}</div>
+                </div>
+                <div style="margin-left:auto; display:flex; gap:0.5rem; flex-wrap:wrap;">
+                    ${p.convEN ? '<span class="badge badge-success">✅ Конвертує в ЕН</span>' : '<span class="badge badge-danger">❌ Не конвертує в ЕН</span>'}
+                    ${p.npCondition ? '<span class="badge badge-success">📦 Умова НП</span>' : ''}
+                </div>
+            </div>`;
+
+            // KPI mini-cards
+            html += `<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:0.5rem; margin-bottom:0.9rem;">
+                <div class="card" style="padding:0.5rem 0.7rem;"><div class="card-title" style="font-size:0.58rem;">Пропозицій всього</div><div class="card-value" style="font-size:1rem;">${p.totalOffers}</div></div>
+                <div class="card" style="padding:0.5rem 0.7rem;"><div class="card-title" style="font-size:0.58rem;">Загальних</div><div class="card-value" style="font-size:1rem; color:var(--primary);">${p.activeOffers.general}</div></div>
+                <div class="card" style="padding:0.5rem 0.7rem;"><div class="card-title" style="font-size:0.58rem;">Персональних</div><div class="card-value" style="font-size:1rem; color:var(--accent);">${p.activeOffers.personal}</div></div>
+                <div class="card" style="padding:0.5rem 0.7rem;"><div class="card-title" style="font-size:0.58rem;">Завдань</div><div class="card-value" style="font-size:1rem; color:var(--warning);">${p.activeOffers.tasks}</div></div>
+                <div class="card" style="padding:0.5rem 0.7rem;"><div class="card-title" style="font-size:0.58rem;">Розіграшів</div><div class="card-value" style="font-size:1rem; color:var(--success);">${p.activeOffers.giveaways}</div></div>
+                <div class="card" style="padding:0.5rem 0.7rem;"><div class="card-title" style="font-size:0.58rem;">❤️ В улюбленому</div><div class="card-value" style="font-size:1rem;">${p.favorites.toLocaleString('uk-UA')}</div></div>
+                <div class="card" style="padding:0.5rem 0.7rem;"><div class="card-title" style="font-size:0.58rem;">📦 Боксиків витрачено</div><div class="card-value" style="font-size:1rem;">${p.boxikSpent.toLocaleString('uk-UA')}</div></div>
+                <div class="card" style="padding:0.5rem 0.7rem;"><div class="card-title" style="font-size:0.58rem;">📐 Сер.бокс./проп.</div><div class="card-value" style="font-size:1rem;">${p.avgBoxikPerOffer}</div></div>
+                <div class="card" style="padding:0.5rem 0.7rem;"><div class="card-title" style="font-size:0.58rem;">🚚 Конв. → ЕН</div><div class="card-value" style="font-size:1rem; color:${p.convRate>=50?'var(--success)':p.convRate>=30?'var(--warning)':'var(--danger)'};">${p.convRate}%</div></div>
+            </div>`;
+
+            // Two-column: segments table + months chart
+            html += `<div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+                <div>
+                    <div style="font-size:0.72rem; font-weight:700; color:var(--text-primary); margin-bottom:0.4rem;">📊 По сегментах клієнтів</div>
+                    <div style="overflow-x:auto;">
+                        <table style="width:100%; font-size:0.67rem; border-collapse:collapse;">
+                            <thead><tr style="background:var(--bg-hover);">
+                                <th style="padding:0.3rem 0.5rem; text-align:left;">Сегмент</th>
+                                <th style="padding:0.3rem 0.4rem; text-align:right;">❤️</th>
+                                <th style="padding:0.3rem 0.4rem; text-align:right;">📦 Бокс.</th>
+                                <th style="padding:0.3rem 0.4rem; text-align:right;">🏪 Промо</th>
+                                <th style="padding:0.3rem 0.4rem; text-align:right;">🔗 Сайт</th>
+                                <th style="padding:0.3rem 0.4rem; text-align:right;">💰 Витр.</th>
+                            </tr></thead>
+                            <tbody>`;
+            p.segments.forEach(s => {
+                html += `<tr style="border-bottom:1px solid var(--border);">
+                    <td style="padding:0.28rem 0.5rem;"><strong>${s.s}</strong></td>
+                    <td style="padding:0.28rem 0.4rem; text-align:right;">${s.fav}</td>
+                    <td style="padding:0.28rem 0.4rem; text-align:right;">${s.box}</td>
+                    <td style="padding:0.28rem 0.4rem; text-align:right;">${s.promo}</td>
+                    <td style="padding:0.28rem 0.4rem; text-align:right;">${s.link}</td>
+                    <td style="padding:0.28rem 0.4rem; text-align:right;">${s.spent.toLocaleString('uk-UA')}</td>
+                </tr>`;
+            });
+            html += `</tbody></table></div></div>
+                <div>
+                    <div style="font-size:0.72rem; font-weight:700; color:var(--text-primary); margin-bottom:0.4rem;">📅 Динаміка по місяцях</div>
+                    <div style="position:relative; height:160px;"><canvas id="pchart-months-${p.id}"></canvas></div>
+                </div>
+            </div>`;
+
+            el.innerHTML = html;
+
+            // Render months chart
+            const mCtx = document.getElementById(`pchart-months-${p.id}`);
+            if (mCtx) {
+                new Chart(mCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: p.months.map(m => m.m),
+                        datasets: [
+                            { label:'📦 Боксики', data: p.months.map(m=>m.box), backgroundColor:'rgba(13,124,79,0.7)', borderRadius:3 },
+                            { label:'🏪 Промокод', data: p.months.map(m=>m.promo), backgroundColor:'rgba(255,107,53,0.7)', borderRadius:3 },
+                            { label:'🔗 Сайт', data: p.months.map(m=>m.link), backgroundColor:'rgba(52,152,219,0.7)', borderRadius:3 },
+                        ]
+                    },
+                    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ labels:{ color:'#666', font:{size:9}, boxWidth:8 }}}, scales:{ x:{ticks:{color:'#666',font:{size:9}}}, y:{ticks:{color:'#666',font:{size:9}},grid:{color:'#e8e8e8'}} } }
+                });
+            }
+        }
+
         function filterPartnerTable() {
-            const search = document.getElementById('partnerSearch').value.toLowerCase();
-            const cat    = document.getElementById('partnerCategoryFilter').value;
-            const en     = document.getElementById('partnerENFilter').value;
+            const search = (document.getElementById('partnerSearch')?.value || '').toLowerCase();
+            const cat    = document.getElementById('partnerCategoryFilter')?.value || 'all';
+            const en     = document.getElementById('partnerENFilter')?.value || 'all';
             filteredPartners = PARTNERS.filter(p => {
                 const matchSearch = p.name.toLowerCase().includes(search);
                 const matchCat    = cat === 'all' || p.category === cat;
@@ -1838,86 +1977,9 @@
             renderPartnerTable();
         }
 
-        function openPartnerDrill(id) {
-            const p = PARTNERS.find(x => x.id === id);
-            if (!p) return;
-            document.getElementById('partnerListView').style.display = 'none';
-            document.getElementById('partnerDrillView').style.display = 'block';
-            
-
-            const totalActive = p.activeOffers.general + p.activeOffers.personal + p.activeOffers.tasks + p.activeOffers.giveaways;
-            const dateFormatted = new Date(p.firstOffer).toLocaleDateString('uk-UA', {day:'2-digit',month:'2-digit',year:'numeric'});
-
-            document.getElementById('drillPartnerIcon').textContent = p.icon;
-            document.getElementById('drillPartnerName').textContent = p.name;
-            document.getElementById('drillPartnerMeta').textContent = `${p.category} · 1-а пропозиція: ${dateFormatted}`;
-
-            const enBadge = p.convEN
-                ? '<span class="badge badge-success" style="font-size:0.8rem; padding:0.4rem 0.9rem;">✅ Конвертує в ЕН</span>'
-                : '<span class="badge badge-danger"   style="font-size:0.8rem; padding:0.4rem 0.9rem;">❌ Не конвертує в ЕН</span>';
-            document.getElementById('drillPartnerBadges').innerHTML = enBadge;
-
-            // KPI row
-            document.getElementById('drillKpiRow').innerHTML = `
-                <div class="card"><div class="card-title">📋 Всього пропозицій</div><div class="card-value">${p.totalOffers}</div></div>
-                <div class="card"><div class="card-title">🟢 Активних зараз</div><div class="card-value">${totalActive}</div></div>
-                <div class="card"><div class="card-title">❤️ В улюбленому</div><div class="card-value">${p.favorites.toLocaleString('uk-UA')}</div></div>
-                <div class="card"><div class="card-title">📦 Списали боксики</div><div class="card-value">${p.users.toLocaleString('uk-UA')}</div></div>
-                <div class="card"><div class="card-title">🏪 Промокод партнера</div><div class="card-value">${last.promo.toLocaleString('uk-UA')}</div><div style="font-size:0.6rem;color:var(--text-secondary);">знижка в магазині партнера</div></div>
-                <div class="card"><div class="card-title">🚚 Умова доставки НП</div><div class="card-value" style="font-size:1rem;">${p.npCondition?'<span style="color:var(--success)">✅ Так</span>':'<span style="color:var(--danger)">❌ Ні</span>'}</div><div style="font-size:0.6rem;color:var(--text-secondary);">${p.npCondition?'промокод діє при доставці НП':'без прив\'язки до НП'}</div></div>
-                <div class="card"><div class="card-title">📊 Боксиків витрачено</div><div class="card-value">${p.boxikSpent.toLocaleString('uk-UA')}</div></div>
-                <div class="card"><div class="card-title">📐 Сер. боксиків/пропоз.</div><div class="card-value">${p.avgBoxikPerOffer}</div></div>
-                <div class="card"><div class="card-title">🚚 Конверсія → ЕН</div><div class="card-value" style="color:${p.convRate>=50?'var(--success)':p.convRate>=30?'var(--warning)':'var(--danger)'};">${p.convRate}<span class="card-unit">%</span></div></div>
-            `;
-
-            // Offers row
-            document.getElementById('drillOffersRow').innerHTML = `
-                <div class="card"><div class="card-title">Загальних</div><div class="card-value" style="color:var(--primary);">${p.activeOffers.general}</div></div>
-                <div class="card"><div class="card-title">Персональних</div><div class="card-value" style="color:var(--accent);">${p.activeOffers.personal}</div></div>
-                <div class="card"><div class="card-title">Завдань</div><div class="card-value" style="color:var(--warning);">${p.activeOffers.tasks}</div></div>
-                <div class="card"><div class="card-title">Розіграшів</div><div class="card-value" style="color:var(--success);">${p.activeOffers.giveaways}</div></div>
-            `;
-
-            // Usage row - last month values
-            document.getElementById('drillUsageRow').innerHTML = `
-                <div class="card"><div class="card-title">📦 Списали боксики</div><div class="card-value">${last.box.toLocaleString('uk-UA')}</div><div style="font-size:0.7rem;color:var(--text-secondary);margin-top:0.2rem;">за ${last.m}</div></div>
-                <div class="card"><div class="card-title">🏪 Промокод партнера отримали</div><div class="card-value">${last.promo.toLocaleString('uk-UA')}</div><div style="font-size:0.7rem;color:var(--text-secondary);margin-top:0.2rem;">знижка в магазині • за ${last.m}</div></div>
-                <div class="card"><div class="card-title">🔗 Перейшли на сайт партнера</div><div class="card-value">${last.link.toLocaleString('uk-UA')}</div><div style="font-size:0.7rem;color:var(--text-secondary);margin-top:0.2rem;">за ${last.m}</div></div>
-            `;
-
-            // Segments table
-            let segHTML = '';
-            p.segments.forEach(s => {
-                segHTML += `<tr>
-                    <td><strong>${s.s}</strong></td>
-                    <td>${s.fav.toLocaleString('uk-UA')}</td>
-                    <td>${s.box.toLocaleString('uk-UA')}</td>
-                    <td>${s.promo.toLocaleString('uk-UA')}</td>
-                    <td>${s.link.toLocaleString('uk-UA')}</td>
-                    <td>${s.spent.toLocaleString('uk-UA')}</td>
-                </tr>`;
-            });
-            document.getElementById('drillSegmentsTable').innerHTML = segHTML;
-
-            // Months table
-            let monHTML = '';
-            p.months.forEach(m => {
-                monHTML += `<tr>
-                    <td><strong>${m.m}</strong></td>
-                    <td>${m.fav.toLocaleString('uk-UA')}</td>
-                    <td>${m.box.toLocaleString('uk-UA')}</td>
-                    <td>${m.promo.toLocaleString('uk-UA')}</td>
-                    <td>${m.link.toLocaleString('uk-UA')}</td>
-                    <td>${m.spent.toLocaleString('uk-UA')}</td>
-                </tr>`;
-            });
-            document.getElementById('drillMonthsTable').innerHTML = monHTML;
-        }
-
-        function closePartnerDrill() {
-            document.getElementById('partnerListView').style.display = 'block';
-            document.getElementById('partnerDrillView').style.display = 'none';
-        }
+        // Keep old stubs for compatibility
+        function openPartnerDrill(id) { togglePartnerDrill(id); }
+        function closePartnerDrill() { activePartnerDrillId = null; renderPartnerTable(); }
 
         // ── CLIENTS DATA ──────────────────────────────────────────────
         const SEGMENTS = ['Новий','Ядро','Реактивований','Відтік','Неактивний'];
@@ -1984,9 +2046,9 @@
         const CLIENT_PAGE_SIZE = 20;
 
         function filterClientTable() {
-            const search = document.getElementById('clientSearch').value.toLowerCase();
-            const seg    = document.getElementById('clientSegmentFilter').value;
-            const lc     = document.getElementById('clientLifecycleFilter').value;
+            const search = (document.getElementById('clientSearch')?.value || '').toLowerCase();
+            const seg    = document.getElementById('clientSegmentFilter')?.value || 'all';
+            const lc     = document.getElementById('clientLifecycleFilter')?.value || 'all';
             filteredClients = CLIENTS.filter(c => {
                 const matchSearch = (c.firstName + ' ' + c.lastName).toLowerCase().includes(search) || c.phone.includes(search);
                 const matchSeg = seg === 'all' || c.segment === seg;
@@ -1994,6 +2056,7 @@
                 return matchSearch && matchSeg && matchLC;
             });
             clientPage = 1;
+            activeClientDrillId = null;
             renderClientTable();
         }
 
@@ -2024,6 +2087,25 @@
             if (hint) hint.textContent = UNITS[unit].hint;
             renderClientTable();
             redrawAllCharts();
+            updateKpiUnits();
+            renderPartnerTable();
+        }
+
+        function updateKpiUnits() {
+            const s = sym();
+            // Overview KPI — боксики на балансі
+            const boxKpi = document.getElementById('kpi-box-balance');
+            if (boxKpi) boxKpi.textContent = fmt(128450) + ' ' + s;
+            // Loyalty KPI cards
+            const lkpi = [
+                ['kpi-loy-balance', 128450],
+                ['kpi-loy-accrued', 81370],
+                ['kpi-loy-spent',   45230],
+            ];
+            lkpi.forEach(([id, val]) => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = fmt(val) + ' <span class="card-unit">' + s + '</span>';
+            });
         }
 
         function redrawAllCharts() {
@@ -2075,31 +2157,142 @@
         // ── END UNIT SWITCHER ──────────────────────────────────────────
 
         // ── COLUMN PICKER (removed) — renderClientTable uses activeUnit ─
+        let activeClientDrillId = null;
+        let activeClientMetric = 'boxik';
+
+        // Unit-aware column headers for client table
+        const CLIENT_COL_HEADERS = {
+            count:  { bal: '📦 Боксики (баланс)', spent: '💸 Боксики (витр.)' },
+            boxiky: { bal: '📦 Боксики (баланс)', spent: '💸 Боксики (витр.)' },
+            uah:    { bal: '₴ Баланс (грн)',       spent: '₴ Витрачено (грн)' },
+            promo:  { bal: '🎟 Промо видано',      spent: '🎟 Промо викор.'   },
+            en:     { bal: '🚚 ЕН-еквівалент',     spent: '🚚 ЕН від партнерів'},
+        };
+
+        function renderClientHeaders() {
+            const thead = document.getElementById('clientMainTableHead');
+            if (!thead) return;
+            const h = CLIENT_COL_HEADERS[activeUnit] || CLIENT_COL_HEADERS.count;
+            thead.innerHTML = `<tr>
+                <th style="width:140px;">Клієнт</th>
+                <th style="width:110px;">Телефон</th>
+                <th style="width:100px;">Підстатус</th>
+                <th style="width:90px;">ЖЦК</th>
+                <th style="width:100px;">${h.bal}</th>
+                <th style="width:100px;">${h.spent}</th>
+                <th style="width:70px;">✅ Завдань</th>
+                <th style="width:65px; text-align:center;">MoM%</th>
+            </tr>`;
+        }
+
+        function switchClientMetric(m, btn) {
+            activeClientMetric = m;
+            document.querySelectorAll('#clientMetricSwitcher .seg-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            initClientSummaryChart();
+        }
+
+        let activeClientTime = 'month';
+        function switchClientTime(t, btn) {
+            activeClientTime = t;
+            document.getElementById('ctimeBtn-month').classList.toggle('active', t==='month');
+            document.getElementById('ctimeBtn-quarter').classList.toggle('active', t==='quarter');
+            initClientSummaryChart();
+        }
+
+        function initClientSummaryChart() {
+            if (segCharts['chartClientSummary']) segCharts['chartClientSummary'].destroy();
+            const ctx = document.getElementById('chartClientSummary');
+            if (!ctx) return;
+            const isQ = activeClientTime === 'quarter';
+            const labels = isQ ? ['Q3 2024','Q4 2024','Q1 2025','Q2 2025'] : ['Лютий','Березень','Квітень','Травень','Червень'];
+            const segColors = ['rgba(13,124,79,0.8)','rgba(255,107,53,0.8)','rgba(52,152,219,0.8)','rgba(155,89,182,0.8)'];
+            const segNames = ['🆕 Новий','💪 Ядро','♻️ Реактив.','🟡 Неактивн.'];
+            const dataBase = {
+                boxik: { month: [[320,370,420,400,460],[1200,1380,1560,1480,1700],[480,550,620,590,680],[260,300,340,320,370]], quarter: [[960,1440,1120,1360],[3600,5400,4160,5040],[1440,2160,1680,2040],[780,1200,920,1080]] },
+                activity: { month: [[4200,4800,5400,5100,5900],[14100,16200,18300,17400,20000],[5600,6400,7200,6800,7800],[4550,5250,5900,5600,6450]], quarter: [[12600,18900,14600,17600],[42300,63000,48800,59800],[16800,25200,19600,23400],[13650,21000,16200,19200]] },
+                tasks: { month: [[280,320,362,344,396],[1048,1205,1360,1292,1490],[419,481,544,517,595],[227,261,296,281,323]], quarter: [[840,1260,972,1156],[3144,4716,3624,4440],[1257,1886,1448,1766],[681,1020,795,960]] },
+                raffles: { month: [[95,109,124,118,136],[360,414,468,445,512],[144,166,187,178,205],[78,90,102,97,112]], quarter: [[285,428,332,396],[1080,1620,1244,1526],[432,648,497,606],[234,342,272,327]] }
+            };
+            const metricLabels = {boxik:'Боксики',activity:'Активність',tasks:'Завдання виконали',raffles:'Участь у розіграшах'};
+            document.getElementById('clientSummaryLabel').textContent = `📈 Динаміка клієнтів — ${metricLabels[activeClientMetric]} (${activeClientTime==='quarter'?'квартально':'по місяцях'})`;
+            const dsets = segNames.map((name, i) => ({
+                label: name,
+                data: (dataBase[activeClientMetric][activeClientTime][i] || []).slice(0, labels.length),
+                backgroundColor: segColors[i],
+                borderRadius: 3
+            }));
+            segCharts['chartClientSummary'] = new Chart(ctx, {
+                type: 'bar',
+                data: { labels, datasets: dsets },
+                options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ labels:{ color:'#666', font:{size:10}, boxWidth:10, padding:6 }}}, scales:{ x:{stacked:true,ticks:{color:'#666',font:{size:10}}}, y:{stacked:true,ticks:{color:'#666',font:{size:10}},grid:{color:'#e8e8e8'}} } }
+            });
+
+            // Client segment share doughnut
+            if (segCharts['chartClientSegShare']) segCharts['chartClientSegShare'].destroy();
+            const ctx2 = document.getElementById('chartClientSegShare');
+            if (ctx2) {
+                segCharts['chartClientSegShare'] = new Chart(ctx2, {
+                    type: 'doughnut',
+                    data: { labels: segNames, datasets:[{ data:[18,49,19,14], backgroundColor:segColors, borderColor:'#fff', borderWidth:2 }]},
+                    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'right', labels:{ color:'#666', font:{size:10}, boxWidth:10, padding:6 }}}}
+                });
+            }
+        }
+
+        const RFM_CATS = {
+            Новий:'🆕 New', Ядро:'⭐ Loyal', Реактивований:'🎯 Potential',
+            Неактивний:'⏰ At Risk', Відтік:'⚠️ Declining'
+        };
+
         function renderClientTable() {
-            const tbody = document.getElementById('clientTableBody');
+            renderClientHeaders();
+            const tbody = document.getElementById('clientMainTableBody');
+            if (!tbody) return;
             const total = filteredClients.length;
             const pages = Math.max(1, Math.ceil(total / CLIENT_PAGE_SIZE));
             const start = (clientPage - 1) * CLIENT_PAGE_SIZE;
             const slice = filteredClients.slice(start, start + CLIENT_PAGE_SIZE);
             const s = sym();
+            const momArr = [+4.2,-2.1,+7.8,+1.3,-5.4,+9.1,+3.6,-1.8,+6.4,+2.9,-3.7,+8.2,+0.5,-4.1,+5.7,+11.2,-2.8,+4.9,+1.1,-6.2];
 
             tbody.innerHTML = '';
-            slice.forEach(c => {
+            slice.forEach((c, idx) => {
                 const segLabel = `${SEG_ICONS[c.segment] || ''} ${c.segment}`;
                 const lcLabel  = `${LC_ICONS[c.lifecycle] || ''} ${c.lifecycle}`;
-                tbody.innerHTML += `
-                    <tr onclick="openClientDrill(${c.id})">
-                        <td><strong>${c.lastName} ${c.firstName}</strong></td>
-                        <td style="color:var(--text-secondary);">${c.phone}</td>
-                        <td>${segLabel}</td>
-                        <td>${lcLabel}</td>
-                        <td><strong>${fmt(c.balance)}</strong> <span style="font-size:0.65rem;color:var(--text-secondary);">${s}</span></td>
-                        <td>${fmt(c.spent)} <span style="font-size:0.65rem;color:var(--text-secondary);">${s}</span></td>
-                        <td>${c.favPartners}</td>
-                        <td>${c.offersVisited}</td>
-                        <td>${fmt(c.boxUsed)} <span style="font-size:0.65rem;color:var(--text-secondary);">${s}</span></td>
-                        <td style="color:var(--accent);font-weight:700;white-space:nowrap;font-size:0.75rem;">Детальніше →</td>
-                    </tr>`;
+                const rfmLabel = RFM_CATS[c.segment] || '—';
+                const scratchUsed = seededRnd(c.id*3+1, 0, 5);
+                const raffleCount = seededRnd(c.id*5+2, 0, 8);
+                const mom = momArr[idx % momArr.length];
+                const momHtml = `<span style="font-size:0.7rem; font-weight:700; padding:0.15rem 0.4rem; border-radius:4px; background:${mom>=0?'rgba(39,174,96,0.15)':'rgba(231,76,60,0.15)'}; color:${mom>=0?'var(--success)':'var(--danger)'};">${mom>0?'+':''}${mom}%</span>`;
+                const isOpen = activeClientDrillId === c.id;
+                const rowStyle = isOpen ? 'background:rgba(13,124,79,0.06); border-left:3px solid var(--primary);' : 'cursor:pointer;';
+
+                const row = document.createElement('tr');
+                row.id = `crow-${c.id}`;
+                row.style.cssText = rowStyle;
+                row.innerHTML = `
+                    <td onclick="toggleClientDrill(${c.id})"><strong>${c.lastName} ${c.firstName}</strong> <span style="font-size:0.6rem; color:var(--primary);">${isOpen?'▲':'▼'}</span></td>
+                    <td onclick="toggleClientDrill(${c.id})" style="color:var(--text-secondary); font-size:0.67rem;">${c.phone}</td>
+                    <td onclick="toggleClientDrill(${c.id})">${segLabel}</td>
+                    <td onclick="toggleClientDrill(${c.id})" style="font-size:0.67rem;">${lcLabel}</td>
+                    <td onclick="toggleClientDrill(${c.id})"><strong>${fmt(c.balance)}</strong> <span style="font-size:0.6rem;color:var(--text-secondary);">${s}</span></td>
+                    <td onclick="toggleClientDrill(${c.id})">${fmt(c.spent)} <span style="font-size:0.6rem;color:var(--text-secondary);">${s}</span></td>
+                    <td onclick="toggleClientDrill(${c.id})" style="text-align:center;">${c.generalBoxUsed}</td>
+                    <td style="text-align:center;">${momHtml}</td>
+                `;
+                tbody.appendChild(row);
+
+                // Inline drill row
+                const drillRow = document.createElement('tr');
+                drillRow.id = `cdrill-${c.id}`;
+                drillRow.style.display = isOpen ? '' : 'none';
+                drillRow.innerHTML = `<td colspan="8" style="padding:0; background:rgba(13,124,79,0.03);">
+                    <div style="padding:1rem 1.25rem; border-top:2px solid var(--primary);" id="cdrill-content-${c.id}"></div>
+                </td>`;
+                tbody.appendChild(drillRow);
+
+                if (isOpen) renderClientDrillContent(c);
             });
 
             document.getElementById('clientPageInfo').textContent =
@@ -2108,87 +2301,118 @@
             document.getElementById('clientNextBtn').disabled = clientPage >= pages;
         }
 
-        function clientPagePrev() { if (clientPage > 1) { clientPage--; renderClientTable(); } }
+        function toggleClientDrill(id) {
+            activeClientDrillId = activeClientDrillId === id ? null : id;
+            renderClientTable();
+        }
+
+        function renderClientDrillContent(c) {
+            const el = document.getElementById(`cdrill-content-${c.id}`);
+            if (!el) return;
+            const s = sym();
+            const raffleCount = seededRnd(c.id*5+2, 0, 8);
+            const raffleBox   = seededRnd(c.id*4+3, 0, raffleCount * 80);
+            const scratchUsed = seededRnd(c.id*3+1, 0, 5);
+
+            let html = `<div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.9rem; flex-wrap:wrap;">
+                <div style="width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1rem; font-weight:700; color:white; background:linear-gradient(135deg,var(--primary),var(--accent));">${c.firstName[0]}${c.lastName[0]}</div>
+                <div>
+                    <div style="font-size:0.9rem; font-weight:700; color:var(--text-primary);">${c.lastName} ${c.firstName}</div>
+                    <div style="font-size:0.65rem; color:var(--text-secondary);">${c.phone} · CID: ${100000 + c.id}</div>
+                </div>
+                <div style="margin-left:auto; display:flex; gap:0.4rem; flex-wrap:wrap;">
+                    <span class="badge badge-success" style="font-size:0.68rem;">${SEG_ICONS[c.segment]} ${c.segment}</span>
+                    <span class="badge badge-warning" style="font-size:0.68rem;">${LC_ICONS[c.lifecycle]} ${c.lifecycle}</span>
+                    ${c.hadEN ? '<span class="badge badge-success" style="font-size:0.68rem;">🚚 Є ЕН</span>' : ''}
+                </div>
+            </div>`;
+
+            // 4-column grid of sections
+            html += `<div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:0.5rem; margin-bottom:0.9rem;">`;
+
+            // Section 1: Боксики
+            html += `<div style="background:var(--bg-hover); border-radius:6px; padding:0.6rem;">
+                <div style="font-size:0.65rem; font-weight:700; color:var(--primary); text-transform:uppercase; letter-spacing:0.3px; margin-bottom:0.4rem;">📦 Боксики</div>
+                <div style="display:flex; flex-direction:column; gap:0.2rem; font-size:0.7rem;">
+                    <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">На балансі</span><strong>${fmt(c.balance)} ${s}</strong></div>
+                    <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">Витрачено</span><strong style="color:var(--accent);">${fmt(c.spent)} ${s}</strong></div>
+                    <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">% витрат</span><strong>${Math.round(c.spent/(c.balance+c.spent+1)*100)}%</strong></div>
+                </div>
+            </div>`;
+
+            // Section 2: Завдання → Промокод НП
+            html += `<div style="background:var(--bg-hover); border-radius:6px; padding:0.6rem;">
+                <div style="font-size:0.65rem; font-weight:700; color:var(--success); text-transform:uppercase; letter-spacing:0.3px; margin-bottom:0.4rem;">✅ Завдання → Промокод НП</div>
+                <div style="display:flex; flex-direction:column; gap:0.2rem; font-size:0.7rem;">
+                    <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">Виконано</span><strong>${c.generalBoxUsed}</strong></div>
+                    <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">Промокод НП</span><strong style="color:var(--success);">${Math.round(c.generalBoxUsed * 0.9)}</strong></div>
+                    <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">ЕН з промокодом</span><strong>${c.hadEN ? '✅ Так' : '❌ Ні'}</strong></div>
+                    ${c.lastPromoDays ? `<div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">Останній</span><strong>${c.lastPromoDays} дн. тому</strong></div>` : ''}
+                </div>
+            </div>`;
+
+            // Section 3: Пропозиції партнерів
+            html += `<div style="background:var(--bg-hover); border-radius:6px; padding:0.6rem;">
+                <div style="font-size:0.65rem; font-weight:700; color:var(--warning); text-transform:uppercase; letter-spacing:0.3px; margin-bottom:0.4rem;">🏪 Партнери → Промокод партнера</div>
+                <div style="display:flex; flex-direction:column; gap:0.2rem; font-size:0.7rem;">
+                    <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">В улюблених</span><strong>${c.favPartners}</strong></div>
+                    <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">Пропозицій відвідано</span><strong>${c.offersVisited}</strong></div>
+                    <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">Боксики списано</span><strong style="color:var(--accent);">${fmt(c.boxUsed)} ${s}</strong></div>
+                    <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">Промокод партнера</span><strong>${c.promoCount}</strong></div>
+                    <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">Перейшли на сайт</span><strong>${c.linkCount}</strong></div>
+                </div>
+            </div>`;
+
+            // Section 4: Розіграші + Скретч
+            html += `<div style="background:var(--bg-hover); border-radius:6px; padding:0.6rem;">
+                <div style="font-size:0.65rem; font-weight:700; color:#9b59b6; text-transform:uppercase; letter-spacing:0.3px; margin-bottom:0.4rem;">🎁 Розіграші + 🎰 Скретч</div>
+                <div style="display:flex; flex-direction:column; gap:0.2rem; font-size:0.7rem;">
+                    <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">Брав участь</span><strong>${raffleCount} разів</strong></div>
+                    <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">Боксиків на розіграші</span><strong>${raffleBox}</strong></div>
+                    <div style="display:flex; justify-content:space-between; margin-top:0.3rem;"><span style="color:var(--text-secondary);">Скретч використано</span><strong>${scratchUsed}</strong></div>
+                    <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">Загальних пропоз.</span><strong>${c.generalAvail}</strong></div>
+                    <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-secondary);">Відкривали</span><strong>${c.generalOpened}</strong></div>
+                </div>
+            </div>`;
+            html += `</div>`;
+
+            // Top partners table
+            html += `<div style="font-size:0.72rem; font-weight:700; color:var(--text-primary); margin-bottom:0.4rem;">📊 Топ партнерів клієнта</div>
+            <div style="overflow-x:auto;">
+                <table style="width:100%; font-size:0.67rem; border-collapse:collapse;">
+                    <thead><tr style="background:var(--bg-hover);">
+                        <th style="padding:0.28rem 0.5rem; text-align:left;">Партнер</th>
+                        <th style="padding:0.28rem 0.4rem;">Категорія</th>
+                        <th style="padding:0.28rem 0.4rem; text-align:right;">Відвідань</th>
+                        <th style="padding:0.28rem 0.4rem; text-align:right;">Боксиків</th>
+                        <th style="padding:0.28rem 0.4rem; text-align:right;">Промокодів</th>
+                        <th style="padding:0.28rem 0.4rem; text-align:center;">❤️</th>
+                    </tr></thead>
+                    <tbody>`;
+            c.partners.forEach(p => {
+                html += `<tr style="border-bottom:1px solid var(--border);">
+                    <td style="padding:0.25rem 0.5rem;"><strong>${p.name}</strong></td>
+                    <td style="padding:0.25rem 0.4rem;">${p.cat}</td>
+                    <td style="padding:0.25rem 0.4rem; text-align:right;">${p.visits}</td>
+                    <td style="padding:0.25rem 0.4rem; text-align:right;">${p.boxSpent.toLocaleString('uk-UA')}</td>
+                    <td style="padding:0.25rem 0.4rem; text-align:right;">${p.promos}</td>
+                    <td style="padding:0.25rem 0.4rem; text-align:center;">${p.fav ? '❤️' : '—'}</td>
+                </tr>`;
+            });
+            html += `</tbody></table></div>`;
+
+            el.innerHTML = html;
+        }
+
+        function clientPagePrev() { if (clientPage > 1) { clientPage--; activeClientDrillId=null; renderClientTable(); } }
         function clientPageNext() {
             if (clientPage < Math.ceil(filteredClients.length / CLIENT_PAGE_SIZE)) {
-                clientPage++; renderClientTable();
+                clientPage++; activeClientDrillId=null; renderClientTable();
             }
         }
 
-        function openClientDrill(id) {
-            const c = CLIENTS.find(x => x.id === id);
-            if (!c) return;
-            document.getElementById('clientListView').style.display  = 'none';
-            document.getElementById('clientDrillView').style.display = 'block';
-            
-
-            // Avatar initials
-            document.getElementById('drillClientAvatar').textContent =
-                c.firstName[0] + c.lastName[0];
-            document.getElementById('drillClientName').textContent =
-                `${c.lastName} ${c.firstName}`;
-            document.getElementById('drillClientMeta').textContent =
-                `${c.phone} · CID: ${100000 + c.id}`;
-            document.getElementById('drillClientBadges').innerHTML =
-                `<span class="badge badge-success" style="font-size:0.75rem;padding:0.25rem 0.6rem;">${SEG_ICONS[c.segment]} ${c.segment}</span>
-                 <span class="badge badge-warning"  style="font-size:0.75rem;padding:0.25rem 0.6rem;">${LC_ICONS[c.lifecycle]} ${c.lifecycle}</span>`;
-
-            // Боксики
-            document.getElementById('drillBoxRow').innerHTML = `
-                <div class="card"><div class="card-title">📦 На балансі</div><div class="card-value" style="color:var(--primary);">${fmt(c.balance)}</div></div>
-                <div class="card"><div class="card-title">💸 Витрачено у партнерів</div><div class="card-value" style="color:var(--accent);">${fmt(c.spent)}</div></div>
-                <div class="card"><div class="card-title">💡 Всього (баланс+витрати)</div><div class="card-value">${fmt(c.balance + c.spent)}</div></div>
-                <div class="card"><div class="card-title">📊 % витрат</div><div class="card-value">${Math.round(c.spent/(c.balance+c.spent)*100)}<span class="card-unit">%</span></div></div>
-            `;
-
-            // Промокоди завдань НП
-            document.getElementById('drillTaskPromoRow').innerHTML = `
-                <div class="card"><div class="card-title">✅ Завдань виконано</div><div class="card-value" style="color:var(--primary);">${c.generalBoxUsed}</div><div style="font-size:0.6rem;color:var(--text-secondary);margin-top:0.15rem;">завдань виконано клієнтом</div></div>
-                <div class="card"><div class="card-title">🎯 Промокод НП отримано</div><div class="card-value" style="color:var(--success);">${Math.round(c.generalBoxUsed * 0.9)}</div><div style="font-size:0.6rem;color:var(--text-secondary);margin-top:0.15rem;">знижка на відправку/отримання НП</div></div>
-                <div class="card"><div class="card-title">🚚 Зробив ЕН з промокодом НП</div><div class="card-value">${c.hadEN ? '<span style="color:var(--success)">✅ Так</span>' : '<span style="color:var(--text-secondary)">❌ Ні</span>'}</div></div>
-                ${c.lastPromoDays !== null ? `<div class="card"><div class="card-title">⏱ Останній промокод НП</div><div class="card-value">${c.lastPromoDays}<span class="card-unit"> дн. тому</span></div></div>` : ''}
-                <div class="card"><div class="card-title">📊 Промо НП на місяць</div><div class="card-value">${c.promoPerMonth}</div></div>
-            `;
-
-            // Пропозиції партнерів
-            document.getElementById('drillOffersRow').innerHTML = `
-                <div class="card"><div class="card-title">❤️ Партнерів в улюблених</div><div class="card-value" style="color:var(--primary);">${c.favPartners}</div></div>
-                <div class="card"><div class="card-title">👁️ Пропозицій партнерів відвідано</div><div class="card-value">${c.offersVisited}</div></div>
-                <div class="card"><div class="card-title">📦 Боксиків списано</div><div class="card-value" style="color:var(--accent);">${fmt(c.boxUsed)}</div></div>
-                <div class="card"><div class="card-title">🏪 Промокод партнера отримано</div><div class="card-value">${c.promoCount}</div><div style="font-size:0.6rem;color:var(--text-secondary);margin-top:0.15rem;">знижка в магазині партнера</div></div>
-                <div class="card"><div class="card-title">🔗 Переходів на сайт партнера</div><div class="card-value">${c.linkCount}</div></div>
-            `;
-
-            // Загальні пропозиції
-            document.getElementById('drillGeneralRow').innerHTML = `
-                <div class="card"><div class="card-title">📋 Наявно загальних</div><div class="card-value">${c.generalAvail}</div></div>
-                <div class="card"><div class="card-title">👁️ Відкривали</div><div class="card-value" style="color:var(--primary);">${c.generalOpened}</div></div>
-                <div class="card"><div class="card-title">📦 Використали боксики</div><div class="card-value" style="color:var(--accent);">${c.generalBoxUsed}</div></div>
-                <div class="card"><div class="card-title">🔗 Перейшли до магазину</div><div class="card-value" style="color:var(--success);">${c.generalLinkClicked}</div></div>
-            `;
-
-            // Top partners
-            let pHTML = '';
-            c.partners.forEach(p => {
-                const favBadge = p.fav
-                    ? '<span class="badge badge-success">❤️ Так</span>'
-                    : '<span class="badge" style="background:var(--bg-hover);color:var(--text-secondary);">Ні</span>';
-                pHTML += `<tr>
-                    <td><strong>${p.name}</strong></td>
-                    <td>${p.cat}</td>
-                    <td>${p.visits}</td>
-                    <td>${p.boxSpent.toLocaleString('uk-UA')}</td>
-                    <td>${p.promos}</td>
-                    <td>${favBadge}</td>
-                </tr>`;
-            });
-            document.getElementById('drillClientPartners').innerHTML = pHTML;
-        }
-
-        function closeClientDrill() {
-            document.getElementById('clientListView').style.display  = 'block';
-            document.getElementById('clientDrillView').style.display = 'none';
-        }
+        function openClientDrill(id) { toggleClientDrill(id); }
+        function closeClientDrill() { activeClientDrillId = null; renderClientTable(); }
 
         // ── CAMPAIGNS DATA ─────────────────────────────────────────────
         const CAMPAIGNS = [
@@ -2380,27 +2604,38 @@
                 { label:'📢 Акції → ЕН',    data:[6840,7420,8120,8640,9120,9640,10120,10480,10848] },
             ]);
 
-            // Radar: активність сегментів
-            if (segCharts['chartOverviewRadar']) segCharts['chartOverviewRadar'].destroy();
-            const rCtx = document.getElementById('chartOverviewRadar');
-            if (rCtx) {
-                segCharts['chartOverviewRadar'] = new Chart(rCtx, {
-                    type: 'radar',
-                    data: {
-                        labels: ['Боксики', 'Промокоди', 'Розіграші', 'Завдання', 'Улюблене', 'ЕН'],
-                        datasets: [
-                            { label:'🆕 Новий',       data:[42,28,35,25,38,18], borderColor:'#ff6b35', backgroundColor:'rgba(255,107,53,0.1)', borderWidth:2, pointRadius:3 },
-                            { label:'💪 Ядро',        data:[88,72,84,78,85,62], borderColor:'#0d7c4f', backgroundColor:'rgba(13,124,79,0.1)',   borderWidth:2, pointRadius:3 },
-                            { label:'♻️ Реактивован.', data:[65,48,58,52,62,42], borderColor:'#3498db', backgroundColor:'rgba(52,152,219,0.1)', borderWidth:2, pointRadius:3 },
-                            { label:'🟡 Неактивні',   data:[22,12,18,10,20,8],  borderColor:'#f39c12', backgroundColor:'rgba(243,156,18,0.1)',   borderWidth:2, pointRadius:3 },
-                        ]
-                    },
-                    options: {
-                        responsive:true, maintainAspectRatio:false,
-                        plugins:{ legend:{ position:'bottom', labels:{ color:'#666', font:{family:"'Segoe UI',sans-serif"}, boxWidth:10, padding:6, font:{size:10} }}},
-                        scales:{ r:{ ticks:{ display:false }, grid:{ color:'#e0e0e0' }, pointLabels:{ font:{size:10}, color:'#555' }}}
-                    }
-                });
+            // Grouped bar: активність сегментів по механіках (замість радару)
+            // Активність сегментів — таблиця замість grouped bar
+            const SEG_ACTIVITY = [
+                { m:'📦 Боксики',    new:42, core:88, react:65, inactive:22 },
+                { m:'🎟 Промокоди', new:28, core:72, react:48, inactive:12 },
+                { m:'🎲 Розіграші', new:35, core:84, react:58, inactive:18 },
+                { m:'✅ Завдання',   new:25, core:78, react:52, inactive:10 },
+                { m:'❤️ Улюблене', new:38, core:85, react:62, inactive:20 },
+                { m:'🚚 ЕН',        new:18, core:62, react:42, inactive:8  },
+            ];
+            const segColors = {
+                new:'rgba(255,107,53,0.85)', core:'rgba(13,124,79,0.85)',
+                react:'rgba(52,152,219,0.85)', inactive:'rgba(243,156,18,0.85)'
+            };
+            function pctBar(val, color) {
+                return `<div style="display:flex;align-items:center;gap:0.25rem;">
+                    <div style="flex:1;height:5px;background:#eee;border-radius:3px;overflow:hidden;min-width:32px;">
+                        <div style="width:${val}%;height:100%;background:${color};border-radius:3px;"></div>
+                    </div>
+                    <span style="font-size:0.62rem;font-weight:700;color:var(--text-primary);min-width:22px;">${val}%</span>
+                </div>`;
+            }
+            const segTbody = document.getElementById('segActivityBody');
+            if (segTbody) {
+                segTbody.innerHTML = SEG_ACTIVITY.map((r, i) => `
+                    <tr style="border-bottom:1px solid var(--border);background:${i%2===0?'':'rgba(0,0,0,0.01)'};">
+                        <td style="padding:0.28rem 0.4rem;font-weight:600;white-space:nowrap;">${r.m}</td>
+                        <td style="padding:0.28rem 0.3rem;">${pctBar(r.new, segColors.new)}</td>
+                        <td style="padding:0.28rem 0.3rem;">${pctBar(r.core, segColors.core)}</td>
+                        <td style="padding:0.28rem 0.3rem;">${pctBar(r.react, segColors.react)}</td>
+                        <td style="padding:0.28rem 0.3rem;">${pctBar(r.inactive, segColors.inactive)}</td>
+                    </tr>`).join('');
             }
 
             // Топ партнерів по клієнтах
@@ -2409,32 +2644,26 @@
                 [4120, 2980, 2180, 1940, 1480, 980, 1120, 580]
             );
 
-            // ЖЦК розподіл
-            makeBarChart('chartOverviewLC',
-                ['🎓 Навчання','📢 Залучення','🔥 Стимуляція','💼 Продажі','🛡️ Утримання','😴 Заснувші','💔 Втрачені'],
-                [{ label:'Клієнтів', data:[2840,4120,6240,5480,4820,2980,1970] }]
-            );
-
-            // RFM розподіл
+            // RFM розподіл — без emoji в підписах осі
             makeBarChart('chartOverviewRFM',
-                ['💎 Champions','⭐ Loyal','🎯 Potential','⏰ At Risk','⚠️ Declining','❌ Lost','🆕 New'],
-                [{ label:'Клієнтів', data:[3840,4280,5120,3640,2480,1820,7270] }]
+                ['Champions','Loyal','Potential','At Risk','Declining','Lost','New'],
+                [{ label:'Клієнтів', data:[3840,4280,5120,3640,2480,1820,7270],
+                   backgroundColor:['#0d7c4f','#27ae60','#3498db','#f39c12','#e67e22','#e74c3c','#9b59b6'] }]
             );
 
-            // Heatmap таблиця
+            // Heatmap таблиця з прогрес-барами
             const HEAT = {
                 'Статус активності': {
-                    '🟢 Активний':  [12840,18640,9820,7240,11480],
-                    '🟡 Неактивний':[2480, 4820, 2140,1840,2960],
-                    '⚫ Архівний':  [480,  920,  420, 380, 560],
+                    '🟢 Активний':     [12840,18640,9820,7240,11480],
+                    '🟡 Неактивний':   [2480, 4820, 2140,1840,2960],
+                    '⚫ Архівний':     [480,  920,  420, 380, 560],
                 },
                 'Підстатус активних': {
-                    '🆕 Новий':        [2120, 3840, 1980,1420,2640],
-                    '💪 Ядро':         [7640,12480, 5820,4280,7240],
-                    '♻️ Реактивований':[3080, 6320, 2980,1980,3240],
+                    '🆕 Новий':         [2120, 3840, 1980,1420,2640],
+                    '💪 Ядро':          [7640,12480, 5820,4280,7240],
+                    '♻️ Реактивований': [3080, 6320, 2980,1980,3240],
                 },
             };
-            const cats = ['🏥 Медицина','📱 Технологія','👕 Одяг','🍔 Їжа','👶 Дитячі'];
             const allVals = Object.values(HEAT).flatMap(g => Object.values(g).flat());
             const maxV = Math.max(...allVals);
             const tbody = document.getElementById('heatmapBody');
@@ -2442,17 +2671,22 @@
             tbody.innerHTML = '';
             Object.entries(HEAT).forEach(([group, rows]) => {
                 const gr = document.createElement('tr');
-                gr.innerHTML = `<td colspan="6" style="padding:0.3rem 0.5rem; font-size:0.6rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; background:var(--bg-hover); letter-spacing:0.5px;">${group}</td>`;
+                gr.innerHTML = `<td colspan="6" style="padding:0.28rem 0.5rem; font-size:0.58rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; background:var(--bg-hover); letter-spacing:0.5px;">${group}</td>`;
                 tbody.appendChild(gr);
                 Object.entries(rows).forEach(([seg, vals]) => {
                     const tr = document.createElement('tr');
+                    tr.style.borderBottom = '1px solid var(--border)';
                     const cells = vals.map(v => {
-                        const pct = v / maxV;
-                        const bg = `rgba(13,124,79,${(pct * 0.7 + 0.05).toFixed(2)})`;
-                        const color = pct > 0.5 ? 'white' : 'var(--text-primary)';
-                        return `<td style="padding:0.3rem 0.4rem;text-align:center;background:${bg};color:${color};font-weight:600;font-size:0.7rem;">${(v/1000).toFixed(1)}K</td>`;
+                        const pct = Math.round(v / maxV * 100);
+                        const barColor = pct > 60 ? '#0d7c4f' : pct > 30 ? '#27ae60' : '#a8d5b5';
+                        return `<td style="padding:0.3rem 0.5rem; min-width:120px;">
+                            <div style="font-size:0.7rem; font-weight:700; color:var(--text-primary); margin-bottom:0.15rem;">${(v/1000).toFixed(1)}K</div>
+                            <div style="height:4px; background:#eee; border-radius:2px; overflow:hidden;">
+                                <div style="width:${pct}%; height:100%; background:${barColor}; border-radius:2px;"></div>
+                            </div>
+                        </td>`;
                     }).join('');
-                    tr.innerHTML = `<td style="padding:0.35rem 0.5rem;font-size:0.72rem;white-space:nowrap;">${seg}</td>${cells}`;
+                    tr.innerHTML = `<td style="padding:0.35rem 0.5rem; font-size:0.72rem; white-space:nowrap; font-weight:500;">${seg}</td>${cells}`;
                     tbody.appendChild(tr);
                 });
             });
@@ -2460,24 +2694,21 @@
 
         // ── PARTNER PAGE CHARTS ────────────────────────────────────────
         function initPartnerCharts() {
-            // Партнерів по категоріях
-            makeHBar('chartPartnerCats',
-                ['🍔 Їжа','👕 Одяг','📱 Технологія','🏥 Медицина','👶 Дитячі товари'],
-                [42, 38, 28, 24, 16],
-                ['#ff6b35','#3498db','#9b59b6','#0d7c4f','#f39c12']
-            );
-            // Топ-5 конверсія ЕН
-            makeHBar('chartPartnerEN',
-                ['Rozetka','Comfy','Аптека Доброго Дня','Дитячий Світ','ZARA'],
-                [62, 56, 58, 48, 45],
-                ['#0d7c4f','#0d7c4f','#0d7c4f','#f39c12','#f39c12']
-            );
-            // Топ-5 боксиків
-            makeHBar('chartPartnerBox',
-                ['Rozetka','Comfy','Аптека Доброго Дня','ZARA','Медлайн'],
-                [51380, 38640, 18640, 23820, 14280],
-                ['#ff6b35','#e74c3c','#3498db','#9b59b6','#1abc9c']
-            );
+            // These old chart IDs no longer exist — use new chartPartnerCatShare instead
+            if (segCharts['chartPartnerCatShare']) segCharts['chartPartnerCatShare'].destroy();
+            const ctx = document.getElementById('chartPartnerCatShare');
+            if (ctx) {
+                segCharts['chartPartnerCatShare'] = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['🍔 Їжа','👕 Одяг','📱 Технологія','🏥 Медицина','👶 Дитячі товари'],
+                        datasets: [{ data:[42,38,28,24,16], backgroundColor:['#ff6b35','#3498db','#9b59b6','#0d7c4f','#f39c12'], borderColor:'#fff', borderWidth:2 }]
+                    },
+                    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'right', labels:{ color:'#666', font:{size:10}, boxWidth:10, padding:5 }}}}
+                });
+            }
+            // Also init summary chart
+            initPartnerSummaryChart();
         }
         // ── END OVERVIEW & PARTNER CHARTS ─────────────────────────────
         const LOY_SEG = {
@@ -2531,43 +2762,65 @@
             });
         }
 
-        function makeHBar(id, labels, data, color) {
+        function makeHBar(id, labels, data, color, unitLabel) {
             if (segCharts[id]) segCharts[id].destroy();
             const ctx = document.getElementById(id); if (!ctx) return;
+            const uLabel = unitLabel || 'шт';
             segCharts[id] = new Chart(ctx, {
                 type:'bar',
-                data:{ labels, datasets:[{ label:'шт', data, backgroundColor: color || COLORS8, borderRadius:4, borderSkipped:false }]},
+                data:{ labels, datasets:[{ label: uLabel, data, backgroundColor: color || COLORS8, borderRadius:4, borderSkipped:false }]},
                 options:{
                     indexAxis:'y',
                     responsive:true, maintainAspectRatio:false,
-                    plugins:{ legend:{ display:false }},
+                    plugins:{
+                        legend:{ display:false },
+                        tooltip:{ callbacks:{ label: ctx => ` ${ctx.formattedValue} ${uLabel}` }}
+                    },
                     scales:{
-                        x:{ ticks:{color:'#666',font:{size:10}}, grid:{color:'#e8e8e8'} },
-                        y:{ ticks:{color:'#444',font:{size:10}, padding:4}, grid:{display:false} }
+                        x:{ ticks:{ color:'#666', font:{size:10}, callback: v => v >= 1000 ? (v/1000).toFixed(0)+'K' : v }, grid:{color:'#e8e8e8'} },
+                        y:{ ticks:{ color:'#444', font:{size:10}, padding:4 }, grid:{display:false} }
                     }
                 }
             });
         }
 
+        // Промокоди НП від завдань по сегментах (≈90% від виконань)
+        const TASKS_PROMO_SEG = {
+            activity:  [8856, 1512, 385],
+            substatus: [1121, 5562, 2205],
+            lifecycle: [378, 1116, 2232, 2556, 1908, 882, 216],
+            rfm:       [3456, 2682, 1926, 1332, 756, 252, 133],
+        };
+
         function initLoyaltyCharts(dim) {
             dim = dim || 'activity';
             const labels = LOY_SEG[dim];
+            const s = sym();
 
             // Баланс по сегментах
             makeBarChart('chartBoxBalance', labels, [{ label:'На балансі', data:BOX_BAL[dim] }]);
 
-            // Нараховано по типах — horizontal bar
+            // Нараховано по типах
             makeHBar('chartBoxAccrual',
                 ['📍 Відділення','🖥️ Термінал','📦 Поштомати','🏦 АО','🌍 Україна→Світ'],
-                [28450, 18320, 12450, 8950, 13200]
+                [28450, 18320, 12450, 8950, 13200],
+                null, s
             );
 
-            // Витрачено по типах — horizontal bar
+            // Витрачено по типах
             makeHBar('chartBoxSpent',
                 ['🛍️ Магазини партнерів','🎲 Розіграші','📋 Інші'],
                 [29148, 12824, 3258],
-                ['#ff6b35','#0d7c4f','#95a5a6']
+                ['#ff6b35','#0d7c4f','#95a5a6'], s
             );
+
+            // Оновлюємо підзаголовки з одиницями
+            const unitNames = { count:'боксиків', boxiky:'боксиків', uah:'гривень (₴)', promo:'промокодів', en:'ЕН-еквівалент' };
+            const uName = unitNames[activeUnit] || 'боксиків';
+            const hintAccrual = document.getElementById('hintBoxAccrual');
+            const hintSpent   = document.getElementById('hintBoxSpent');
+            if (hintAccrual) hintAccrual.textContent = `${uName} нараховано за поточний місяць по каналу відправки`;
+            if (hintSpent)   hintSpent.textContent   = `${uName} витрачено за поточний місяць по напрямку`;
 
             // Динаміка нарахування vs витрат по місяцях
             makeLine('chartBoxMonthly', MONTHS, [
@@ -2581,12 +2834,20 @@
                 { label:'Витрачено ₴',  data:[1240,1380,1480,1560,1640,1720,1820,1920,1980] },
             ]);
 
-            // Завдання по сегментах
+            // Завдання — виконань по сегментах
             makeBarChart('chartTasksSeg', labels, [{ label:'Виконань', data:TASKS_SEG[dim] }]);
 
-            // Завдання по місяцях
+            // Промокод НП від завдань по сегментах
+            makeBarChart('chartTasksPromoSeg', labels, [
+                { label:'🎯 Промокод НП отримано', data:TASKS_PROMO_SEG[dim] },
+                { label:'🚚 ЕН з промокодом НП',  data:TASKS_PROMO_SEG[dim].map(v => Math.round(v * 0.58)) },
+            ]);
+
+            // Завдання — виконань і промокодів по місяцях
             makeLine('chartTasksMonths', MONTHS, [
-                { label:'Виконань', data:[820,960,1080,1120,1180,1240,1320,1420,1480] },
+                { label:'✅ Виконань',         data:[820,960,1080,1120,1180,1240,1320,1420,1480] },
+                { label:'🎯 Промокод НП виданий', data:[738,864,972,1008,1062,1116,1188,1278,1332] },
+                { label:'🚚 ЕН з промокодом',  data:[428,501,564,584,616,647,689,741,772] },
             ]);
 
             // Розіграші по сегментах
@@ -2599,15 +2860,20 @@
         }
 
         function switchLoy(section, dim, btn) {
-            const swId = section === 'tasks' ? 'sw-tasks-loy'
-                       : section === 'raffle' ? 'sw-raffle-loy'
+            const swId = section === 'tasks'      ? 'sw-tasks-loy'
+                       : section === 'taskspromo' ? 'sw-taskspromo-loy'
+                       : section === 'raffle'     ? 'sw-raffle-loy'
                        : 'sw-' + section;
             const sw = document.getElementById(swId);
             if (sw) { sw.querySelectorAll('.seg-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
             const labels = LOY_SEG[dim];
-            if (section === 'boxbal')  makeBarChart('chartBoxBalance', labels, [{ label:'На балансі', data:BOX_BAL[dim] }]);
-            if (section === 'tasks')   makeBarChart('chartTasksSeg',   labels, [{ label:'Виконань', data:TASKS_SEG[dim] }]);
-            if (section === 'raffle')  makeBarChart('chartRaffleSeg',  labels, [{ label:'Боксиків витрачено', data:RAFFLE_SEG[dim] }]);
+            if (section === 'boxbal')     makeBarChart('chartBoxBalance',    labels, [{ label:'На балансі', data:BOX_BAL[dim] }]);
+            if (section === 'tasks')      makeBarChart('chartTasksSeg',      labels, [{ label:'Виконань', data:TASKS_SEG[dim] }]);
+            if (section === 'taskspromo') makeBarChart('chartTasksPromoSeg', labels, [
+                { label:'🎯 Промокод НП отримано', data:TASKS_PROMO_SEG[dim] },
+                { label:'🚚 ЕН з промокодом НП',  data:TASKS_PROMO_SEG[dim].map(v => Math.round(v * 0.58)) },
+            ]);
+            if (section === 'raffle')     makeBarChart('chartRaffleSeg',     labels, [{ label:'Боксиків витрачено', data:RAFFLE_SEG[dim] }]);
         }
 
         // ── END LOYALTY ────────────────────────────────────────────────
@@ -2665,7 +2931,7 @@
                 type:'bar',
                 data:{ labels, datasets: datasets.map((d,i)=>({
                     label:d.label, data:d.data,
-                    backgroundColor: COLORS8[i % COLORS8.length],
+                    backgroundColor: d.backgroundColor || COLORS8[i % COLORS8.length],
                     borderRadius:4, borderSkipped:false
                 }))},
                 options:{
@@ -2770,7 +3036,6 @@
             initCharts();
             renderPartnerTable();
             renderClientTable();
-            initSegmentCharts();
             initLoyaltyCharts();
             initOverviewCharts();
             initPartnerCharts();
@@ -2783,9 +3048,23 @@
                 if (pageId === 'economics') { initLoyaltyCharts(); }
                 if (pageId === 'campaigns') { initCampaignCharts(); closeCampaignDrill(); }
                 if (pageId === 'overview')  { initOverviewCharts(); }
-                if (pageId === 'partners') { renderPartnerTable(); closePartnerDrill(); initPartnerCharts(); }
-                if (pageId === 'customers') { renderClientTable(); closeClientDrill(); initSegmentCharts(); }
+                if (pageId === 'partners') {
+                    activePartnerDrillId = null;
+                    renderPartnerTable();
+                    initPartnerCharts();
+                    setTimeout(() => initPartnerSummaryChart(), 50);
+                }
+                if (pageId === 'customers') {
+                    activeClientDrillId = null;
+                    renderClientTable();
+                    setTimeout(() => initClientSummaryChart(), 50);
+                }
             };
+            // init summary charts
+            setTimeout(() => {
+                initPartnerSummaryChart();
+                initClientSummaryChart();
+            }, 200);
         });
 
         // Responsive chart update
@@ -2794,6 +3073,227 @@
                 if (chart) chart.resize();
             });
         });
+
+        // ── INFO MODAL SYSTEM ─────────────────────────────────────────
+        const INFO_BLOCKS = {
+            'overview-insights': {
+                title: '💡 Ключові інсайти — що це і як рахується',
+                rows: [
+                    { label:'Що це таке', value:'П\'ять автоматичних аналітичних карток що виявляють найважливіші події в даних. Кожна картка загоряється зеленим, помаранчевим або червоним коли метрика перетинає заданий поріг. Мета — одразу привернути увагу до того що потребує рішення, без копання в таблицях.' },
+                    { label:'✅ Завдання працюють', value:'Показує частку клієнтів що виконали хоча б одне завдання і отримали промокод НП. Якщо цифра вище 35% — механіка працює добре, клієнти активно взаємодіють з програмою.', formula:'COUNT(task_completed) / COUNT(active_clients) × 100' },
+                    { label:'⚠️ Відвал партнерів', value:'Показує скільки відсотків клієнтів зайшли на сторінку партнера але так і не списали боксики. Великий відвал (>30%) означає що пропозиції не відповідають очікуванням — або ціна в боксиках завелика, або оффер нецікавий.', formula:'(1 - boxik_spent / partner_page_open) × 100' },
+                    { label:'🏆 Топ категорія', value:'Автоматично виявляє категорію партнерів де найбільша частка клієнтів що отримали промокод партнера — реально зробила ЕН з умовою НП. Показує де "ланцюжок" боксики→партнер→ЕН працює найкраще.', formula:'MAX(en / promo_issued) GROUP BY partner_category' },
+                    { label:'📢 Акції ефективні', value:'Показує найкращий канал маркетингових розсилок за показником "відкрили повідомлення". Якщо Viber відкрили 71% — це означає що саме цей канал варто використовувати для пріоритетних акцій.', formula:'AVG(opened / sent) GROUP BY channel, current_month' },
+                    { label:'💔 Проблема', value:'Рахує партнерів у яких є підписники в "Улюбленому" але при цьому зараз немає жодної активної пропозиції. Клієнти чекають — а купити нічого. Це мертвий трафік який треба усунути або видалити партнера.', formula:'COUNT(partner WHERE active_offers=0 AND favorited_count>0)' },
+                    { label:'Джерело даних', value:'NovaPlace (завдання, партнери) + MessageBridge (розсилки) + BigQuery (агрегація)' },
+                ]
+            },
+            'overview-kpi': {
+                title: '📊 KPI-рядок — що показує кожна картка',
+                rows: [
+                    { label:'Активних клієнтів', value:'Кількість унікальних клієнтів що зробили хоча б одну транзакцію з послугами НП за останні 30 днів. Це базова аудиторія для всіх інших метрик лояльності.', formula:'COUNT(DISTINCT CID WHERE last_tx ≤ 30 днів)' },
+                    { label:'Боксиків на балансі', value:'Загальна сума боксиків що зараз лежать на рахунках всіх клієнтів і не були витрачені. Показує "резерв" потенційних взаємодій з партнерами.', formula:'SUM(boxik_balance) ALL active CID' },
+                    { label:'Партнерів', value:'Кількість партнерів у яких прямо зараз є хоча б одна активна пропозиція в каталозі. Партнер без активних пропозицій не рахується.', formula:'COUNT(partner_id WHERE offers_active > 0)' },
+                    { label:'Завдань виконано', value:'Скільки разів клієнти виконали завдання за поточний місяць (один клієнт може виконати кілька завдань). Показує загальну активність механіки завдань.', formula:'COUNT(task_completed_event) WHERE month=current' },
+                    { label:'Промокод завдання → ЕН', value:'З усіх клієнтів що отримали промокод НП за виконання завдання — яка частка реально зробила ЕН протягом 30 днів. Це ключова метрика ефективності механіки завдань. Промокод НП = знижка на відправку/отримання посилки, не плутати з промокодом партнера.', formula:'COUNT(en WITH np_promo) / COUNT(np_promo_issued) × 100' },
+                    { label:'Промокод партнера → ЕН', value:'З усіх клієнтів що витратили боксики у партнера і отримали промокод партнера (знижку в магазині) — яка частка після цього зробила ЕН з умовою доставки НП. Показує чи пропозиції партнерів дійсно генерують ЕН.', formula:'COUNT(en WITH partner_promo) / COUNT(boxik_spent) × 100' },
+                    { label:'Промокод акції → ЕН', value:'З усіх клієнтів що отримали промокод через маркетингову розсилку (Viber/Push/SMS/Email) — яка частка зробила ЕН. Показує ефективність маркетингових акцій як каналу генерації відправлень.', formula:'COUNT(en WITH campaign_promo) / COUNT(campaign_promo_issued) × 100' },
+                    { label:'Джерело', value:'BigQuery: таблиці events, en_transactions, promo_log, client_segments' },
+                ]
+            },
+            'overview-funnels': {
+                title: '🔽 Три воронки конверсії — логіка кожного кроку',
+                rows: [
+                    { label:'Навіщо три воронки', value:'Кожна воронка відстежує окремий шлях клієнта до ЕН: через завдання, через партнера, через маркетингову акцію. Три паралельних шляхи — три різних механіки. Порівнюючи їх видно який шлях ефективніший і де найбільший відвал.' },
+                    { label:'Завдання: Побачили', value:'Клієнти що відкрили розділ завдань в додатку або на сайті. База воронки.', formula:'COUNT(CID WHERE task_section_opened=true)' },
+                    { label:'Завдання: Почали', value:'Клієнти що натиснули "Прийняти завдання" або почали виконувати умови.', formula:'COUNT(CID WHERE task_started=true)' },
+                    { label:'Завдання: Виконали', value:'Система зафіксувала виконання умов завдання (наприклад: зробив ЕН певного типу).', formula:'COUNT(task_completed_event)' },
+                    { label:'Завдання: Промокод НП', value:'Клієнт забрав промокод — код знижки на відправку або отримання посилки НП. Не всі хто виконав — забирають (≈90%).', formula:'COUNT(np_promo_issued)' },
+                    { label:'Завдання: Зробили ЕН', value:'Клієнт використав промокод НП при оформленні відправлення протягом 30 днів після отримання.', formula:'COUNT(en WHERE np_promo_used AND en_date ≤ promo_date+30d)' },
+                    { label:'Партнер: Зайшли в розділ', value:'Клієнти що відкрили розділ "Доставка бонусів" — головну сторінку каталогу партнерів.', formula:'COUNT(section_delivery_bonus_opened)' },
+                    { label:'Партнер: Зайшли на партнера', value:'Клієнти що натиснули на конкретного партнера і відкрили його пропозиції.', formula:'COUNT(partner_page_opened)' },
+                    { label:'Партнер: Списали боксики', value:'Клієнти що вибрали пропозицію і підтвердили списання боксиків для отримання промокоду партнера.', formula:'COUNT(DISTINCT CID WHERE boxik_spent_at_partner)' },
+                    { label:'Партнер: Промокод партнера', value:'Клієнт отримав промокод партнера — це знижка в магазині партнера (не знижка НП). Наприклад: -15% в Rozetka.', formula:'COUNT(partner_promo_issued)' },
+                    { label:'Партнер: ЕН з умовою НП', value:'Клієнт скористався пропозицією з умовою "доставка через НП" і зробив ЕН. Це і є ключова конверсія механіки партнерів.', formula:'COUNT(en WHERE partner_np_condition=true)' },
+                    { label:'Акція: Відправлено', value:'Загальна кількість повідомлень відправлених через MessageBridge по всіх активних акціях за місяць.', formula:'COUNT(message_sent)' },
+                    { label:'Акція: Доставлено', value:'Повідомлення що реально дійшли до клієнта. Недоставлені = заблоковані номери, відмова від розсилок.', formula:'COUNT(message_delivered)' },
+                    { label:'Акція: Відкрили', value:'Для Viber і Email — факт відкриття повідомлення. Для SMS і Push — клік на посилання (відкриття не відстежується).', formula:'COUNT(message_opened OR link_clicked)' },
+                    { label:'Акція: Промокод', value:'Клієнт явно взаємодіяв з промокодом: скопіював код або натиснув кнопку "Отримати промокод".', formula:'COUNT(promo_link_clicked OR promo_copied)' },
+                    { label:'Акція: Зробили ЕН', value:'Клієнт зробив ЕН протягом 14 днів після отримання повідомлення з акцією. Вікно атрибуції: 14 днів.', formula:'COUNT(en WHERE source=campaign AND en_date ≤ send_date+14d)' },
+                    { label:'Джерело', value:'Завдання/Партнери: NovaPlace. Акції: MessageBridge. Атрибуція ЕН: EN-трекінг сервіс.' },
+                ]
+            },
+            'overview-heatmap': {
+                title: '🌡️ Теплова карта — що показує і навіщо',
+                rows: [
+                    { label:'Що це таке', value:'Матриця де рядки — сегменти клієнтів, колонки — категорії партнерів, а значення в клітинці — скільки боксиків витратили клієнти цього сегменту у партнерів цієї категорії. Дозволяє одразу побачити "гарячі точки" — які сегменти найбільше цікавляться якими категоріями.' },
+                    { label:'Рядки', value:'Статус активності клієнта: Активний (≤30 днів) / Неактивний (31–365 днів) / Архівний (>365 днів). При глобальній фільтрації по сегментах рядки змінюються.' },
+                    { label:'Колонки', value:'Категорії партнерів: 🏥 Медицина, 📱 Технологія, 👕 Одяг, 🍔 Їжа, 👶 Дитячі товари' },
+                    { label:'Значення клітинки', value:'Сума боксиків витрачених клієнтами даного сегменту у партнерів даної категорії за поточний місяць.', formula:'SUM(boxik_spent) WHERE segment=row AND category=col' },
+                    { label:'Кольорова шкала', value:'Білий = мінімальне значення в матриці. Темно-зелений = максимальне. Градієнт відносний — завжди показує відносний розподіл, а не абсолютні числа.' },
+                    { label:'Практичне застосування', value:'Якщо "Ядро × Технологія" темно-зелена — активні постійні клієнти найбільше витрачають у tech-партнерів. Означає: для цього сегменту треба більше tech-пропозицій і акцій з tech-каналом.' },
+                    { label:'Джерело', value:'BigQuery: JOIN boxik_transactions, client_segments, partner_categories' },
+                ]
+            },
+            'loy-boxiky': {
+                title: '📦 Боксики — що вимірює кожен показник',
+                rows: [
+                    { label:'Що таке боксики', value:'Внутрішня валюта програми лояльності НП. Нараховуються клієнту за кожне відправлення або отримання посилки. Витрачаються на отримання промокодів у партнерів або на участь у розіграшах. 1 бокс ≈ 18.5 грн номінальної вартості.' },
+                    { label:'Всього на балансі', value:'Загальний резерв боксиків що зараз лежать невитраченими на рахунках всіх клієнтів. Це потенційна активність — чим більше боксиків на балансі, тим більше клієнтів потенційно підуть до партнерів.', formula:'SUM(boxik_balance) WHERE ALL CID' },
+                    { label:'Нараховано (місяць)', value:'Скільки боксиків було нараховано клієнтам за поточний місяць по всіх каналах. Зростання = більше ЕН або нові типи нарахувань.', formula:'SUM(accrual_amount) WHERE month=current' },
+                    { label:'Витрачено (місяць)', value:'Скільки боксиків клієнти витратили за місяць. Якщо нараховано >> витрачено — клієнти накопичують але не використовують. Це ризик "мертвих боксиків".', formula:'SUM(spent_amount) WHERE month=current' },
+                    { label:'Баланс по сегментах', value:'Розбивка загального балансу по групах клієнтів. Показує де зосереджений "резерв". Перемикач дозволяє дивитись по 4 вимірах: Статус активності / Підстатус / Життєвий цикл / RFM.', formula:'SUM(boxik_balance) GROUP BY selected_segment' },
+                    { label:'Нараховано по типах', value:'Звідки прийшли боксики: через відділення НП, через термінал у відділенні, через поштомати, через АО (Авіаційне відділення), міжнародні відправлення. Показує які канали найбільше генерують лояльність.' },
+                    { label:'Витрачено по типах', value:'На що пішли боксики: у магазинах партнерів (обмін на промокод) або на участь у розіграшах. Важливий розподіл — партнери vs розіграші.' },
+                    { label:'Динаміка по місяцях', value:'Дві лінії на одному графіку: нараховано vs витрачено по місяцях. Якщо лінія нарахувань завжди вище — баланс росте. Якщо витрати наздоганяють нарахування — механіка партнерів і розіграшів добре залучає клієнтів.' },
+                    { label:'Джерело', value:'NovaPlace: таблиці boxik_accrual (типи нарахування), boxik_spent (списання) → агрегація в BigQuery' },
+                ]
+            },
+            'loy-cashback': {
+                title: '💳 Кешбек — що вимірює кожен показник',
+                rows: [
+                    { label:'Що таке кешбек', value:'Гривневий кешбек що нараховується клієнту за певні дії (наприклад за першу відправку або за відправки вище певної суми). Витрачається на оплату послуг НП — тобто безпосередньо стимулює нові ЕН.' },
+                    { label:'Нараховано', value:'Загальна сума гривневого кешбеку нарахованого всім клієнтам за поточний місяць. Зростання — більше клієнтів виконують умови нарахування.', formula:'SUM(cashback_accrued) WHERE month=current' },
+                    { label:'Витрачено на НП', value:'Сума кешбеку що клієнти реально використали при оплаті послуг НП. Це пряма конверсія кешбеку в ЕН.', formula:'SUM(cashback_spent_on_np)' },
+                    { label:'% використання', value:'Яка частка нарахованого кешбеку реально витрачається. Низький % (наприклад 40%) означає що клієнти накопичують але не повертаються. Високий % (>70%) — механіка добре утримує клієнтів.', formula:'SUM(spent) / SUM(accrued) × 100' },
+                    { label:'Невикористано', value:'Залишок: нараховано мінус витрачено. Якщо росте місяць за місяцем — клієнти відходять не витративши кешбек. Це сигнал що треба нагадувати про залишок або додати термін дії.', formula:'SUM(accrued) - SUM(spent)' },
+                    { label:'Динаміка по місяцях', value:'Бар — нараховано (що клієнти заробили). Лінія — витрачено (що використали). Ідеальна картина: обидва зростають разом. Якщо витрати відстають — клієнти не повертаються.' },
+                    { label:'Джерело', value:'NovaPlace: cashback_log (нарахування та списання) → BigQuery' },
+                ]
+            },
+            'loy-tasks': {
+                title: '✅ Завдання → Промокод НП — повна логіка блоку',
+                rows: [
+                    { label:'Що таке механіка завдань', value:'Клієнту дається завдання (наприклад: "Зроби 3 відправки за місяць"). Виконав — отримує промокод НП зі знижкою на наступну відправку або отримання. Ціль: стимулювати повторні ЕН через нагороду.' },
+                    { label:'ВАЖЛИВО', value:'Промокод НП (від завдання) — це знижка на відправку/отримання посилки НП. Це не те саме що промокод партнера (знижка в магазині партнера). Два різних типи промокодів — дві різних механіки.' },
+                    { label:'Активних завдань', value:'Скільки завдань зараз доступні клієнтам (не закінчились за датою, не вичерпали ліміт видачі). Показує наповненість механіки.', formula:'COUNT(task_id WHERE status=active AND end_date>=today)' },
+                    { label:'Всього виконань', value:'Кількість подій виконання завдань за місяць. Один клієнт може виконати кілька завдань — рахуються всі події.', formula:'COUNT(task_completed_event) WHERE month=current' },
+                    { label:'Промокодів НП видано', value:'Кількість промокодів НП що були видані після виконання. Трохи менше ніж виконань — бо деякі клієнти виконали але не забрали промокод (або технічний збій). Нормально: 90%+ забирають.', formula:'COUNT(np_promo_issued) / COUNT(task_completed)' },
+                    { label:'Промокод НП → ЕН', value:'Найважливіша метрика блоку. Показує скільки клієнтів що отримали промокод НП — реально скористались ним і зробили ЕН протягом 30 днів. Вікно 30 днів — стандартний термін дії промокоду.', formula:'COUNT(en WHERE np_promo_used AND en_date≤promo_date+30d)' },
+                    { label:'Середній % знижки НП', value:'Середній розмір знижки по всіх активних завданнях. Допомагає розуміти "привабливість" поточних завдань — чи достатньо велика знижка щоб мотивувати.', formula:'AVG(discount_pct) WHERE task_status=active' },
+                    { label:'По сегментах (виконання)', value:'Розбивка виконань по групах клієнтів. Перемикач: Статус активності / Підстатус / Життєвий цикл / RFM. Показує яка аудиторія найактивніше виконує завдання.' },
+                    { label:'По сегментах (промокод→ЕН)', value:'Конверсія промокоду НП в ЕН по сегментах. Якщо "Ядро" конвертує 65% а "Нові" лише 30% — завдання добре утримують постійних але не залучають нових.' },
+                    { label:'Динаміка по місяцях', value:'Дві лінії: скільки виконань і скільки промокодів видано по місяцях. Якщо лінії розходяться — зростає частка "невикористаних" промокодів. Сигнал що термін дії завдань або промокодів треба переглянути.' },
+                    { label:'Джерело', value:'NovaPlace: tasks (опис завдань), task_completions (виконання), np_promos (промокоди), en_log (ЕН)' },
+                ]
+            },
+            'loy-raffles': {
+                title: '🎲 Розіграші — що вимірює кожен показник',
+                rows: [
+                    { label:'Що таке розіграш', value:'Клієнт витрачає боксики як "ставку" для участі в розіграші призу. Приклад: "Вигрій iPhone — мінімальна ставка 50 боксиків, чим більше ставиш — тим вища ймовірність". Відрізняється від механіки партнерів тим що виграш непередбачуваний.' },
+                    { label:'Активних розіграшів', value:'Кількість розіграшів що зараз тривають (не завершились, приймають ставки). Показує "наповненість" механіки.', formula:'COUNT(raffle_id WHERE status=active AND end_date>=today)' },
+                    { label:'Учасників загалом', value:'Унікальні клієнти що брали участь хоча б в одному розіграші за весь час. Показує загальне охоплення механіки.', formula:'COUNT(DISTINCT CID WHERE raffle_participated=true)' },
+                    { label:'Учасників в активних', value:'Унікальні клієнти що зараз беруть участь у поточних (незавершених) розіграшах. Поточна активна аудиторія механіки.', formula:'COUNT(DISTINCT CID WHERE participated_in_active_raffle)' },
+                    { label:'Боксиків по сегментах', value:'Скільки боксиків витратили клієнти кожного сегменту на участь у розіграшах. Показує яка аудиторія найбільше "ставить". Перемикач дозволяє дивитись по 4 вимірах сегментації.', formula:'SUM(boxik_spent WHERE type=raffle) GROUP BY segment' },
+                    { label:'Динаміка по місяцях', value:'Тренд витрат боксиків на розіграші. Зростання — механіка набирає популярності. Падіння — або призи нецікаві, або клієнти переключились на партнерів.', formula:'SUM(boxik_spent_on_raffles) GROUP BY month' },
+                    { label:'Джерело', value:'NovaPlace: raffles (довідник розіграшів), raffle_participations (ставки), boxik_spent (списання)' },
+                ]
+            },
+            'campaigns-list': {
+                title: '📢 Маркетингові акції — логіка таблиці і drill-down',
+                rows: [
+                    { label:'Що таке маркетингова акція', value:'Точкова розсилка повідомлень (Viber, Push, Email або SMS) на визначену аудиторію клієнтів. Кожна акція має назву, опис аудиторії і містить або промокод НП (знижка на відправку НП) або промокод партнера (знижка в магазині). Це окремий канал від механік лояльності.' },
+                    { label:'Відправлено', value:'Кількість повідомлень відправлених з MessageBridge по цій акції. Базовий показник охоплення.', formula:'COUNT(message_sent WHERE campaign_id=x)' },
+                    { label:'Доставлено', value:'Скільки повідомлень реально дійшло до клієнта. Різниця = недоставлені (заблоковані номери, відписані, технічні помилки). Нормальний показник: 85–92%.', formula:'COUNT(message_delivered) / COUNT(sent)' },
+                    { label:'Відкрили', value:'Для Viber і Email: факт відкриття повідомлення (read receipt). Для Push і SMS: клік на посилання (відкриття не відстежується технічно). Показник зацікавленості аудиторії.', formula:'COUNT(message_opened OR link_clicked)' },
+                    { label:'Промокод отримали', value:'Клієнт явно взаємодіяв з промокодом: або скопіював код, або натиснув кнопку "Отримати знижку". Це сильніший сигнал зацікавленості ніж просто відкриття.', formula:'COUNT(promo_copied OR promo_btn_clicked)' },
+                    { label:'ЕН (атрибуція)', value:'Кількість ЕН зроблених клієнтами що отримали промокод, протягом 14 днів після відправки акції. 14 днів — стандартне вікно атрибуції. Якщо клієнт зробив ЕН на 15-й день — він вже не рахується.', formula:'COUNT(en WHERE source=campaign AND en_date≤send_date+14d)' },
+                    { label:'Конверсія → ЕН', value:'Частка клієнтів що отримали промокод і зробили ЕН. Ключова метрика ефективності акції. Нормальний діапазон: 15–35% залежно від каналу і аудиторії.', formula:'COUNT(en) / COUNT(promo_received) × 100' },
+                    { label:'Drill-down акції', value:'При кліку на кнопку "Детальніше" відкривається: воронка по кроках, графік результатів по сегментах аудиторії, таблиця з повною розбивкою по кожному сегменту.' },
+                    { label:'Джерело', value:'MessageBridge (відправки, доставки, кліки) + BigQuery (атрибуція ЕН). Вікно атрибуції: 14 днів.' },
+                ]
+            },
+            'partners-table': {
+                title: '🤝 Таблиця партнерів — опис кожної колонки',
+                rows: [
+                    { label:'Пропозицій всього', value:'Загальна кількість пропозицій що партнер розмістив за весь час в системі — включаючи вже завершені. Показує "досвід" і активність партнера в програмі.', formula:'COUNT(offer_id WHERE partner_id=x)' },
+                    { label:'Активних зараз', value:'Сума пропозицій 4 типів що зараз доступні клієнтам: Загальних (для всіх) + Персональних (для конкретного клієнта) + Завдань (прив\'язані до завдань) + Розіграшів.', formula:'SUM(general + personal + tasks + giveaways WHERE status=active)' },
+                    { label:'❤️ В улюбленому', value:'Кількість унікальних клієнтів що додали цього партнера до розділу "Улюблене". Це індикатор лояльності до бренду партнера — клієнт хоче слідкувати за новими пропозиціями.', formula:'COUNT(DISTINCT CID WHERE favorited_partner=x)' },
+                    { label:'📦 Списали боксики', value:'Кількість унікальних клієнтів що витратили боксики хоча б раз у цього партнера за поточний місяць. Показник реальної активності (не просто переглянули).', formula:'COUNT(DISTINCT CID WHERE boxik_spent_at=partner_x, month=current)' },
+                    { label:'🏪 Промокод партнера', value:'Скільки разів клієнти отримали промокод партнера (знижку в магазині) за останній місяць. УВАГА: це не те саме що промокод НП. Промокод партнера = знижка на покупку в магазині партнера.', formula:'COUNT(partner_promo_issued WHERE month=current)' },
+                    { label:'🔗 Перейшли на сайт', value:'Кількість кліків на посилання магазину партнера. Показує зацікавленість у бренді — клієнт зацікавився і пішов дивитись асортимент.', formula:'COUNT(partner_link_click WHERE month=current)' },
+                    { label:'Боксиків витрачено', value:'Загальна сума боксиків списаних у цього партнера за весь час. Показує "вагу" партнера в програмі лояльності — скільки реальних боксиків партнер "поглинає".', formula:'SUM(boxik_amount WHERE partner_id=x)' },
+                    { label:'Сер. бокс./пропоз.', value:'Середня вартість пропозиції в боксиках. Показує чи "дорогий" партнер — якщо середня вартість висока, менше клієнтів можуть дозволити собі використати пропозицію.', formula:'AVG(offer_price_boxiky WHERE partner_id=x AND status=active)' },
+                    { label:'Сер. час активності', value:'Скільки днів в середньому одна пропозиція партнера "висить" активною в каталозі. Короткий час = часта ротація. Довгий = стабільні офери.', formula:'AVG(offer_end_date - offer_start_date) WHERE completed' },
+                    { label:'Умова НП', value:'Чи є серед пропозицій партнера такі що вимагають доставку через НП для активації знижки. Якщо "Так" — ця пропозиція безпосередньо генерує ЕН для НП.', formula:'BOOL: EXISTS(offer WHERE np_condition=true)' },
+                    { label:'🚚 Конв. → ЕН', value:'З клієнтів що отримали промокод цього партнера — яка частка реально зробила ЕН з умовою НП. Ключова метрика цінності партнера для НП.', formula:'COUNT(en WHERE partner_np_cond) / COUNT(promo_issued) × 100' },
+                    { label:'MoM%', value:'Відсоткова зміна обраної метрики відносно попереднього місяця. Зелений = зріст, червоний = падіння. Дозволяє швидко виявити партнерів що втрачають активність.', formula:'(current - prev) / prev × 100' },
+                    { label:'Джерело', value:'NovaPlace: partners, offers, boxik_transactions → BigQuery; EN-трекінг: en_log' },
+                ]
+            },
+            'partners-summary': {
+                title: '📈 Summary-графік партнерів — як читати',
+                rows: [
+                    { label:'Що це таке', value:'Стекований стовпчиковий графік де кожен стовпець = один часовий період, кожен кольоровий шар в стовпці = один партнер. Висота шару = значення обраної метрики для цього партнера за цей місяць. Дозволяє побачити і загальний тренд і внесок кожного партнера одночасно.' },
+                    { label:'Перемикач метрики', value:'Змінює що відображається: Боксики (скільки списано) / Скористались (унікальних клієнтів) / В улюбленому (кількість підписників) / ЕН (скільки ЕН згенеровано). Кожна метрика дає інший погляд на ефективність партнерів.' },
+                    { label:'Місяць / Квартал', value:'Перемикач агрегації часу. Місяць = деталізований тренд, видно сезонність. Квартал = стратегічна картина, прибирає "шум" окремих місяців.' },
+                    { label:'YoY% (рядок під графіком)', value:'Year over Year — порівняння поточного місяця з тим самим місяцем минулого року. Прибирає сезонність. Якщо травень 2025 кращий за травень 2024 — це реальне зростання, а не "просто так вийшло".', formula:'(current_month - same_month_prev_year) / same_month_prev_year × 100' },
+                    { label:'MoM% (рядок під графіком)', value:'Month over Month — порівняння з попереднім місяцем. Показує оперативний тренд. Зручно помічати різкі зміни: якщо MoM -20% без очевидної причини — щось пішло не так.', formula:'(current_month - prev_month) / prev_month × 100' },
+                    { label:'Джерело', value:'NovaPlace + BigQuery: агрегація по partner_id і month' },
+                ]
+            },
+            'clients-table': {
+                title: '👥 Таблиця клієнтів — опис кожної колонки',
+                rows: [
+                    { label:'Підстатус активності', value:'Деталізований статус активного клієнта. Новий = перша транзакція за останні 30 днів (рахується від 01.01.2021). Ядро = стабільно активний, є транзакції в поточному і попередньому місяці. Реактивований = є транзакція зараз але в попередньому місяці не було. Неактивний = немає транзакцій 31–365 днів.' },
+                    { label:'ЖЦК (Життєвий Цикл)', value:'Сегмент на основі частоти та давності транзакцій: Навчання (перші 30 днів) / Залучення (мало транзакцій) / Стимуляція (середньо) / Продажі (багато, є потенціал) / Утримання (давність 31–180 днів) / Заснувші (181–365 днів) / Втрачені (>365 днів).' },
+                    { label:'RFM категорія', value:'Champions (часто, нещодавно, багато) / Loyal (часто, нещодавно) / Potential (нечасто але нещодавно) / At Risk (раніше активний, зараз пасивний) / Declining (рідко і давно) / Lost (не повертається) / New (перша транзакція).' },
+                    { label:'Боксики (баланс)', value:'Поточний залишок боксиків у клієнта. SUM(нараховано) - SUM(витрачено). При перемиканні одиниць перераховується в гривні (×18.5) або ЕН-еквівалент (×0.18).', formula:'SUM(accrued) - SUM(spent) WHERE CID=x' },
+                    { label:'Боксики (витрачено)', value:'Загальна сума боксиків що клієнт витратив у партнерів і на розіграші за всі часи. Показує загальну "глибину" залучення в програму.', formula:'SUM(boxik_spent) WHERE CID=x' },
+                    { label:'Партнерів в улюбленому', value:'Кількість партнерів що клієнт зберіг в розділі "Улюблене". Показник зацікавленості — клієнт хоче слідкувати за пропозиціями цих магазинів.', formula:'COUNT(partner WHERE favorited_by=CID)' },
+                    { label:'Пропозицій відвідано', value:'Скільки сторінок партнерських пропозицій клієнт відкрив за місяць. Показує активність "перегляду" каталогу.', formula:'COUNT(offer_page_open WHERE CID=x, month=current)' },
+                    { label:'Завдань виконано', value:'Кількість завдань що клієнт виконав за місяць. Показує залученість в механіку завдань.', formula:'COUNT(task_completed WHERE CID=x, month=current)' },
+                    { label:'Розіграшів (участь)', value:'Скільки разів клієнт брав участь у розіграшах за весь час. Один клієнт може брати участь кілька разів в одному розіграші (збільшуючи ставку).', formula:'COUNT(raffle_participation WHERE CID=x)' },
+                    { label:'Скретч-карт (вик.)', value:'Кількість скретч-карт що клієнт використав. Скретч-картки — окрема механіка лояльності де клієнт "стирає" захисний шар і дізнається про виграш.', formula:'COUNT(scratch_used WHERE CID=x)' },
+                    { label:'ЕН з промокодом', value:'Булева ознака: чи робив клієнт хоча б одне ЕН за останні 90 днів використовуючи будь-який промокод (НП або партнера або акції). Так/Ні — бінарна ознака конверсії.', formula:'BOOL: EXISTS(en WHERE promo_used AND CID=x AND days<=90)' },
+                    { label:'MoM%', value:'Зміна суми витрачених боксиків клієнта між поточним і попереднім місяцем. Зелений = клієнт став активнішим у програмі. Червоний = спад активності — потенційний відтік.', formula:'(spent_current - spent_prev) / spent_prev × 100' },
+                    { label:'Одиниці вимірювання', value:'Перемикач "Одиниці" (вгорі сторінки) перераховує числові колонки: Боксики = базова одиниця / Гривні = боксики × 18.5 / ЕН-еквівалент = боксики × 0.18 (середній коефіцієнт конверсії).' },
+                    { label:'Джерело', value:'CDP (CID, сегменти, ЖЦК, RFM) + NovaPlace (боксики, завдання, партнери) + BigQuery' },
+                ]
+            },
+            'clients-summary': {
+                title: '📈 Summary-графік клієнтів — як читати',
+                rows: [
+                    { label:'Що це таке', value:'Стекований стовпчиковий графік де кожен стовпець = один часовий період, кожен кольоровий шар = підстатус клієнтів (Новий/Ядро/Реактивований/Неактивний). Висота шару = значення обраної метрики для цієї групи за цей місяць. Дає одночасно загальний тренд і структуру аудиторії.' },
+                    { label:'Перемикач метрики', value:'Боксики = SUM(boxik_spent) — активність витрат. Активність = COUNT(section_open) — хто заходив в розділ лояльності. Завдання = COUNT(task_completed) — хто виконував завдання. Розіграші = COUNT(raffle_participated) — хто брав участь.' },
+                    { label:'Бублик "Розподіл по сегментах"', value:'Показує поточну структуру аудиторії: яка частка клієнтів відноситься до кожного підстатусу. Якщо "Ядро" 49% — програма стабільна. Якщо "Новий" різко зростає — йде активне залучення.', formula:'COUNT(CID) GROUP BY substatus / COUNT(total) × 100' },
+                    { label:'YoY% (рядок під графіком)', value:'Порівняння кожного місяця з аналогічним місяцем минулого року. Усуває сезонність і показує реальне зростання програми лояльності.', formula:'(current_month - same_month_prev_year) / same_month_prev_year × 100' },
+                    { label:'MoM% (рядок під графіком)', value:'Оперативна зміна від місяця до місяця. Різкий мінус = сигнал тривоги (наприклад щось зламалось в механіці або пропозиції стали менш цікавими).', formula:'(current_month - prev_month) / prev_month × 100' },
+                    { label:'Місяць / Квартал', value:'Перемикач агрегації. Місячний вид — для оперативного контролю. Квартальний — для стратегічних висновків і порівняння з бізнес-цілями.' },
+                    { label:'Джерело', value:'CDP (підстатуси, ЖЦК) + NovaPlace (події взаємодії) + BigQuery (агрегація)' },
+                ]
+            },
+        };
+
+        function showInfo(blockId) {
+            const block = INFO_BLOCKS[blockId];
+            if (!block) return;
+            const modal = document.getElementById('infoModalOverlay');
+            const title = document.getElementById('infoModalTitle');
+            const body  = document.getElementById('infoModalBody');
+            title.textContent = block.title;
+            body.innerHTML = block.rows.map(r => `
+                <div class="info-row">
+                    <div class="info-label">${r.label}</div>
+                    <div class="info-value">${r.value}${r.formula ? `<div class="info-formula">${r.formula}</div>` : ''}</div>
+                </div>`).join('');
+            modal.classList.add('open');
+        }
+
+        function closeInfoModal() {
+            document.getElementById('infoModalOverlay').classList.remove('open');
+        }
+
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeInfoModal(); });
     </script>
+
+    <!-- INFO MODAL -->
+    <div class="info-modal-overlay" id="infoModalOverlay" onclick="if(event.target===this)closeInfoModal()">
+        <div class="info-modal">
+            <button class="info-modal-close" onclick="closeInfoModal()">✕ Закрити</button>
+            <h3 id="infoModalTitle"></h3>
+            <div id="infoModalBody"></div>
+        </div>
+    </div>
 </body>
 </html>
