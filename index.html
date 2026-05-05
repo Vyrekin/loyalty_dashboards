@@ -855,173 +855,101 @@
         <!-- PAGE 0: OVERVIEW -->
         <div id="overview" class="page active">
 
-            <!-- ── КЛЮЧОВІ ІНСАЙТИ ── -->
-            <div style="display:flex; align-items:center; gap:0.4rem; margin-bottom:0.5rem;">
-                <span style="font-size:0.72rem; font-weight:700; color:var(--text-primary);">💡 Ключові інсайти</span>
-                <button class="info-btn" onclick="showInfo('overview-insights')">i</button>
-            </div>
-            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:0.5rem; margin-bottom:1rem;">
-                <div style="background:rgba(39,174,96,0.08); border:1px solid rgba(39,174,96,0.3); border-left:4px solid var(--success); border-radius:8px; padding:0.65rem 0.9rem;">
-                    <div style="font-size:0.6rem; font-weight:700; color:var(--success); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.2rem;">✅ Завдання працюють</div>
-                    <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary);">38% клієнтів виконали завдання</div>
-                    <div style="font-size:0.68rem; color:var(--text-secondary); margin-top:0.15rem;">і отримали промокод на знижку НП → прямий вплив на ЕН</div>
-                </div>
-                <div style="background:rgba(255,107,53,0.08); border:1px solid rgba(255,107,53,0.3); border-left:4px solid var(--accent); border-radius:8px; padding:0.65rem 0.9rem;">
-                    <div style="font-size:0.6rem; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.2rem;">⚠️ Великий відвал</div>
-                    <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary);">Зайшов на партнера → списав боксики: 62%</div>
-                    <div style="font-size:0.68rem; color:var(--text-secondary); margin-top:0.15rem;">38% заходять але не купують пропозицію — потребує аналізу</div>
-                </div>
-                <div style="background:rgba(52,152,219,0.08); border:1px solid rgba(52,152,219,0.3); border-left:4px solid #3498db; border-radius:8px; padding:0.65rem 0.9rem;">
-                    <div style="font-size:0.6rem; font-weight:700; color:#3498db; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.2rem;">🏆 Топ категорія</div>
-                    <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary);">Технологія: конверсія → ЕН 62%</div>
-                    <div style="font-size:0.68rem; color:var(--text-secondary); margin-top:0.15rem;">Умова "доставка НП" в офері — найкращий драйвер ЕН</div>
-                </div>
-                <div style="background:rgba(155,89,182,0.08); border:1px solid rgba(155,89,182,0.3); border-left:4px solid #9b59b6; border-radius:8px; padding:0.65rem 0.9rem;">
-                    <div style="font-size:0.6rem; font-weight:700; color:#9b59b6; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.2rem;">📢 Акції ефективні</div>
-                    <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary);">Viber: відкрили 71%, промокод: 28%</div>
-                    <div style="font-size:0.68rem; color:var(--text-secondary); margin-top:0.15rem;">Найвища конверсія серед каналів акцій цього місяця</div>
-                </div>
-                <div style="background:rgba(243,156,18,0.08); border:1px solid rgba(243,156,18,0.3); border-left:4px solid var(--warning); border-radius:8px; padding:0.65rem 0.9rem;">
-                    <div style="font-size:0.6rem; font-weight:700; color:var(--warning); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.2rem;">💔 Проблема</div>
-                    <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary);">7 партнерів — 0 пропозицій</div>
-                    <div style="font-size:0.68rem; color:var(--text-secondary); margin-top:0.15rem;">Клієнти додали в улюблені, але купити нічого — мертвий трафік</div>
-                </div>
-            </div>
-
-            <!-- ── KPI ── -->
-            <div style="display:flex; align-items:center; gap:0.4rem; margin-bottom:0.4rem;">
-                <span style="font-size:0.72rem; font-weight:700; color:var(--text-primary);">📊 Ключові показники</span>
-                <button class="info-btn" onclick="showInfo('overview-kpi')">i</button>
-            </div>
-            <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:0.5rem; margin-bottom:1rem;">
-                <div class="card"><div class="card-title">👥 Активних клієнтів</div><div class="card-value">28,450</div><div class="card-change positive">↑ +4.8%</div></div>
-                <div class="card"><div class="card-title">📦 Боксиків на балансі</div><div class="card-value">128K</div><div class="card-change positive">↑ +6.2%</div></div>
-                <div class="card"><div class="card-title">🤝 Партнерів</div><div class="card-value">148</div><div class="card-change positive">↑ +12</div></div>
-                <div class="card"><div class="card-title">✅ Завдань виконано</div><div class="card-value">11,948</div><div class="card-change positive">↑ +5.6%</div></div>
-                <div class="card">
-                    <div class="card-title">🎯 Промокод завдання → ЕН НП</div>
-                    <div class="card-value" style="font-size:1.1rem;">38<span class="card-unit">%</span></div>
-                    <div style="font-size:0.6rem; color:var(--text-secondary); margin-top:0.2rem;">клієнтів що виконали завдання зробили ЕН</div>
-                </div>
-                <div class="card">
-                    <div class="card-title">🏪 Промокод партнера → ЕН НП</div>
-                    <div class="card-value" style="font-size:1.1rem;">18<span class="card-unit">%</span></div>
-                    <div style="font-size:0.6rem; color:var(--text-secondary); margin-top:0.2rem;">клієнтів що списали боксики зробили ЕН</div>
-                </div>
-                <div class="card">
-                    <div class="card-title">📢 Промокод акції → ЕН НП</div>
-                    <div class="card-value" style="font-size:1.1rem;">24<span class="card-unit">%</span></div>
-                    <div style="font-size:0.6rem; color:var(--text-secondary); margin-top:0.2rem;">клієнтів що отримали промокод зробили ЕН</div>
-                </div>
-            </div>
-
-            <!-- ── ВОРОНКИ ── -->
-            <div style="display:flex; align-items:center; gap:0.4rem; margin-bottom:0.5rem;">
-                <span style="font-size:0.72rem; font-weight:700; color:var(--text-primary);">🔽 Воронки конверсії</span>
-                <button class="info-btn" onclick="showInfo('overview-funnels')">i</button>
-            </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.75rem; margin-bottom:1rem;">
-
-                <!-- Воронка завдань -->
-                <div class="card">
-                    <div class="card-title" style="font-size:0.72rem; margin-bottom:0.75rem;">✅ Завдання → ЕН</div>
-                    <div class="funnel-container">
-                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Побачили завдання</div><div class="funnel-bar" style="width:100%; background:linear-gradient(90deg,#0d7c4f,#27ae60)"><span style="font-size:0.65rem;">28,450</span></div><div class="funnel-value" style="font-size:0.65rem;">100%</div></div>
-                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Почали завдання</div><div class="funnel-bar" style="width:68%; background:linear-gradient(90deg,#0d7c4f,#27ae60)"><span style="font-size:0.65rem;">19,346</span></div><div class="funnel-value" style="font-size:0.65rem;">68%</div></div>
-                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Виконали</div><div class="funnel-bar" style="width:42%; background:linear-gradient(90deg,#0d7c4f,#27ae60)"><span style="font-size:0.65rem;">11,948</span></div><div class="funnel-value" style="font-size:0.65rem;">42%</div></div>
-                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Промокод НП отримали</div><div class="funnel-bar" style="width:38%; background:linear-gradient(90deg,#0d7c4f,#27ae60)"><span style="font-size:0.65rem;">10,806</span></div><div class="funnel-value" style="font-size:0.65rem;">38%</div></div>
-                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Зробили ЕН з промокодом</div><div class="funnel-bar" style="width:22%; background:linear-gradient(90deg,#0d7c4f,#27ae60)"><span style="font-size:0.65rem;">6,259</span></div><div class="funnel-value" style="font-size:0.65rem;">22%</div></div>
+            <!-- ГОЛОВНИЙ БЛОК: ЯКА КОНВЕРСІЯ? -->
+            <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:0.9rem 1.1rem; margin-bottom:0.85rem; box-shadow:0 2px 10px rgba(0,0,0,0.06);">
+                <!-- Заголовок -->
+                <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
+                    <div>
+                        <div style="font-size:0.85rem; font-weight:700; color:var(--text-primary);">🎯 Яка конверсія механік лояльності в ЕН? <button class="info-btn" onclick="showInfo('overview-kpi')" style="margin-left:4px;">i</button></div>
+                        <div style="font-size:0.62rem; color:var(--text-secondary); margin-top:0.1rem;">Використовуйте фільтри вгорі сторінки — сегмент, партнер, категорія, період — показники перерахуються автоматично</div>
                     </div>
                 </div>
 
-                <!-- Воронка партнерів -->
-                <div class="card">
-                    <div class="card-title" style="font-size:0.72rem; margin-bottom:0.75rem;">🏪 Партнер → ЕН</div>
-                    <div class="funnel-container">
-                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Зайшли в розділ</div><div class="funnel-bar" style="width:100%; background:linear-gradient(90deg,#ff6b35,#e67e22)"><span style="font-size:0.65rem;">28,450</span></div><div class="funnel-value" style="font-size:0.65rem;">100%</div></div>
-                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Зайшли на партнера</div><div class="funnel-bar" style="width:58%; background:linear-gradient(90deg,#ff6b35,#e67e22)"><span style="font-size:0.65rem;">16,501</span></div><div class="funnel-value" style="font-size:0.65rem;">58%</div></div>
-                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Списали боксики</div><div class="funnel-bar" style="width:36%; background:linear-gradient(90deg,#ff6b35,#e67e22)"><span style="font-size:0.65rem;">10,242</span></div><div class="funnel-value" style="font-size:0.65rem;">36%</div></div>
-                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Промокод партнера отримали</div><div class="funnel-bar" style="width:28%; background:linear-gradient(90deg,#ff6b35,#e67e22)"><span style="font-size:0.65rem;">7,966</span></div><div class="funnel-value" style="font-size:0.65rem;">28%</div></div>
-                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Зробили ЕН з умовою НП</div><div class="funnel-bar" style="width:18%; background:linear-gradient(90deg,#ff6b35,#e67e22)"><span style="font-size:0.65rem;">5,121</span></div><div class="funnel-value" style="font-size:0.65rem;">18%</div></div>
+                <!-- 4 великі KPI конверсії -->
+                <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:0.6rem; margin-bottom:0.85rem;" id="convKpiRow"></div>
+
+                <!-- Графік тренду на всю ширину -->
+                <div>
+                    <div style="display:flex; align-items:baseline; gap:0.5rem; margin-bottom:0.25rem;">
+                        <div style="font-size:0.7rem; font-weight:700; color:var(--text-primary);">📈 Конверсія → ЕН по місяцях (%)</div>
+                        <div style="font-size:0.6rem; color:var(--text-secondary);">— відсоток клієнтів що дійшли від промокоду до ЕН</div>
+                    </div>
+                    <div style="position:relative; height:160px;"><canvas id="chartConvTrend"></canvas></div>
+                    <!-- MoM рядок з чітким підписом -->
+                    <div style="margin-top:0.35rem; padding-top:0.35rem; border-top:1px solid var(--border);">
+                        <div style="font-size:0.6rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.4px; margin-bottom:0.25rem;">
+                            Конверсія завдань → ЕН по місяцях: % від тих хто отримав промокод НП і зробив ЕН
+                        </div>
+                        <div id="convMoMRow" style="display:grid; grid-template-columns:repeat(5,1fr); gap:0.3rem;"></div>
                     </div>
                 </div>
-
-                <!-- Воронка акцій -->
-                <div class="card">
-                    <div class="card-title" style="font-size:0.72rem; margin-bottom:0.75rem;">📢 Акція → ЕН</div>
-                    <div class="funnel-container">
-                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Відправлено</div><div class="funnel-bar" style="width:100%; background:linear-gradient(90deg,#8e44ad,#9b59b6)"><span style="font-size:0.65rem;">45,200</span></div><div class="funnel-value" style="font-size:0.65rem;">100%</div></div>
-                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Доставлено</div><div class="funnel-bar" style="width:88%; background:linear-gradient(90deg,#8e44ad,#9b59b6)"><span style="font-size:0.65rem;">39,776</span></div><div class="funnel-value" style="font-size:0.65rem;">88%</div></div>
-                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Відкрили / клікнули</div><div class="funnel-bar" style="width:52%; background:linear-gradient(90deg,#8e44ad,#9b59b6)"><span style="font-size:0.65rem;">23,504</span></div><div class="funnel-value" style="font-size:0.65rem;">52%</div></div>
-                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Промокод отримали</div><div class="funnel-bar" style="width:28%; background:linear-gradient(90deg,#8e44ad,#9b59b6)"><span style="font-size:0.65rem;">12,656</span></div><div class="funnel-value" style="font-size:0.65rem;">28%</div></div>
-                        <div class="funnel-step"><div class="funnel-label" style="font-size:0.65rem; min-width:110px;">Зробили ЕН</div><div class="funnel-bar" style="width:24%; background:linear-gradient(90deg,#8e44ad,#9b59b6)"><span style="font-size:0.65rem;">10,848</span></div><div class="funnel-value" style="font-size:0.65rem;">24%</div></div>
-                    </div>
-                </div>
-
             </div>
 
-            <!-- ── ВЕЛИКЕ ПОЛОТНО ── -->
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1rem;">
+            <!-- РЯД: РОЗБИВКА ПО КАНАЛАХ (окремий рядок) -->
+            <div class="stat-section-box" style="margin-bottom:0.85rem;">
+                <div style="font-size:0.72rem; font-weight:700; color:var(--text-primary); margin-bottom:0.4rem;">📋 Розбивка по каналах — скільки ЕН генерує кожен канал</div>
+                <div style="font-size:0.6rem; color:var(--text-secondary); margin-bottom:0.5rem;">Охоплення = скільки клієнтів могли отримати промокод · Промокод = скільки отримали · ЕН = скільки зробили ЕН після · Конв.% = ЕН / Промокод × 100</div>
+                <table style="width:100%; font-size:0.7rem; border-collapse:collapse;">
+                    <thead><tr style="background:var(--bg-hover);">
+                        <th style="padding:0.32rem 0.6rem; text-align:left;">Канал → ЕН</th>
+                        <th style="padding:0.32rem 0.5rem; text-align:right;">Охоплення</th>
+                        <th style="padding:0.32rem 0.5rem; text-align:right;">Отримали промокод</th>
+                        <th style="padding:0.32rem 0.5rem; text-align:right;">Зробили ЕН</th>
+                        <th style="padding:0.32rem 0.5rem; text-align:right;">Конв.% (ЕН / Промокод)</th>
+                        <th style="padding:0.32rem 0.5rem; text-align:center;">MoM% конверсії</th>
+                    </tr></thead>
+                    <tbody id="convBreakdownBody"></tbody>
+                </table>
+            </div>
+
+            <!-- РЯД 2: 3 KPI -->
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.6rem; margin-bottom:0.85rem;">
+                <div class="card"><div class="card-title">👥 Активних клієнтів</div><div class="card-value">28,450</div><div class="card-change positive">↑ +4.8%</div><div style="font-size:0.58rem; color:var(--text-secondary); margin-top:0.15rem;">транзакція НП за 30 днів</div></div>
+                <div class="card"><div class="card-title">📦 Боксиків на балансі</div><div class="card-value">128K</div><div class="card-change positive">↑ +6.2%</div><div style="font-size:0.58rem; color:var(--text-secondary); margin-top:0.15rem;">потенційних взаємодій</div></div>
+                <div class="card"><div class="card-title">🤝 Активних партнерів</div><div class="card-value">148</div><div class="card-change positive">↑ +12</div><div style="font-size:0.58rem; color:var(--text-secondary); margin-top:0.15rem;">з активними офферами зараз</div></div>
+            </div>
+
+            <!-- РЯД 3: ТОП ПАРТНЕРІВ + АКТИВНІСТЬ СЕГМЕНТІВ + RFM -->
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.75rem; margin-bottom:0.85rem;">
                 <div class="stat-section-box">
-                    <div class="stat-section-label">📈 Динаміка ЕН від кожного каналу по місяцях</div>
-                    <div class="chart-container"><canvas id="chartOverviewTrend"></canvas></div>
-                </div>
-                <div class="stat-section-box">
-                    <div style="display:flex; align-items:center; gap:0.4rem; margin-bottom:0.6rem;">
-                        <div class="stat-section-label" style="margin-bottom:0;">🌡️ Сегмент × Категорія партнера — боксиків списано</div>
-                        <button class="info-btn" onclick="showInfo('overview-heatmap')">i</button>
-                    </div>
-                    <div style="overflow-x:auto;">
-                        <table style="width:100%; font-size:0.67rem; border-collapse:collapse;">
-                            <thead>
-                                <tr style="background:var(--bg-hover);">
-                                    <th style="padding:0.35rem 0.5rem; text-align:left; color:var(--text-secondary); font-weight:600; white-space:nowrap; min-width:110px;">Сегмент</th>
-                                    <th style="padding:0.35rem 0.4rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:130px;">🏥 Медицина</th>
-                                    <th style="padding:0.35rem 0.4rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:130px;">📱 Технологія</th>
-                                    <th style="padding:0.35rem 0.4rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:130px;">👕 Одяг</th>
-                                    <th style="padding:0.35rem 0.4rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:100px;">🍔 Їжа</th>
-                                    <th style="padding:0.35rem 0.4rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:130px;">👶 Дитячі товари</th>
-                                </tr>
-                            </thead>
-                            <tbody id="heatmapBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.75rem; margin-bottom:1rem;">
-                <div class="stat-section-box">
-                    <div class="stat-section-label">🏆 Топ партнерів по ЕН що генерують</div>
+                    <div class="stat-section-label">🏆 Топ партнерів по ЕН</div>
                     <div class="chart-container"><canvas id="chartTopPartners"></canvas></div>
                 </div>
-
-                <!-- Активність сегментів — таблиця замість радару -->
                 <div class="stat-section-box">
-                    <div class="stat-section-label">📊 Активність сегментів по механіках</div>
-                    <table style="width:100%; font-size:0.66rem; border-collapse:collapse;">
-                        <thead>
-                            <tr style="background:var(--bg-hover);">
-                                <th style="padding:0.28rem 0.4rem; text-align:left; font-weight:600; color:var(--text-secondary);">Механіка</th>
-                                <th style="padding:0.28rem 0.3rem; text-align:center; font-weight:600; color:#ff6b35;" title="Новий">🆕 Новий</th>
-                                <th style="padding:0.28rem 0.3rem; text-align:center; font-weight:600; color:#0d7c4f;" title="Ядро">💪 Ядро</th>
-                                <th style="padding:0.28rem 0.3rem; text-align:center; font-weight:600; color:#3498db;" title="Реактивований">♻️ Реакт.</th>
-                                <th style="padding:0.28rem 0.3rem; text-align:center; font-weight:600; color:#f39c12;" title="Неактивні">🟡 Неакт.</th>
-                            </tr>
-                        </thead>
-                        <tbody id="segActivityBody"></tbody>
-                    </table>
-                    <div style="margin-top:0.4rem; font-size:0.58rem; color:var(--text-secondary); font-style:italic;">% — відносна активність, 100% = максимум по механіці</div>
+                    <div style="display:flex; align-items:center; gap:0.4rem; margin-bottom:0.4rem;">
+                        <div class="stat-section-label" style="margin-bottom:0;">📊 Активність сегментів по механіках</div>
+                    </div>
+                    <div style="font-size:0.6rem; color:var(--text-secondary); margin-bottom:0.35rem;">% клієнтів кожного сегменту що взаємодіяли з механікою за місяць</div>
+                    <div style="position:relative; height:165px;"><canvas id="chartOverviewRadar"></canvas></div>
                 </div>
-
-                <!-- RFM — виправлені підписи без emoji -->
                 <div class="stat-section-box">
                     <div class="stat-section-label">💎 Розподіл по RFM</div>
                     <div class="chart-container"><canvas id="chartOverviewRFM"></canvas></div>
                 </div>
             </div>
 
-        </div>
+            <!-- РЯД 4: ТЕПЛОВА КАРТА -->
+            <div class="stat-section-box" style="margin-bottom:0.85rem;">
+                <div style="display:flex; align-items:center; gap:0.4rem; margin-bottom:0.6rem;">
+                    <div class="stat-section-label" style="margin-bottom:0;">🌡️ Сегмент × Категорія партнера — боксиків списано</div>
+                    <button class="info-btn" onclick="showInfo('overview-heatmap')">i</button>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%; font-size:0.67rem; border-collapse:collapse;">
+                        <thead><tr style="background:var(--bg-hover);">
+                            <th style="padding:0.35rem 0.5rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:110px;">Сегмент</th>
+                            <th style="padding:0.35rem 0.4rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:120px;">🏥 Медицина</th>
+                            <th style="padding:0.35rem 0.4rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:120px;">📱 Технологія</th>
+                            <th style="padding:0.35rem 0.4rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:100px;">👕 Одяг</th>
+                            <th style="padding:0.35rem 0.4rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:90px;">🍔 Їжа</th>
+                            <th style="padding:0.35rem 0.4rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:120px;">👶 Дитячі товари</th>
+                        </tr></thead>
+                        <tbody id="heatmapBody"></tbody>
+                    </table>
+                </div>
+            </div>
 
+        </div>
 
 
         <!-- PAGE: АКЦІЇ -->
@@ -1706,6 +1634,7 @@
             clientPage = 1;
             renderClientTable();
             renderActiveTags(f);
+            renderConvBlock();
         }
 
         function resetGlobalFilters() {
@@ -2085,10 +2014,24 @@
             if (btn) btn.classList.add('active');
             const hint = document.getElementById('unitHint');
             if (hint) hint.textContent = UNITS[unit].hint;
+            // Оновлюємо всі блоки
             renderClientTable();
+            renderPartnerTable();
             redrawAllCharts();
             updateKpiUnits();
-            renderPartnerTable();
+            renderConvBlock();
+            initLoyaltyCharts();
+            // Оновлюємо підзаголовки графіків боксиків
+            const unitNames = { count:'боксиків', boxiky:'боксиків', uah:'гривень (₴)', promo:'промокодів', en:'ЕН-еквівалент' };
+            const uName = unitNames[unit] || 'боксиків';
+            const hintAccrual = document.getElementById('hintBoxAccrual');
+            const hintSpent   = document.getElementById('hintBoxSpent');
+            const labelAccrual = document.getElementById('labelBoxAccrual');
+            const labelSpent   = document.getElementById('labelBoxSpent');
+            if (hintAccrual) hintAccrual.textContent = `${uName} нараховано за поточний місяць по каналу відправки`;
+            if (hintSpent)   hintSpent.textContent   = `${uName} витрачено за поточний місяць по напрямку`;
+            if (labelAccrual) labelAccrual.textContent = `Нараховано по типах (${uName})`;
+            if (labelSpent)   labelSpent.textContent   = `Витрачено по типах (${uName})`;
         }
 
         function updateKpiUnits() {
@@ -2596,7 +2539,153 @@
         // ── END CAMPAIGNS ──────────────────────────────────────────────
 
         // ── OVERVIEW CHARTS ────────────────────────────────────────────
+        // ── CONVERSION BLOCK (overview) ──────────────────────────────
+        const CONV_BASE = {
+            all:         { task:{reach:28450,promo:10806,en:6259,conv:38,mom:+3.1}, partner:{reach:28450,promo:7966,en:5121,conv:18,mom:+1.8}, campaign:{reach:45200,promo:12656,en:10848,conv:24,mom:+4.2} },
+            new:         { task:{reach:4200,promo:1512,en:840,conv:20,mom:+1.2},    partner:{reach:4200,promo:840,en:420,conv:10,mom:-0.5},      campaign:{reach:6800,promo:1428,en:952,conv:14,mom:+2.1} },
+            core:        { task:{reach:14100,promo:6204,en:3807,conv:44,mom:+3.8},  partner:{reach:14100,promo:4512,en:2961,conv:21,mom:+2.3},   campaign:{reach:22500,promo:6750,en:6075,conv:27,mom:+5.1} },
+            reactivated: { task:{reach:5600,promo:2128,en:1232,conv:38,mom:+4.2},   partner:{reach:5600,promo:1624,en:1008,conv:18,mom:+1.1},    campaign:{reach:9100,promo:2548,en:2184,conv:24,mom:+3.4} },
+            'non-active':{ task:{reach:4550,promo:910,en:364,conv:8,mom:-1.4},      partner:{reach:4550,promo:455,en:182,conv:4,mom:-2.1},       campaign:{reach:6800,promo:816,en:476,conv:7,mom:-0.8} },
+            champions:   { task:{reach:2800,promo:1428,en:952,conv:51,mom:+5.2},    partner:{reach:2800,promo:980,en:672,conv:24,mom:+3.1},      campaign:{reach:4500,promo:1440,en:1305,conv:29,mom:+6.0} },
+            loyal:       { task:{reach:5100,promo:2142,en:1326,conv:42,mom:+3.5},   partner:{reach:5100,promo:1530,en:1020,conv:20,mom:+1.9},    campaign:{reach:8200,promo:2460,en:2214,conv:27,mom:+4.3} },
+            'at-risk':   { task:{reach:3200,promo:928,en:448,conv:14,mom:-2.8},     partner:{reach:3200,promo:640,en:288,conv:9,mom:-3.2},       campaign:{reach:5100,promo:918,en:612,conv:12,mom:-1.5} },
+            rozetka:     { task:{reach:28450,promo:10806,en:6259,conv:38,mom:+3.1}, partner:{reach:5840,promo:2420,en:2890,conv:49,mom:+6.2},    campaign:{reach:12000,promo:3600,en:3240,conv:27,mom:+4.8} },
+            comfy:       { task:{reach:28450,promo:10806,en:6259,conv:38,mom:+3.1}, partner:{reach:4120,promo:1820,en:2150,conv:52,mom:+7.1},    campaign:{reach:9500,promo:2850,en:2660,conv:28,mom:+5.2} },
+            apteka:       { task:{reach:28450,promo:10806,en:6259,conv:38,mom:+3.1},partner:{reach:3240,promo:940,en:1240,conv:38,mom:+2.4},     campaign:{reach:7000,promo:1750,en:1470,conv:21,mom:+3.1} },
+            tech:        { task:{reach:28450,promo:10806,en:6259,conv:38,mom:+3.1}, partner:{reach:9960,promo:4240,en:5040,conv:51,mom:+8.2},    campaign:{reach:16000,promo:4800,en:4640,conv:29,mom:+5.9} },
+            health:      { task:{reach:28450,promo:10806,en:6259,conv:38,mom:+3.1}, partner:{reach:4920,promo:1576,en:2048,conv:42,mom:+3.5},    campaign:{reach:8500,promo:2380,en:2040,conv:24,mom:+2.8} },
+        };
+        const CONV_MONTHS = ['Лют','Бер','Кві','Тра','Чер'];
+        const CONV_TREND = {
+            task:     [34,35,36,37,38],
+            partner:  [15,16,16,17,18],
+            campaign: [20,21,22,23,24],
+        };
+
+        function renderConvBlock() {
+            const f = getFilterValues();
+            // Determine key from global filters (priority: substatus > activity > lifecycle > rfm > category)
+            let key = 'all';
+            if (f.substatus && f.substatus !== 'all') key = f.substatus;
+            else if (f.activity && f.activity !== 'all') key = f.activity;
+            else if (f.lifecycle && f.lifecycle !== 'all') key = f.lifecycle;
+            else if (f.rfm && f.rfm !== 'all') key = f.rfm;
+            else if (f.category && f.category !== 'all') key = f.category;
+            const d = CONV_BASE[key] || CONV_BASE.all;
+
+            // KPI row
+            const kpiEl = document.getElementById('convKpiRow');
+            if (kpiEl) {
+                const total = d.task.en + d.partner.en + d.campaign.en;
+                const avgConv = Math.round((d.task.conv + d.partner.conv + d.campaign.conv) / 3);
+                const mom = (d.task.mom + d.partner.mom + d.campaign.mom) / 3;
+                const momSign = mom >= 0 ? '+' : '';
+                const s = sym();
+
+                kpiEl.innerHTML = `
+                    <div style="background:rgba(13,124,79,0.07); border:1px solid rgba(13,124,79,0.25); border-radius:10px; padding:0.75rem 1rem; border-top:4px solid var(--primary);">
+                        <div style="font-size:0.6rem; font-weight:700; color:var(--primary); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.3rem;">✅ Завдання → ЕН НП</div>
+                        <div style="font-size:2rem; font-weight:800; color:var(--text-primary); line-height:1;">${d.task.conv}<span style="font-size:1rem; color:var(--text-secondary);">%</span></div>
+                        <div style="font-size:0.62rem; color:var(--text-secondary); margin-top:0.2rem;">${fmt(cv(d.task.en))} ${s} ЕН з ${fmt(cv(d.task.promo))} ${s} промокодів</div>
+                        <div style="font-size:0.65rem; font-weight:700; color:${d.task.mom>=0?'var(--success)':'var(--danger)'}; margin-top:0.2rem;">${d.task.mom>=0?'↑':'↓'} ${d.task.mom>0?'+':''}${d.task.mom}% MoM</div>
+                    </div>
+                    <div style="background:rgba(255,107,53,0.07); border:1px solid rgba(255,107,53,0.25); border-radius:10px; padding:0.75rem 1rem; border-top:4px solid var(--accent);">
+                        <div style="font-size:0.6rem; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.3rem;">🏪 Партнер → ЕН НП</div>
+                        <div style="font-size:2rem; font-weight:800; color:var(--text-primary); line-height:1;">${d.partner.conv}<span style="font-size:1rem; color:var(--text-secondary);">%</span></div>
+                        <div style="font-size:0.62rem; color:var(--text-secondary); margin-top:0.2rem;">${fmt(cv(d.partner.en))} ${s} ЕН з ${fmt(cv(d.partner.promo))} ${s} промокодів</div>
+                        <div style="font-size:0.65rem; font-weight:700; color:${d.partner.mom>=0?'var(--success)':'var(--danger)'}; margin-top:0.2rem;">${d.partner.mom>=0?'↑':'↓'} ${d.partner.mom>0?'+':''}${d.partner.mom}% MoM</div>
+                    </div>
+                    <div style="background:rgba(142,68,173,0.07); border:1px solid rgba(142,68,173,0.25); border-radius:10px; padding:0.75rem 1rem; border-top:4px solid #8e44ad;">
+                        <div style="font-size:0.6rem; font-weight:700; color:#8e44ad; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.3rem;">📢 Акція → ЕН НП</div>
+                        <div style="font-size:2rem; font-weight:800; color:var(--text-primary); line-height:1;">${d.campaign.conv}<span style="font-size:1rem; color:var(--text-secondary);">%</span></div>
+                        <div style="font-size:0.62rem; color:var(--text-secondary); margin-top:0.2rem;">${fmt(cv(d.campaign.en))} ${s} ЕН з ${fmt(cv(d.campaign.promo))} ${s} промокодів</div>
+                        <div style="font-size:0.65rem; font-weight:700; color:${d.campaign.mom>=0?'var(--success)':'var(--danger)'}; margin-top:0.2rem;">${d.campaign.mom>=0?'↑':'↓'} ${d.campaign.mom>0?'+':''}${d.campaign.mom}% MoM</div>
+                    </div>
+                    <div style="background:rgba(52,152,219,0.07); border:1px solid rgba(52,152,219,0.25); border-radius:10px; padding:0.75rem 1rem; border-top:4px solid #3498db;">
+                        <div style="font-size:0.6rem; font-weight:700; color:#3498db; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.3rem;">🚚 Разом ЕН від механік</div>
+                        <div style="font-size:2rem; font-weight:800; color:var(--text-primary); line-height:1;">${fmt(cv(total))}<span style="font-size:1rem; color:var(--text-secondary);"> ${s}</span></div>
+                        <div style="font-size:0.62rem; color:var(--text-secondary); margin-top:0.2rem;">за поточний місяць по всіх каналах</div>
+                        <div style="font-size:0.65rem; font-weight:700; color:${mom>=0?'var(--success)':'var(--danger)'}; margin-top:0.2rem;">${mom>=0?'↑':'↓'} ${momSign}${mom.toFixed(1)}% MoM (сер.)</div>
+                    </div>`;
+            }
+
+            // Breakdown table
+            const tbody = document.getElementById('convBreakdownBody');
+            if (tbody) {
+                const rows = [
+                    { name:'✅ Завдання → НП промокод', color:'var(--primary)', ...d.task },
+                    { name:'🏪 Партнер → промокод партнера', color:'var(--accent)', ...d.partner },
+                    { name:'📢 Viber-акція', color:'#8e44ad', reach: Math.round(d.campaign.reach*0.62), promo: Math.round(d.campaign.promo*0.58), en: Math.round(d.campaign.en*0.55), conv: Math.round(d.campaign.conv*0.96), mom: +(d.campaign.mom*1.1).toFixed(1) },
+                    { name:'📢 Push-акція',  color:'#8e44ad', reach: Math.round(d.campaign.reach*0.21), promo: Math.round(d.campaign.promo*0.22), en: Math.round(d.campaign.en*0.25), conv: Math.round(d.campaign.conv*1.04), mom: +(d.campaign.mom*0.9).toFixed(1) },
+                    { name:'📢 SMS / Email', color:'#8e44ad', reach: Math.round(d.campaign.reach*0.17), promo: Math.round(d.campaign.promo*0.20), en: Math.round(d.campaign.en*0.20), conv: Math.round(d.campaign.conv*0.92), mom: +(d.campaign.mom*0.8).toFixed(1) },
+                ];
+                tbody.innerHTML = rows.map(r => `<tr style="border-bottom:1px solid var(--border);">
+                    <td style="padding:0.28rem 0.5rem; font-weight:600; font-size:0.67rem;">${r.name}</td>
+                    <td style="padding:0.28rem 0.4rem; text-align:right;">${(r.reach/1000).toFixed(1)}K</td>
+                    <td style="padding:0.28rem 0.4rem; text-align:right;">${(r.promo/1000).toFixed(1)}K</td>
+                    <td style="padding:0.28rem 0.4rem; text-align:right; font-weight:700;">${(r.en/1000).toFixed(1)}K</td>
+                    <td style="padding:0.28rem 0.4rem; text-align:right;">
+                        <span style="font-weight:700; color:${r.conv>=30?'var(--success)':r.conv>=15?'var(--warning)':'var(--danger)'};">${r.conv}%</span>
+                    </td>
+                    <td style="padding:0.28rem 0.4rem; text-align:center;">
+                        <span style="font-size:0.65rem; font-weight:700; color:${r.mom>=0?'var(--success)':'var(--danger)'};">${r.mom>=0?'+':''}${r.mom}%</span>
+                    </td>
+                </tr>`).join('');
+            }
+
+            // MoM рядок
+            const momRow = document.getElementById('convMoMRow');
+            if (momRow) {
+                const taskTrend   = [34,35,36,37,38].map(v => Math.round(v * (d.task.conv/38)));
+                const partTrend   = [15,16,16,17,18].map(v => Math.round(v * (d.partner.conv/18)));
+                const campTrend   = [20,21,22,23,24].map(v => Math.round(v * (d.campaign.conv/24)));
+                momRow.innerHTML = CONV_MONTHS.map((m, i) => {
+                    const prevT = i > 0 ? taskTrend[i-1] : taskTrend[0];
+                    const momT  = i > 0 ? Math.round((taskTrend[i]-prevT)/prevT*100) : 0;
+                    return `<div style="text-align:center;">
+                        <div style="font-size:0.58rem; color:var(--text-secondary);">${m}</div>
+                        <div style="font-size:0.65rem; font-weight:700; background:rgba(13,124,79,0.12); color:var(--success); border-radius:3px; padding:0.1rem 0.2rem; margin-top:0.1rem;">${taskTrend[i]}%</div>
+                        <div style="font-size:0.62rem; font-weight:700; color:${momT>=0?'var(--success)':'var(--danger)'}; margin-top:0.08rem;">${i>0?(momT>=0?'+':'')+momT+'%':'—'}</div>
+                    </div>`;
+                }).join('');
+            }
+
+            // Trend chart
+            initConvTrendChart(d);
+        }
+
+        function initConvTrendChart(d) {
+            if (segCharts['chartConvTrend']) segCharts['chartConvTrend'].destroy();
+            const ctx = document.getElementById('chartConvTrend');
+            if (!ctx) return;
+            const taskBase  = [34,35,36,37,38];
+            const partBase  = [15,16,16,17,18];
+            const campBase  = [20,21,22,23,24];
+            const scale = (arr, ref, cur) => arr.map(v => Math.round(v * cur / ref));
+            segCharts['chartConvTrend'] = new Chart(ctx, {
+                type:'line',
+                data:{
+                    labels: CONV_MONTHS,
+                    datasets:[
+                        { label:'✅ Завдання', data: scale(taskBase,38,d.task.conv), borderColor:'#0d7c4f', backgroundColor:'rgba(13,124,79,0.08)', borderWidth:2.5, tension:0.4, pointRadius:4, fill:true },
+                        { label:'🏪 Партнер',  data: scale(partBase,18,d.partner.conv), borderColor:'#ff6b35', backgroundColor:'rgba(255,107,53,0.08)', borderWidth:2.5, tension:0.4, pointRadius:4, fill:true },
+                        { label:'📢 Акція',    data: scale(campBase,24,d.campaign.conv), borderColor:'#8e44ad', backgroundColor:'rgba(142,68,173,0.08)', borderWidth:2.5, tension:0.4, pointRadius:4, fill:true },
+                    ]
+                },
+                options:{
+                    responsive:true, maintainAspectRatio:false,
+                    plugins:{ legend:{ position:'bottom', labels:{ color:'#666', font:{size:10}, boxWidth:12, padding:8 }}, tooltip:{ callbacks:{ label: ctx => ` ${ctx.dataset.label}: ${ctx.raw}%` }}},
+                    scales:{
+                        x:{ ticks:{ color:'#666', font:{size:10} }, grid:{ display:false } },
+                        y:{ ticks:{ color:'#666', font:{size:10}, callback: v => v+'%' }, grid:{ color:'#eee' }, min:0, max:60 }
+                    }
+                }
+            });
+        }
+
         function initOverviewCharts() {
+            renderConvBlock();
+
             // Динаміка ЕН від трьох каналів
             makeLine('chartOverviewTrend', MONTHS, [
                 { label:'✅ Завдання → ЕН', data:[3840,4120,4580,5040,5420,5840,6120,6580,6259] },
@@ -2636,6 +2725,32 @@
                         <td style="padding:0.28rem 0.3rem;">${pctBar(r.react, segColors.react)}</td>
                         <td style="padding:0.28rem 0.3rem;">${pctBar(r.inactive, segColors.inactive)}</td>
                     </tr>`).join('');
+            }
+
+            // Grouped bar: активність сегментів по механіках
+            if (segCharts['chartOverviewRadar']) segCharts['chartOverviewRadar'].destroy();
+            const radarCtx = document.getElementById('chartOverviewRadar');
+            if (radarCtx) {
+                segCharts['chartOverviewRadar'] = new Chart(radarCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['📦 Боксики','🎟 Промокоди','🎲 Розіграші','✅ Завдання','❤️ Улюблене','🚚 ЕН'],
+                        datasets: [
+                            { label:'🆕 Новий',        data:[42,28,35,25,38,18], backgroundColor:'rgba(255,107,53,0.75)', borderRadius:3 },
+                            { label:'💪 Ядро',         data:[88,72,84,78,85,62], backgroundColor:'rgba(13,124,79,0.80)',  borderRadius:3 },
+                            { label:'♻️ Реакт.',       data:[65,48,58,52,62,42], backgroundColor:'rgba(52,152,219,0.75)', borderRadius:3 },
+                            { label:'🟡 Неактивні',    data:[22,12,18,10,20,8],  backgroundColor:'rgba(243,156,18,0.75)', borderRadius:3 },
+                        ]
+                    },
+                    options: {
+                        responsive:true, maintainAspectRatio:false,
+                        plugins:{ legend:{ position:'bottom', labels:{ color:'#666', font:{size:9}, boxWidth:10, padding:5 }}},
+                        scales:{
+                            x:{ ticks:{ color:'#666', font:{size:9} }, grid:{ display:false } },
+                            y:{ ticks:{ color:'#666', font:{size:9}, callback: v => v+'%' }, grid:{ color:'#eee' }, max:100 }
+                        }
+                    }
+                });
             }
 
             // Топ партнерів по клієнтах
