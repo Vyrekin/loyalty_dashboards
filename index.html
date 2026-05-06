@@ -714,6 +714,11 @@
         </div>
     </div>
 
+    <!-- Concept warning -->
+    <div style="background:#fff8dc; border-bottom:1px solid #f0d878; padding:0.35rem 1rem; font-size:0.7rem; color:#7a5e00; text-align:center;">
+        ⚠️ <strong>Концепт-макет.</strong> Дані демонстраційні. Фінальна реалізація, кінцева точка воронки і набір фільтрів можуть відрізнятись.
+    </div>
+
     <!-- Navigation + Units -->
     <div class="nav-tabs">
         <div class="nav-tabs-left">
@@ -724,12 +729,9 @@
             <button class="nav-tab" onclick="switchPage('customers')">👥 Клієнт</button>
         </div>
         <div class="nav-tabs-right">
-            <span class="unit-label">📐 Одиниці:</span>
-            <button class="unit-chip active" onclick="setUnit('count',this)">🔢 Кількість</button>
-            <button class="unit-chip" onclick="setUnit('boxiky',this)">📦 Боксики</button>
+            <span class="unit-label" title="Перерахунок боксиків у гривні за курсом 1 бокс = 0.5 ₴ (тільки для блоків з боксиками)">📐 Одиниці:</span>
+            <button class="unit-chip active" onclick="setUnit('boxiky',this)">📦 Боксики</button>
             <button class="unit-chip" onclick="setUnit('uah',this)">₴ Гривні</button>
-            <button class="unit-chip" onclick="setUnit('promo',this)">🎟 Промокоди</button>
-            <button class="unit-chip" onclick="setUnit('en',this)">🚚 ЕН</button>
         </div>
     </div>
 
@@ -926,7 +928,7 @@
             <!-- 3. 4 КЛІКАБЕЛЬНИХ БЛОКИ КОНВЕРСІЇ ПО СЦЕНАРІЯХ -->
             <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:0.6rem; margin-bottom:1rem;">
 
-                <div class="stat-section-box" style="padding:0.85rem; border-top:4px solid #0d7c4f; cursor:pointer; transition:all 0.2s;"
+                <div id="drillCard-tasks" class="stat-section-box" style="padding:0.85rem; border-top:4px solid #0d7c4f; cursor:pointer; transition:all 0.2s;"
                      onclick="drillTo(&#39;tasks&#39;)"
                      onmouseover="this.style.transform=&#39;translateY(-3px)&#39;;this.style.boxShadow=&#39;0 8px 24px rgba(13,124,79,0.18)&#39;"
                      onmouseout="this.style.transform=&#39;&#39;;this.style.boxShadow=&#39;&#39;">
@@ -945,7 +947,7 @@
                     <div style="font-size:0.62rem; font-weight:700; color:#0d7c4f; text-align:right;">→ Деталі сценарію</div>
                 </div>
 
-                <div class="stat-section-box" style="padding:0.85rem; border-top:4px solid #ff6b35; cursor:pointer; transition:all 0.2s;"
+                <div id="drillCard-partners" class="stat-section-box" style="padding:0.85rem; border-top:4px solid #ff6b35; cursor:pointer; transition:all 0.2s;"
                      onclick="drillTo(&#39;partners&#39;)"
                      onmouseover="this.style.transform=&#39;translateY(-3px)&#39;;this.style.boxShadow=&#39;0 8px 24px rgba(255,107,53,0.18)&#39;"
                      onmouseout="this.style.transform=&#39;&#39;;this.style.boxShadow=&#39;&#39;">
@@ -964,7 +966,7 @@
                     <div style="font-size:0.62rem; font-weight:700; color:#ff6b35; text-align:right;">→ Деталі сценарію</div>
                 </div>
 
-                <div class="stat-section-box" style="padding:0.85rem; border-top:4px solid #8e44ad; cursor:pointer; transition:all 0.2s;"
+                <div id="drillCard-campaigns" class="stat-section-box" style="padding:0.85rem; border-top:4px solid #8e44ad; cursor:pointer; transition:all 0.2s;"
                      onclick="drillTo(&#39;campaigns&#39;)"
                      onmouseover="this.style.transform=&#39;translateY(-3px)&#39;;this.style.boxShadow=&#39;0 8px 24px rgba(142,68,173,0.18)&#39;"
                      onmouseout="this.style.transform=&#39;&#39;;this.style.boxShadow=&#39;&#39;">
@@ -983,7 +985,7 @@
                     <div style="font-size:0.62rem; font-weight:700; color:#8e44ad; text-align:right;">→ Деталі сценарію</div>
                 </div>
 
-                <div class="stat-section-box" style="padding:0.85rem; border-top:4px solid #3498db; cursor:pointer; transition:all 0.2s;"
+                <div id="drillCard-raffles" class="stat-section-box" style="padding:0.85rem; border-top:4px solid #3498db; cursor:pointer; transition:all 0.2s;"
                      onclick="drillTo(&#39;raffles&#39;)"
                      onmouseover="this.style.transform=&#39;translateY(-3px)&#39;;this.style.boxShadow=&#39;0 8px 24px rgba(52,152,219,0.18)&#39;"
                      onmouseout="this.style.transform=&#39;&#39;;this.style.boxShadow=&#39;&#39;">
@@ -1004,40 +1006,36 @@
 
             </div>
 
+            <!-- ══ DRILL-DOWN INLINE EXPAND (під 4 блоками) ══ -->
+            <div id="drillContent" style="display:none; margin-bottom:1rem;"></div>
+
             <!-- 5. Сегментаційний зріз -->
-            <div style="display:grid; grid-template-columns:1.5fr 1fr 1fr; gap:0.75rem;">
-                <div class="stat-section-box">
-                    <div style="display:flex; align-items:center; gap:0.4rem; margin-bottom:0.6rem;">
-                        <div class="stat-section-label" style="margin-bottom:0;">🌡️ Сегмент × Категорія — боксиків списано</div>
+            <div id="drillL1Heatmap" class="stat-section-box">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:0.4rem; margin-bottom:0.6rem; flex-wrap:wrap;">
+                    <div style="display:flex; align-items:center; gap:0.4rem;">
+                        <div class="stat-section-label" id="heatmapTitle" style="margin-bottom:0;">🌡️ Сегмент × Категорія — боксиків списано</div>
                         <button class="info-btn" onclick="showInfo(&#39;overview-heatmap&#39;)">i</button>
                     </div>
-                    <table style="width:100%; font-size:0.64rem; border-collapse:collapse;">
-                        <thead><tr style="background:var(--bg-hover);">
-                            <th style="padding:0.3rem 0.4rem; text-align:left; color:var(--text-secondary); font-weight:600;">Сегмент</th>
-                            <th style="padding:0.3rem 0.35rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:80px;">🏥 Медицина</th>
-                            <th style="padding:0.3rem 0.35rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:80px;">📱 Технологія</th>
-                            <th style="padding:0.3rem 0.35rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:70px;">👕 Одяг</th>
-                            <th style="padding:0.3rem 0.35rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:65px;">🍔 Їжа</th>
-                            <th style="padding:0.3rem 0.35rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:75px;">👶 Дитячі</th>
-                        </tr></thead>
-                        <tbody id="heatmapBody"></tbody>
-                    </table>
+                    <div style="display:flex; gap:0.3rem;">
+                        <button class="seg-btn active" id="heatBtn-boxiky" onclick="switchHeatmap(&#39;boxiky&#39;,this)">📦 Боксиків списано</button>
+                        <button class="seg-btn" id="heatBtn-clients" onclick="switchHeatmap(&#39;clients&#39;,this)">👥 Унікальних клієнтів</button>
+                        <button class="seg-btn" id="heatBtn-en" onclick="switchHeatmap(&#39;en&#39;,this)">🚚 ЕН від сегменту</button>
+                    </div>
                 </div>
-                <div class="stat-section-box">
-                    <div class="stat-section-label">📊 Активність сегментів по механіках</div>
-                    <div style="position:relative; height:175px;"><canvas id="chartOverviewRadar"></canvas></div>
-                    <div style="margin-top:0.3rem; font-size:0.58rem; color:var(--text-secondary); font-style:italic;">% — відносна активність, 100% = максимум</div>
-                </div>
-                <div class="stat-section-box">
-                    <div class="stat-section-label">💎 Розподіл по RFM</div>
-                    <div class="chart-container"><canvas id="chartOverviewRFM"></canvas></div>
-                </div>
+                <table style="width:100%; font-size:0.64rem; border-collapse:collapse;">
+                    <thead><tr style="background:var(--bg-hover);">
+                        <th style="padding:0.3rem 0.4rem; text-align:left; color:var(--text-secondary); font-weight:600;">Сегмент</th>
+                        <th style="padding:0.3rem 0.35rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:80px;">🏥 Медицина</th>
+                        <th style="padding:0.3rem 0.35rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:80px;">📱 Технологія</th>
+                        <th style="padding:0.3rem 0.35rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:70px;">👕 Одяг</th>
+                        <th style="padding:0.3rem 0.35rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:65px;">🍔 Їжа</th>
+                        <th style="padding:0.3rem 0.35rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:75px;">👶 Дитячі</th>
+                    </tr></thead>
+                    <tbody id="heatmapBody"></tbody>
+                </table>
             </div>
 
         </div><!-- /drillL1 -->
-
-        <!-- ══ L2/L3/L4: КОНТЕЙНЕР DRILL-DOWN РІВНІВ ══ -->
-        <div id="drillContent" style="display:none;"></div>
 
         </div><!-- /overview -->
                 <!-- PAGE: АКЦІЇ -->
@@ -1608,11 +1606,9 @@
 
         <!-- ── UNIT SWITCHER ── -->
         <div style="display:flex; gap:0.4rem; flex-wrap:wrap; align-items:center; margin-bottom:0.5rem;">
-            <span style="font-size:0.6rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase;">Одиниці:</span>
-            <button class="unit-chip active" onclick="setUnit('count',this)">Кількість</button>
-            <button class="unit-chip" onclick="setUnit('boxiky',this)">📦 Боксики</button>
+            <span style="font-size:0.6rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase;">📐 Одиниці (для блоків з боксиками):</span>
+            <button class="unit-chip active" onclick="setUnit('boxiky',this)">📦 Боксики</button>
             <button class="unit-chip" onclick="setUnit('uah',this)">₴ Гривні</button>
-            <button class="unit-chip" onclick="setUnit('en',this)">🚚 ЕН</button>
         </div>
 
         <!-- ── FILTERS ── -->
@@ -2228,19 +2224,16 @@
         }
 
         // ── UNIT SWITCHER ──────────────────────────────────────────────
-        let activeUnit = 'count';
+        // Глобальний перемикач працює тільки для блоків де є реальний курс (боксики ↔ гривні).
+        // Інші блоки (клієнти, ЕН, промокоди) лишаються в своїх одиницях.
+        let activeUnit = 'boxiky';
 
         const UNITS = {
-            count:  { label:'',    sym:'шт',   factor:1,      hint:'' },
-            boxiky: { label:'📦', sym:'бокс.', factor:2.4,    hint:'Показники перераховані в боксики' },
-            uah:    { label:'₴',  sym:'₴',     factor:18.5,   hint:'Перерахунок у гривні за курсом 1 бокс = 18.5 ₴' },
-            promo:  { label:'🎟', sym:'прм',   factor:0.42,   hint:'Частка промокодів від загальних взаємодій' },
-            en:     { label:'🚚', sym:'ЕН',    factor:0.18,   hint:'Еквівалент згенерованих ЕН від партнерів' },
+            boxiky: { label:'📦', sym:'бокс.', factor:1,    hint:'Базова одиниця — боксики' },
+            uah:    { label:'₴',  sym:'₴',     factor:0.5,  hint:'Перерахунок у гривні: 1 бокс = 0.5 ₴' },
         };
 
         function cv(val) {
-            // convert a base numeric value to active unit
-            if (activeUnit === 'count') return val;
             return Math.round(val * UNITS[activeUnit].factor);
         }
         function sym() { return UNITS[activeUnit].sym; }
@@ -2259,8 +2252,9 @@
             updateKpiUnits();
             renderConvBlock();
             initLoyaltyCharts();
+            if (typeof renderHeatmap === 'function') renderHeatmap();
             // Оновлюємо підзаголовки графіків боксиків
-            const unitNames = { count:'боксиків', boxiky:'боксиків', uah:'гривень (₴)', promo:'промокодів', en:'ЕН-еквівалент' };
+            const unitNames = { boxiky:'боксиків', uah:'гривень (₴)' };
             const uName = unitNames[unit] || 'боксиків';
             const hintAccrual = document.getElementById('hintBoxAccrual');
             const hintSpent   = document.getElementById('hintBoxSpent');
@@ -3001,6 +2995,11 @@
         };
 
         function drillTo(scenario) {
+            // Toggle: if clicking the same scenario at L1 — collapse
+            if (drillState.level >= 1 && drillState.scenario === scenario) {
+                drillBack(0);
+                return;
+            }
             drillState = { level: 1, scenario, entityId: null, clientId: null };
             renderDrill();
         }
@@ -3032,25 +3031,38 @@
         }
 
         function renderDrill() {
-            const l1 = document.getElementById('drillL1');
             const content = document.getElementById('drillContent');
             const breadcrumbs = document.getElementById('drillBreadcrumbs');
             const breadcrumbsBody = document.getElementById('drillBreadcrumbsBody');
 
+            // Reset highlight on all 4 cards
+            ['tasks','partners','campaigns','raffles'].forEach(s => {
+                const card = document.getElementById('drillCard-'+s);
+                if (card) {
+                    card.style.outline = 'none';
+                    card.style.outlineOffset = '0';
+                }
+            });
+
             if (drillState.level === 0) {
-                l1.style.display = 'block';
-                content.style.display = 'none';
-                breadcrumbs.style.display = 'none';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                if (content) { content.style.display = 'none'; content.innerHTML = ''; }
+                if (breadcrumbs) breadcrumbs.style.display = 'none';
                 return;
             }
 
-            l1.style.display = 'none';
-            content.style.display = 'block';
-            breadcrumbs.style.display = 'block';
+            // Drill active — show content under 4 blocks, heatmap stays visible below
+            if (content) content.style.display = 'block';
+            if (breadcrumbs) breadcrumbs.style.display = 'block';
+
+            // Highlight active card
+            const meta = SCENARIO_META[drillState.scenario] || {};
+            const activeCard = document.getElementById('drillCard-'+drillState.scenario);
+            if (activeCard) {
+                activeCard.style.outline = `3px solid ${meta.color}`;
+                activeCard.style.outlineOffset = '2px';
+            }
 
             // Breadcrumbs
-            const meta = SCENARIO_META[drillState.scenario] || {};
             const crumbs = [
                 `<span style="color:var(--text-secondary); cursor:pointer; font-weight:600;" onclick="drillBack(0)">📊 Загальна</span>`
             ];
@@ -3079,17 +3091,21 @@
                 crumbs.push(`<span style="color:var(--text-secondary);">›</span>`);
                 crumbs.push(`<span style="color:var(--text-primary); font-weight:700;">${clientName}</span>`);
             }
-            const backBtn = drillState.level > 0
-                ? `<button onclick="drillBack(${drillState.level - 1})" style="margin-left:auto; background:var(--bg-hover); border:1px solid var(--border); border-radius:6px; padding:0.25rem 0.65rem; cursor:pointer; font-size:0.65rem; font-weight:700; color:var(--text-secondary);">← Назад</button>`
+            const closeBtn = `<button onclick="drillBack(0)" style="margin-left:auto; background:#e74c3c; border:1px solid #c0392b; border-radius:6px; padding:0.4rem 0.9rem; cursor:pointer; font-size:0.72rem; font-weight:700; color:white; box-shadow:0 2px 6px rgba(231,76,60,0.3);">✕ Згорнути деталі</button>`;
+            const backBtn = drillState.level > 1
+                ? `<button onclick="drillBack(${drillState.level - 1})" style="margin-left:0.5rem; background:var(--text-primary); border:1px solid var(--text-primary); border-radius:6px; padding:0.4rem 0.9rem; cursor:pointer; font-size:0.72rem; font-weight:700; color:white;">← Назад</button>`
                 : '';
-            breadcrumbsBody.innerHTML = crumbs.join(' ') + backBtn;
+            breadcrumbsBody.innerHTML = crumbs.join(' ') + backBtn + closeBtn;
 
             // Render level content
             if (drillState.level === 1) renderL2_scenario();
             else if (drillState.level === 2) renderL3_entity();
             else if (drillState.level === 3) renderL4_client();
 
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            // Scroll content into view smoothly
+            setTimeout(() => {
+                if (content) content.scrollIntoView({ behavior:'smooth', block:'start' });
+            }, 50);
         }
 
         function getEntityName(scenario, entityId) {
@@ -3750,42 +3766,13 @@
             renderOverviewFunnel();
             initSparklines();
             initOverviewTrendCharts();
+            renderHeatmap();
+        }
 
-            // Grouped bar: активність сегментів по механіках
-            if (segCharts['chartOverviewRadar']) segCharts['chartOverviewRadar'].destroy();
-            const radarCtx = document.getElementById('chartOverviewRadar');
-            if (radarCtx) {
-                segCharts['chartOverviewRadar'] = new Chart(radarCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['📦 Боксики','🎟 Промокоди','🎲 Розіграші','✅ Завдання','❤️ Улюблене','🚚 ЕН'],
-                        datasets: [
-                            { label:'🆕 Новий',        data:[42,28,35,25,38,18], backgroundColor:'rgba(255,107,53,0.75)', borderRadius:3 },
-                            { label:'💪 Ядро',         data:[88,72,84,78,85,62], backgroundColor:'rgba(13,124,79,0.80)',  borderRadius:3 },
-                            { label:'♻️ Реакт.',       data:[65,48,58,52,62,42], backgroundColor:'rgba(52,152,219,0.75)', borderRadius:3 },
-                            { label:'🟡 Неактивні',    data:[22,12,18,10,20,8],  backgroundColor:'rgba(243,156,18,0.75)', borderRadius:3 },
-                        ]
-                    },
-                    options: {
-                        responsive:true, maintainAspectRatio:false,
-                        plugins:{ legend:{ position:'bottom', labels:{ color:'#666', font:{size:9}, boxWidth:10, padding:5 }}},
-                        scales:{
-                            x:{ ticks:{ color:'#666', font:{size:9} }, grid:{ display:false } },
-                            y:{ ticks:{ color:'#666', font:{size:9}, callback: v => v+'%' }, grid:{ color:'#eee' }, max:100 }
-                        }
-                    }
-                });
-            }
-
-            // RFM розподіл — без emoji в підписах осі
-            makeBarChart('chartOverviewRFM',
-                ['Champions','Loyal','Potential','At Risk','Declining','Lost','New'],
-                [{ label:'Клієнтів', data:[3840,4280,5120,3640,2480,1820,7270],
-                   backgroundColor:['#0d7c4f','#27ae60','#3498db','#f39c12','#e67e22','#e74c3c','#9b59b6'] }]
-            );
-
-            // Heatmap таблиця з прогрес-барами
-            const HEAT = {
+        // ── HEATMAP DATA + RENDER ──────────────────────────────────────
+        // 3 окремі dataset для 3 режимів (різні запити, не перерахунок)
+        const HEAT_DATA = {
+            boxiky: {
                 'Статус активності': {
                     '🟢 Активний':     [12840,18640,9820,7240,11480],
                     '🟡 Неактивний':   [2480, 4820, 2140,1840,2960],
@@ -3814,8 +3801,118 @@
                     '❌ Lost':            [620,  920,  420,  340,  540],
                     '🆕 New':            [1840, 2680, 1380, 1020, 1620],
                 },
-            };
-            const allVals = Object.values(HEAT).flatMap(g => Object.values(g).flat());
+                'CVO сегмент': {
+                    '🔴 High Value':     [4820, 6280, 3240, 2440, 3940],
+                    '🟡 Mid Value':      [3640, 5180, 2640, 1980, 3120],
+                    '🟢 Low Value':      [1820, 2840, 1380, 1020, 1620],
+                    '🆕 New Customer':   [1240, 1820,  920,  680, 1080],
+                    '⚠️ Churn Risk':    [580,  840,  420,  320,  520],
+                },
+            },
+            // унікальні клієнти що списали боксики мін 1 раз
+            clients: {
+                'Статус активності': {
+                    '🟢 Активний':     [840, 1240, 680, 510, 760],
+                    '🟡 Неактивний':   [180, 320,  140, 110, 200],
+                    '⚫ Архівний':     [32,  62,   28,  26,  38],
+                },
+                'Підстатус активних': {
+                    '🆕 Новий':         [148, 268, 138, 99, 184],
+                    '💪 Ядро':          [510, 832, 388, 285, 482],
+                    '♻️ Реактивований': [205, 421, 198, 132, 216],
+                },
+                'Життєвий цикл': {
+                    '🎓 Навчання':       [98,  158, 82, 65, 113],
+                    '📢 Залучення':      [156, 256, 126, 93, 158],
+                    '🔥 Стимуляція':     [256, 378, 193, 144, 230],
+                    '💼 Продажі':        [204, 297, 156, 114, 183],
+                    '🛡️ Утримання':     [128, 186, 96, 71, 112],
+                    '😴 Заснувші':       [43,  64,  33,  24,  37],
+                    '💔 Втрачені':       [12,  19,   9,   6,  11],
+                },
+                'RFM категорія': {
+                    '💎 Champions':      [216, 297, 156, 114, 186],
+                    '⭐ Loyal':          [197, 272, 144, 103, 169],
+                    '🎯 Potential':      [172, 252, 126, 93,  158],
+                    '⏰ At Risk':        [117, 172, 82,  64,  103],
+                    '⚠️ Declining':     [86,  128, 58,  44,  75],
+                    '❌ Lost':            [43,  64,  29,  23,  37],
+                    '🆕 New':            [128, 186, 96,  71,  112],
+                },
+                'CVO сегмент': {
+                    '🔴 High Value':     [334, 436, 225, 169, 274],
+                    '🟡 Mid Value':      [253, 360, 183, 137, 217],
+                    '🟢 Low Value':      [126, 197, 96,  71,  113],
+                    '🆕 New Customer':   [86,  126, 64,  47,  75],
+                    '⚠️ Churn Risk':    [40,  58,  29,  22,  36],
+                },
+            },
+            // ЕН з умовою НП від цього сегмента в категорії партнера
+            en: {
+                'Статус активності': {
+                    '🟢 Активний':     [620, 920, 510, 380, 580],
+                    '🟡 Неактивний':   [124, 240, 108, 92,  148],
+                    '⚫ Архівний':     [22,  42,  20,  18,  28],
+                },
+                'Підстатус активних': {
+                    '🆕 Новий':         [108, 192, 99,  71,  132],
+                    '💪 Ядро':          [382, 624, 291, 214, 362],
+                    '♻️ Реактивований': [154, 316, 149, 99,  162],
+                },
+                'Життєвий цикл': {
+                    '🎓 Навчання':       [71, 114, 59, 47, 82],
+                    '📢 Залучення':      [112, 184, 91, 67, 114],
+                    '🔥 Стимуляція':     [184, 272, 139, 104, 166],
+                    '💼 Продажі':        [147, 214, 112, 82, 132],
+                    '🛡️ Утримання':     [92, 134, 69, 51, 81],
+                    '😴 Заснувші':       [31, 46, 24, 17, 27],
+                    '💔 Втрачені':       [9, 14, 7, 4, 8],
+                },
+                'RFM категорія': {
+                    '💎 Champions':      [156, 214, 112, 82, 134],
+                    '⭐ Loyal':          [142, 196, 104, 74, 122],
+                    '🎯 Potential':      [124, 182, 91, 67, 114],
+                    '⏰ At Risk':        [84, 124, 59, 46, 74],
+                    '⚠️ Declining':     [62, 92, 42, 32, 54],
+                    '❌ Lost':            [31, 46, 21, 17, 27],
+                    '🆕 New':            [92, 134, 69, 51, 81],
+                },
+                'CVO сегмент': {
+                    '🔴 High Value':     [241, 314, 162, 122, 197],
+                    '🟡 Mid Value':      [182, 259, 132, 99,  156],
+                    '🟢 Low Value':      [91,  142, 69,  51,  81],
+                    '🆕 New Customer':   [62,  91,  46,  34,  54],
+                    '⚠️ Churn Risk':    [29,  42,  21,  16,  26],
+                },
+            },
+        };
+
+        const HEAT_META = {
+            boxiky:  { unit:'бокс.', bigK:true,  title:'🌡️ Сегмент × Категорія — боксиків списано',         color:'#0d7c4f' },
+            clients: { unit:'клієнт.', bigK:false, title:'🌡️ Сегмент × Категорія — унікальних клієнтів',     color:'#3498db' },
+            en:      { unit:'ЕН',    bigK:false, title:'🌡️ Сегмент × Категорія — ЕН від сегменту в категорії', color:'#ff6b35' },
+        };
+        let heatmapMode = 'boxiky';
+
+        function switchHeatmap(mode, btn) {
+            heatmapMode = mode;
+            document.querySelectorAll('[id^="heatBtn-"]').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            renderHeatmap();
+        }
+
+        function renderHeatmap() {
+            const HEAT = HEAT_DATA[heatmapMode] || HEAT_DATA.boxiky;
+            const meta = HEAT_META[heatmapMode];
+            // Update title
+            const title = document.getElementById('heatmapTitle');
+            if (title) title.textContent = meta.title;
+            // Apply UAH conversion only for boxiky mode
+            const useUAH = heatmapMode === 'boxiky' && activeUnit === 'uah';
+            const unitSym = useUAH ? '₴' : meta.unit;
+            const factor = useUAH ? UNITS.uah.factor : 1;
+
+            const allVals = Object.values(HEAT).flatMap(g => Object.values(g).flat()).map(v => v * factor);
             const maxV = Math.max(...allVals);
             const tbody = document.getElementById('heatmapBody');
             if (!tbody) return;
@@ -3827,11 +3924,18 @@
                 Object.entries(rows).forEach(([seg, vals]) => {
                     const tr = document.createElement('tr');
                     tr.style.borderBottom = '1px solid var(--border)';
-                    const cells = vals.map(v => {
+                    const cells = vals.map(rawV => {
+                        const v = rawV * factor;
                         const pct = Math.round(v / maxV * 100);
-                        const barColor = pct > 60 ? '#0d7c4f' : pct > 30 ? '#27ae60' : '#a8d5b5';
+                        const barColor = pct > 60 ? meta.color : pct > 30 ? meta.color+'cc' : meta.color+'66';
+                        let displayVal;
+                        if (meta.bigK || v >= 1000) {
+                            displayVal = (v/1000).toFixed(1) + 'K';
+                        } else {
+                            displayVal = Math.round(v).toLocaleString('uk-UA');
+                        }
                         return `<td style="padding:0.3rem 0.5rem; min-width:120px;">
-                            <div style="font-size:0.7rem; font-weight:700; color:var(--text-primary); margin-bottom:0.15rem;">${(v/1000).toFixed(1)}K</div>
+                            <div style="font-size:0.7rem; font-weight:700; color:var(--text-primary); margin-bottom:0.15rem;">${displayVal} <span style="font-size:0.58rem; color:var(--text-secondary); font-weight:500;">${unitSym}</span></div>
                             <div style="height:4px; background:#eee; border-radius:2px; overflow:hidden;">
                                 <div style="width:${pct}%; height:100%; background:${barColor}; border-radius:2px;"></div>
                             </div>
