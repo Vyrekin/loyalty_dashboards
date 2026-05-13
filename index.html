@@ -722,17 +722,13 @@
     <!-- Navigation + Units -->
     <div class="nav-tabs">
         <div class="nav-tabs-left">
-            <button class="nav-tab active" onclick="switchPage('overview')">📊 Загальна</button>
-            <button class="nav-tab" onclick="switchPage('economics')">💰 Лояльність</button>
-            <button class="nav-tab" onclick="switchPage('campaigns')">📢 Акції</button>
+            <button class="nav-tab active" onclick="switchPage('overview')">🎯 Партнерська воронка</button>
+            <button class="nav-tab" onclick="switchPage('economics')" style="opacity:0.7;" title="Наступні ітерації">🚧 Лояльність</button>
+            <button class="nav-tab" onclick="switchPage('campaigns')" style="opacity:0.7;" title="Наступні ітерації">🚧 Акції</button>
             <button class="nav-tab" onclick="switchPage('partners')">🤝 Партнери</button>
             <button class="nav-tab" onclick="switchPage('customers')">👥 Клієнт</button>
         </div>
-        <div class="nav-tabs-right">
-            <span class="unit-label" title="Перерахунок боксиків у гривні за курсом 1 бокс = 0.5 ₴ (тільки для блоків з боксиками)">📐 Одиниці:</span>
-            <button class="unit-chip active" onclick="setUnit('boxiky',this)">📦 Боксики</button>
-            <button class="unit-chip" onclick="setUnit('uah',this)">₴ Гривні</button>
-        </div>
+        <div class="nav-tabs-right"></div>
     </div>
 
     <!-- Main Container -->
@@ -914,132 +910,124 @@
             </div>
         </div>
 
-        <!-- PAGE 0: OVERVIEW -->
+        <!-- PAGE 0: OVERVIEW — ВОРОНКА ЛОЯЛЬНОСТІ -->
         <div id="overview" class="page active">
 
-        <!-- ══ DRILL-DOWN BREADCRUMBS (видно на L2+) ══ -->
-        <div id="drillBreadcrumbs" style="display:none; margin-bottom:0.6rem; padding:0.5rem 0.85rem; background:linear-gradient(90deg,#fff 0%,#f8f9fa 100%); border:1px solid var(--border); border-radius:8px; font-size:0.7rem;">
-            <div id="drillBreadcrumbsBody" style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;"></div>
+        <!-- ══ ПЕРЕМИКАЧ СЦЕНАРІЇВ ══ -->
+        <div style="display:flex; align-items:center; gap:0.4rem; margin-bottom:0.7rem; flex-wrap:wrap;">
+            <span style="font-size:0.6rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px;">🎬 Сценарій:</span>
+            <button class="seg-btn active" style="background:#27ae60; color:white; border-color:#27ae60;">🤝 Партнери</button>
+            <button class="seg-btn" onclick="showNextIterationToast('Завдання')" title="Наступна ітерація — потрібен пул даних з NovaPlace">🚧 Завдання</button>
+            <button class="seg-btn" onclick="showNextIterationToast('Розіграші')" title="Наступна ітерація — окремий пул даних">🚧 Розіграші</button>
+            <button class="seg-btn" onclick="showNextIterationToast('Акції / Розсилки')" title="Наступна ітерація — потрібна інтеграція з MessageBridge">🚧 Акції / Розсилки</button>
         </div>
 
-        <!-- ══ L1: ОГЛЯД (4 БЛОКИ + СЕГМЕНТАЦІЯ) ══ -->
-        <div id="drillL1">
+        <!-- Toast для "наступна ітерація" -->
+        <div id="nextIterToast" style="position:fixed; top:80px; right:20px; z-index:9999; background:linear-gradient(135deg,#fff8e1,#fff3cd); border-left:4px solid #f39c12; border-radius:8px; padding:0.8rem 1.1rem; box-shadow:0 8px 24px rgba(0,0,0,0.15); display:none; max-width:340px; font-size:0.72rem;"></div>
 
-            <!-- 3. 4 КЛІКАБЕЛЬНИХ БЛОКИ КОНВЕРСІЇ ПО СЦЕНАРІЯХ -->
-            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:0.6rem; margin-bottom:1rem;">
+        <!-- ══ KPI РЯД (кроки воронки MVP-сценарію) ══ -->
+        <div id="ovKpiRow" style="display:grid; grid-template-columns:repeat(6,1fr); gap:0.5rem; margin-bottom:0.8rem;"></div>
 
-                <div id="drillCard-tasks" class="stat-section-box" style="padding:0.85rem; border-top:4px solid #0d7c4f; cursor:pointer; transition:all 0.2s;"
-                     onclick="drillTo(&#39;tasks&#39;)"
-                     onmouseover="this.style.transform=&#39;translateY(-3px)&#39;;this.style.boxShadow=&#39;0 8px 24px rgba(13,124,79,0.18)&#39;"
-                     onmouseout="this.style.transform=&#39;&#39;;this.style.boxShadow=&#39;&#39;">
-                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.5rem;">
-                        <div>
-                            <div style="font-size:0.6rem; font-weight:700; color:#0d7c4f; text-transform:uppercase; letter-spacing:0.5px;">✅ Завдання</div>
-                            <div style="font-size:0.6rem; color:var(--text-secondary);">Виконав умову → Отримав приз</div>
-                        </div>
-                    </div>
-                    <div style="font-size:1.4rem; font-weight:900; color:var(--text-primary); line-height:1;">
-                        <span id="ovTaskEN">9,725 призів</span> <span style="font-size:0.95rem; color:#0d7c4f;">(<span id="ovTaskConv">34</span>%)</span>
-                    </div>
-                    <div id="ovTaskBreakdown" style="font-size:0.62rem; color:var(--text-secondary); margin:0.3rem 0;">з 28,450 охоплених</div>
-                    <div id="ovTaskMom" style="font-size:0.65rem; font-weight:700; color:#27ae60; margin-bottom:0.5rem;">↑ +3.1% MoM</div>
-                    <div style="position:relative; height:32px; margin-bottom:0.4rem;"><canvas id="sparkTasks"></canvas></div>
-                    <div style="font-size:0.62rem; font-weight:700; color:#0d7c4f; text-align:right;">→ Деталі сценарію</div>
+        <!-- ══ ГРАФІК + ОПЦІЇ ══ -->
+        <div class="stat-section-box" style="margin-bottom:0.8rem;">
+            <!-- Toolbar -->
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:0.6rem; margin-bottom:0.6rem; flex-wrap:wrap;">
+                <div style="display:flex; align-items:center; gap:0.4rem;">
+                    <div class="stat-section-label" style="margin-bottom:0;">📈 Воронка лояльності — динаміка в часі</div>
+                    <button class="info-btn" onclick="showInfo('overview-funnel')">i</button>
                 </div>
-
-                <div id="drillCard-partners" class="stat-section-box" style="padding:0.85rem; border-top:4px solid #ff6b35; cursor:pointer; transition:all 0.2s;"
-                     onclick="drillTo(&#39;partners&#39;)"
-                     onmouseover="this.style.transform=&#39;translateY(-3px)&#39;;this.style.boxShadow=&#39;0 8px 24px rgba(255,107,53,0.18)&#39;"
-                     onmouseout="this.style.transform=&#39;&#39;;this.style.boxShadow=&#39;&#39;">
-                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.5rem;">
-                        <div>
-                            <div style="font-size:0.6rem; font-weight:700; color:#ff6b35; text-transform:uppercase; letter-spacing:0.5px;">🤝 Партнери</div>
-                            <div style="font-size:0.6rem; color:var(--text-secondary);">Боксики → Промокод → Сайт партнера</div>
-                        </div>
+                <div style="display:flex; gap:0.8rem; align-items:center; flex-wrap:wrap;">
+                    <!-- Тумблер вимірювань -->
+                    <div style="display:flex; align-items:center; gap:0.3rem;">
+                        <span style="font-size:0.6rem; color:var(--text-secondary); font-weight:600;">📊 Вимір:</span>
+                        <button class="seg-btn active" id="ovMeasureBtn-clients" onclick="setOvMeasure('clients',this)">👥 Унікальні клієнти</button>
+                        <button class="seg-btn" id="ovMeasureBtn-events" onclick="setOvMeasure('events',this)">🖱️ Кліки / Сесії</button>
                     </div>
-                    <div style="font-size:1.4rem; font-weight:900; color:var(--text-primary); line-height:1;">
-                        <span id="ovPartnerEN">7,966 промо</span> <span style="font-size:0.95rem; color:#ff6b35;">(<span id="ovPartnerConv">81</span>%)</span>
-                    </div>
-                    <div id="ovPartnerBreakdown" style="font-size:0.62rem; color:var(--text-secondary); margin:0.3rem 0;">з 9,820 що списали боксики</div>
-                    <div id="ovPartnerMom" style="font-size:0.65rem; font-weight:700; color:#27ae60; margin-bottom:0.5rem;">↑ +1.8% MoM</div>
-                    <div style="position:relative; height:32px; margin-bottom:0.4rem;"><canvas id="sparkPartners"></canvas></div>
-                    <div style="font-size:0.62rem; font-weight:700; color:#ff6b35; text-align:right;">→ Деталі сценарію</div>
                 </div>
-
-                <div id="drillCard-campaigns" class="stat-section-box" style="padding:0.85rem; border-top:4px solid #8e44ad; cursor:pointer; transition:all 0.2s;"
-                     onclick="drillTo(&#39;campaigns&#39;)"
-                     onmouseover="this.style.transform=&#39;translateY(-3px)&#39;;this.style.boxShadow=&#39;0 8px 24px rgba(142,68,173,0.18)&#39;"
-                     onmouseout="this.style.transform=&#39;&#39;;this.style.boxShadow=&#39;&#39;">
-                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.5rem;">
-                        <div>
-                            <div style="font-size:0.6rem; font-weight:700; color:#8e44ad; text-transform:uppercase; letter-spacing:0.5px;">📢 Акції</div>
-                            <div style="font-size:0.6rem; color:var(--text-secondary);">Розсилка → Доставлено → Взаємодія з промо</div>
-                        </div>
-                    </div>
-                    <div style="font-size:1.4rem; font-weight:900; color:var(--text-primary); line-height:1;">
-                        <span id="ovCampEN">12,656 взаємодій</span> <span style="font-size:0.95rem; color:#8e44ad;">(<span id="ovCampConv">25</span>%)</span>
-                    </div>
-                    <div id="ovCampBreakdown" style="font-size:0.62rem; color:var(--text-secondary); margin:0.3rem 0;">з 51,200 доставлених</div>
-                    <div id="ovCampMom" style="font-size:0.65rem; font-weight:700; color:#27ae60; margin-bottom:0.5rem;">↑ +4.2% MoM</div>
-                    <div style="position:relative; height:32px; margin-bottom:0.4rem;"><canvas id="sparkCampaigns"></canvas></div>
-                    <div style="font-size:0.62rem; font-weight:700; color:#8e44ad; text-align:right;">→ Деталі сценарію</div>
-                </div>
-
-                <div id="drillCard-raffles" class="stat-section-box" style="padding:0.85rem; border-top:4px solid #3498db; cursor:pointer; transition:all 0.2s;"
-                     onclick="drillTo(&#39;raffles&#39;)"
-                     onmouseover="this.style.transform=&#39;translateY(-3px)&#39;;this.style.boxShadow=&#39;0 8px 24px rgba(52,152,219,0.18)&#39;"
-                     onmouseout="this.style.transform=&#39;&#39;;this.style.boxShadow=&#39;&#39;">
-                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.5rem;">
-                        <div>
-                            <div style="font-size:0.6rem; font-weight:700; color:#3498db; text-transform:uppercase; letter-spacing:0.5px;">🎲 Розіграші</div>
-                            <div style="font-size:0.6rem; color:var(--text-secondary);">Боксики → Участь</div>
-                        </div>
-                    </div>
-                    <div style="font-size:1.4rem; font-weight:900; color:var(--text-primary); line-height:1;">
-                        7,280 учасн. <span style="font-size:0.95rem; color:#3498db;">(3.2 разів)</span>
-                    </div>
-                    <div style="font-size:0.62rem; color:var(--text-secondary); margin:0.3rem 0;">22,840 боксиків · 28 активних</div>
-                    <div style="font-size:0.65rem; font-weight:700; color:#27ae60; margin-bottom:0.5rem;">↑ +8.4% MoM</div>
-                    <div style="position:relative; height:32px; margin-bottom:0.4rem;"><canvas id="sparkRaffles"></canvas></div>
-                    <div style="font-size:0.62rem; font-weight:700; color:#3498db; text-align:right;">→ Деталі сценарію</div>
-                </div>
-
             </div>
+            <!-- Canvas -->
+            <div style="position:relative; height:380px;">
+                <canvas id="ovFunnelChart"></canvas>
+            </div>
+        </div>
 
-            <!-- ══ DRILL-DOWN INLINE EXPAND (під 4 блоками) ══ -->
-            <div id="drillContent" style="display:none; margin-bottom:1rem;"></div>
-
-            <!-- 5. Сегментаційний зріз -->
-            <div id="drillL1Heatmap" class="stat-section-box">
-                <div style="display:flex; align-items:center; justify-content:space-between; gap:0.4rem; margin-bottom:0.6rem; flex-wrap:wrap;">
-                    <div style="display:flex; align-items:center; gap:0.4rem;">
-                        <div class="stat-section-label" id="heatmapTitle" style="margin-bottom:0;">🌡️ Сегмент × Категорія — боксиків списано</div>
-                        <button class="info-btn" onclick="showInfo(&#39;overview-heatmap&#39;)">i</button>
-                    </div>
-                    <div style="display:flex; gap:0.3rem;">
-                        <button class="seg-btn active" id="heatBtn-boxiky" onclick="switchHeatmap(&#39;boxiky&#39;,this)">📦 Боксиків списано</button>
-                        <button class="seg-btn" id="heatBtn-clients" onclick="switchHeatmap(&#39;clients&#39;,this)">👥 Унікальних клієнтів</button>
-                        <button class="seg-btn" id="heatBtn-en" onclick="switchHeatmap(&#39;en&#39;,this)">🚚 ЕН від сегменту</button>
-                    </div>
+        <!-- ══ ТАБЛИЦЯ ВОРОНКИ ══ -->
+        <div class="stat-section-box" style="margin-bottom:0.8rem;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem;">
+                <div style="display:flex; align-items:center; gap:0.4rem;">
+                    <div class="stat-section-label" style="margin-bottom:0;">📋 Деталізація воронки</div>
+                    <button class="info-btn" onclick="showInfo('overview-table')">i</button>
                 </div>
-                <table style="width:100%; font-size:0.64rem; border-collapse:collapse;">
-                    <thead><tr style="background:var(--bg-hover);">
-                        <th style="padding:0.3rem 0.4rem; text-align:left; color:var(--text-secondary); font-weight:600;">Сегмент</th>
-                        <th style="padding:0.3rem 0.35rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:80px;">🏥 Медицина</th>
-                        <th style="padding:0.3rem 0.35rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:80px;">📱 Технологія</th>
-                        <th style="padding:0.3rem 0.35rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:70px;">👕 Одяг</th>
-                        <th style="padding:0.3rem 0.35rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:65px;">🍔 Їжа</th>
-                        <th style="padding:0.3rem 0.35rem; text-align:left; color:var(--text-secondary); font-weight:600; min-width:75px;">👶 Дитячі</th>
-                    </tr></thead>
-                    <tbody id="heatmapBody"></tbody>
+                <span style="font-size:0.6rem; color:var(--text-secondary);">Конверсія розрахована від верху воронки (Доставка бонусів = 100%)</span>
+            </div>
+            <div class="table-container">
+                <table id="ovFunnelTable" style="width:100%; font-size:0.7rem;">
+                    <thead>
+                        <tr style="background:var(--bg-hover);">
+                            <th style="padding:0.5rem 0.6rem; text-align:left; color:var(--text-secondary); font-weight:600;">Крок воронки</th>
+                            <th style="padding:0.5rem 0.6rem; text-align:right; color:var(--text-secondary); font-weight:600;">Кількість</th>
+                            <th style="padding:0.5rem 0.6rem; text-align:right; color:var(--text-secondary); font-weight:600;">Конверсія від верху</th>
+                            <th style="padding:0.5rem 0.6rem; text-align:right; color:var(--text-secondary); font-weight:600;">Drop-off від попер.</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ovFunnelTableBody"></tbody>
                 </table>
             </div>
+        </div>
 
-        </div><!-- /drillL1 -->
+        <!-- ══ ТАБЛИЦЯ ПАРТНЕРІВ ПО КРОКАХ ВОРОНКИ ══ -->
+        <div class="stat-section-box" style="margin-bottom:0.8rem;">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:0.4rem; margin-bottom:0.5rem; flex-wrap:wrap;">
+                <div style="display:flex; align-items:center; gap:0.4rem;">
+                    <div class="stat-section-label" style="margin-bottom:0;">🤝 Партнери — той самий сценарій по кожному магазину</div>
+                    <button class="info-btn" onclick="showInfo('overview-partners')">i</button>
+                </div>
+                <div style="display:flex; gap:0.3rem; align-items:center;">
+                    <span style="font-size:0.6rem; color:var(--text-secondary); font-weight:600;">Сорт.:</span>
+                    <select id="ovPartnerSort" onchange="renderOvPartnersTable()" style="font-size:0.62rem; padding:0.15rem 0.4rem;">
+                        <option value="visit">👁️ Зайшов на партнера</option>
+                        <option value="offer">🛒 Купив офер</option>
+                        <option value="promo">📋 Скопіював промо</option>
+                        <option value="link">🔗 Перейшов на сайт</option>
+                        <option value="en">🚚 ЕН (7д)</option>
+                        <option value="conv">📊 CR до промо</option>
+                        <option value="convEN">🎯 CR до ЕН</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-container">
+                <table style="width:100%; font-size:0.65rem;">
+                    <thead>
+                        <tr style="background:var(--bg-hover);">
+                            <th style="padding:0.4rem 0.5rem; text-align:left; color:var(--text-secondary); font-weight:600;">Партнер</th>
+                            <th style="padding:0.4rem 0.4rem; text-align:left; color:var(--text-secondary); font-weight:600;">Категорія</th>
+                            <th style="padding:0.4rem 0.4rem; text-align:center; color:var(--text-secondary); font-weight:600;">Ген. ЕН</th>
+                            <th style="padding:0.4rem 0.4rem; text-align:right; color:#3498db; font-weight:600;" title="Зайшов на сторінку партнера">👁️ Зайшов</th>
+                            <th style="padding:0.4rem 0.4rem; text-align:right; color:#1abc9c; font-weight:600;" title="Купив офер за боксики">🛒 Купив офер</th>
+                            <th style="padding:0.4rem 0.4rem; text-align:right; color:#e91e63; font-weight:600;" title="Скопіював промокод">📋 Промокод</th>
+                            <th style="padding:0.4rem 0.4rem; text-align:right; color:#f39c12; font-weight:600;" title="Перейшов на сайт партнера">🔗 На сайт</th>
+                            <th style="padding:0.4rem 0.4rem; text-align:right; color:#27ae60; font-weight:600;" title="ЕН за 7 днів після промокоду (тільки для партнерів, що генерують ЕН)">🚚 ЕН (7д)</th>
+                            <th style="padding:0.4rem 0.4rem; text-align:right; color:var(--text-secondary); font-weight:600;" title="Конверсія: Скопіював промо ÷ Зайшов">📊 CR→Промо</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ovPartnersTableBody"></tbody>
+                    <tfoot id="ovPartnersTableFoot"></tfoot>
+                </table>
+            </div>
+            <div style="margin-top:0.4rem; font-size:0.58rem; color:var(--text-secondary); font-style:italic;">
+                💡 ЕН (7д) рахується лише для магазинів з ознакою «генерує ЕН». Натисніть на партнера — перейдете до детальної вкладки.
+            </div>
+        </div>
 
         </div><!-- /overview -->
                 <!-- PAGE: АКЦІЇ -->
         <div id="campaigns" class="page">
+
+            <!-- ── 🚧 ПЛАШКА: НАСТУПНА ІТЕРАЦІЯ ── -->
+            <div style="background:linear-gradient(90deg, #fff8e1, #fff3cd); border-left:4px solid #f39c12; border-radius:8px; padding:0.5rem 0.9rem; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem;">
+                <span style="font-size:1.1rem;">🚧</span>
+                <div style="font-size:0.72rem; font-weight:700; color:#8a6d3b;">Наступна ітерація — концепт-прев'ю</div>
+            </div>
 
             <!-- KPI -->
             <div class="grid grid-3x1" style="margin-bottom:1rem;">
@@ -1100,10 +1088,9 @@
                                     <th>Аудиторія</th>
                                     <th>Відправлено</th>
                                     <th>Доставлено</th>
-                                    <th>Відкрили</th>
-                                    <th>Промокод отримали</th>
-                                    <th>ЕН</th>
-                                    <th>Конв. → ЕН</th>
+                                    <th>Відкрили / Клікнули</th>
+                                    <th>Взаємодія з промо</th>
+                                    <th title="Конверсія: Взаємодія з промо ÷ Відправлено">Конв.</th>
                                     <th>Статус</th>
                                     <th></th>
                                 </tr>
@@ -1170,6 +1157,12 @@
         <!-- PAGE 1: ЛОЯЛЬНІСТЬ -->
         <div id="economics" class="page">
 
+            <!-- ── 🚧 ПЛАШКА: НАСТУПНА ІТЕРАЦІЯ ── -->
+            <div style="background:linear-gradient(90deg, #fff8e1, #fff3cd); border-left:4px solid #f39c12; border-radius:8px; padding:0.5rem 0.9rem; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem;">
+                <span style="font-size:1.1rem;">🚧</span>
+                <div style="font-size:0.72rem; font-weight:700; color:#8a6d3b;">Наступна ітерація — концепт-прев'ю</div>
+            </div>
+
             <!-- ── БОКСИКИ ── -->
             <div class="section-title">📦 Боксики <button class="info-btn" onclick="showInfo('loy-boxiky')" style="margin-left:4px;">i</button></div>
 
@@ -1226,45 +1219,6 @@
                 <div class="stat-section-box">
                     <div class="stat-section-label">Динаміка нарахування vs витрат (по місяцях)</div>
                     <div class="chart-container"><canvas id="chartBoxMonthly"></canvas></div>
-                </div>
-
-            </div>
-
-            <!-- ── КЕШБЕК ── -->
-            <div class="section-title">💳 Кешбек <button class="info-btn" onclick="showInfo('loy-cashback')" style="margin-left:4px;">i</button></div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1.5rem;">
-
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
-                    <div class="card">
-                        <div class="card-title">Нараховано</div>
-                        <div class="card-value">24,850 <span class="card-unit">₴</span></div>
-                        <div class="card-change positive">↑ +12%</div>
-                    </div>
-                    <div class="card">
-                        <div class="card-title">Витрачено на НП</div>
-                        <div class="card-value">18,320 <span class="card-unit">₴</span></div>
-                        <div class="card-change negative">↓ -3%</div>
-                    </div>
-                    <div class="card">
-                        <div class="card-title">% використання</div>
-                        <div class="card-value">73.7 <span class="card-unit">%</span></div>
-                        <div class="card-change positive">↑ +1.2%</div>
-                    </div>
-                    <div class="card">
-                        <div class="card-title">Невикористано</div>
-                        <div class="card-value">6,530 <span class="card-unit">₴</span></div>
-                        <div class="card-change negative">↑ +8%</div>
-                    </div>
-                    <div class="card" style="grid-column:span 2; border-left:3px solid var(--danger);">
-                        <div class="card-title">🔥 Згоріло кешбеку <span style="font-size:0.58rem; color:var(--text-secondary);">(не використали за 180 днів)</span></div>
-                        <div class="card-value" style="color:var(--danger);">1,240 <span class="card-unit">₴</span></div>
-                        <div style="font-size:0.62rem; color:var(--text-secondary); margin-top:0.2rem;">↑ +18% до попереднього місяця · 284 клієнти втратили кешбек</div>
-                    </div>
-                </div>
-
-                <div class="stat-section-box">
-                    <div class="stat-section-label">Нараховано vs Витрачено по місяцях</div>
-                    <div class="chart-container"><canvas id="chartCashback"></canvas></div>
                 </div>
 
             </div>
@@ -1391,34 +1345,24 @@
                 <div style="font-size:0.65rem; color:var(--text-secondary); margin-top:0.1rem;">Повна аналітика по кожному партнеру</div>
             </div>
             <div style="display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap;">
-                <span style="font-size:0.6rem; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:0.4px;">Обрати показник:</span>
+                <span style="font-size:0.6rem; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:0.4px;">Крок воронки:</span>
                 <div id="partnerMetricSwitcher" style="display:flex; gap:0.3rem; flex-wrap:wrap;">
-                    <button class="seg-btn active" onclick="switchPartnerMetric('boxik',this)">📦 Боксики</button>
-                    <button class="seg-btn" onclick="switchPartnerMetric('users',this)">👥 Скористались</button>
-                    <button class="seg-btn" onclick="switchPartnerMetric('fav',this)">❤️ В улюбленому</button>
-                    <button class="seg-btn" onclick="switchPartnerMetric('en',this)">🔗 На сайт</button>
+                    <button class="seg-btn" onclick="switchPartnerMetric('visit',this)">👥 Зайшли</button>
+                    <button class="seg-btn active" onclick="switchPartnerMetric('boxik',this)">🛒 Купили</button>
+                    <button class="seg-btn" onclick="switchPartnerMetric('promo',this)">🎟 Промо</button>
+                    <button class="seg-btn" onclick="switchPartnerMetric('link',this)">🔗 Сайт</button>
+                    <button class="seg-btn" onclick="switchPartnerMetric('en',this)">🚚 ЕН (7д)</button>
                 </div>
             </div>
         </div>
 
-        <!-- ── KPI ROW + MoM block (reference style) ── -->
-        <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr auto; gap:0.6rem; margin-bottom:0.75rem; align-items:start;">
+        <!-- ── KPI ROW (5 cards) ── -->
+        <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:0.6rem; margin-bottom:0.75rem; align-items:start;">
             <div class="card"><div class="card-title">🤝 Всього партнерів</div><div class="card-value">8 <span class="card-unit">активних</span></div><div class="card-change positive">↑ +1 новий</div></div>
             <div class="card"><div class="card-title">📦 Боксиків витрачено</div><div class="card-value" id="pkpi-box">84,120 <span class="card-unit">шт</span></div><div class="card-change positive">↑ +6.4%</div></div>
             <div class="card"><div class="card-title">👥 Скористались</div><div class="card-value" id="pkpi-users">9,470 <span class="card-unit">осіб</span></div><div class="card-change positive">↑ +5.1%</div></div>
             <div class="card"><div class="card-title">🔗 Перейшли на сайт</div><div class="card-value" id="pkpi-en">6,840 <span class="card-unit">осіб</span></div><div class="card-change positive">↑ +5.3%</div></div>
-            <!-- MoM block (reference style) -->
-            <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:0.6rem 0.9rem; box-shadow:0 2px 8px rgba(0,0,0,0.05); min-width:160px;">
-                <div style="font-size:0.6rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; margin-bottom:0.4rem;">MoM для поточного місяця</div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.3rem; text-align:center;">
-                    <div style="font-size:0.6rem; color:var(--text-secondary);">Попередній</div>
-                    <div style="font-size:0.6rem; color:var(--text-secondary);">Поточний</div>
-                    <div style="font-size:1rem; font-weight:700; color:var(--text-primary);">10,384</div>
-                    <div style="font-size:1rem; font-weight:700; color:var(--primary);">11,240</div>
-                    <div style="font-size:0.65rem; background:rgba(39,174,96,0.15); color:var(--success); border-radius:4px; padding:0.1rem 0.3rem;">↑ +8.2%</div>
-                    <div style="font-size:0.65rem; color:var(--text-secondary);">ЕН</div>
-                </div>
-            </div>
+            <div class="card" style="border-top:3px solid #27ae60;"><div class="card-title" title="ЕН від клієнтів які скопіювали промокод партнера протягом 7 днів. Тільки для партнерів з ознакою «генерує ЕН».">🚚 ЕН (атрибуція 7д)</div><div class="card-value" id="pkpi-attr-en" style="color:#27ae60;">2,599 <span class="card-unit">ЕН</span></div><div class="card-change positive">↑ +7.8%</div></div>
         </div>
 
         <!-- ── SUMMARY CHART ROW ── -->
@@ -1426,7 +1370,7 @@
             <div class="stat-section-box">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
                     <div style="display:flex; align-items:center; gap:0.4rem;">
-                        <div class="stat-section-label" id="partnerSummaryLabel" style="margin-bottom:0;">📈 Динаміка по партнерах (боксики по місяцях)</div>
+                        <div class="stat-section-label" id="partnerSummaryLabel" style="margin-bottom:0;">📈 Розподіл партнерів — Купили офер (по місяцях)</div>
                         <button class="info-btn" onclick="showInfo('partners-summary')">i</button>
                     </div>
                     <div style="display:flex; gap:0.3rem;">
@@ -1435,34 +1379,6 @@
                     </div>
                 </div>
                 <div style="position:relative; height:200px;"><canvas id="chartPartnerSummary"></canvas></div>
-                <!-- YoY + MoM row under chart (reference style) -->
-                <div id="partnerYoYRow" style="display:grid; grid-template-columns:repeat(5,1fr); gap:0.3rem; margin-top:0.5rem; padding-top:0.5rem; border-top:1px solid var(--border);">
-                    <div style="text-align:center;">
-                        <div style="font-size:0.58rem; color:var(--text-secondary);">Лютий</div>
-                        <div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem;">YoY +18%</div>
-                        <div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem; margin-top:0.15rem;">MoM +5%</div>
-                    </div>
-                    <div style="text-align:center;">
-                        <div style="font-size:0.58rem; color:var(--text-secondary);">Березень</div>
-                        <div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem;">YoY +22%</div>
-                        <div style="font-size:0.7rem; font-weight:700; background:rgba(231,76,60,0.15); color:var(--danger); border-radius:3px; padding:0.1rem; margin-top:0.15rem;">MoM -3%</div>
-                    </div>
-                    <div style="text-align:center;">
-                        <div style="font-size:0.58rem; color:var(--text-secondary);">Квітень</div>
-                        <div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem;">YoY +15%</div>
-                        <div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem; margin-top:0.15rem;">MoM +7%</div>
-                    </div>
-                    <div style="text-align:center;">
-                        <div style="font-size:0.58rem; color:var(--text-secondary);">Травень</div>
-                        <div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem;">YoY +19%</div>
-                        <div style="font-size:0.7rem; font-weight:700; background:rgba(231,76,60,0.15); color:var(--danger); border-radius:3px; padding:0.1rem; margin-top:0.15rem;">MoM -1%</div>
-                    </div>
-                    <div style="text-align:center;">
-                        <div style="font-size:0.58rem; color:var(--text-secondary);">Червень</div>
-                        <div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem;">YoY +24%</div>
-                        <div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem; margin-top:0.15rem;">MoM +8%</div>
-                    </div>
-                </div>
             </div>
             <div class="stat-section-box">
                 <div class="stat-section-label">🏆 Частка боксиків по категоріях</div>
@@ -1494,7 +1410,8 @@
             </select>
             <select id="partnerENFilter" onchange="filterPartnerTable()" style="max-width:180px;">
                 <option value="all">Всі партнери</option>
-                <option value="yes">✅ З переходом на сайт</option>
+                <option value="genEN">✅ З атрибуцією ЕН</option>
+                <option value="noEN">❌ Без атрибуції ЕН</option>
             </select>
             <div style="margin-left:auto; font-size:0.7rem; color:var(--text-secondary);">👆 Натисніть на рядок, щоб розгорнути деталі</div>
         </div>
@@ -1505,14 +1422,16 @@
                 <table id="partnerMainTable" style="font-size:0.72rem; table-layout:fixed; width:100%;">
                     <thead>
                         <tr>
-                            <th style="width:150px;">Партнер</th>
-                            <th style="width:90px;">Категорія</th>
-                            <th style="width:90px;" title="Кількість унікальних клієнтів що списали боксики у партнера мінімум 1 раз">👥 Списали бокс. (людей)</th>
-                            <th style="width:100px;" title="Загальна кількість боксиків списаних всіма клієнтами у партнера">📦 Бокс. витрачено (шт)</th>
-                            <th style="width:90px;">🏪 Промокод партнера</th>
-                            <th style="width:70px;">🔗 На сайт</th>
-                            <th style="width:80px;">🏪 Конв. промо</th>
-                            <th style="width:65px; text-align:center;">MAU%</th>
+                            <th style="width:130px;">Партнер</th>
+                            <th style="width:80px;">Категорія</th>
+                            <th style="width:55px; text-align:center;" title="Партнер з ознакою «Генерує ЕН» — для нього рахується атрибуція ЕН за 7 днів">Ген.ЕН</th>
+                            <th style="width:75px; text-align:right;" title="Унікальні клієнти що зайшли на сторінку партнера">👥 Зайшли</th>
+                            <th style="width:75px; text-align:right;" title="Купили офер за боксики (списали)">🛒 Купили</th>
+                            <th style="width:75px; text-align:right;" title="Скопіювали промокод партнера">🎟 Промо</th>
+                            <th style="width:70px; text-align:right;" title="Натиснули «Перейти на сайт»">🔗 Сайт</th>
+                            <th style="width:75px; text-align:right; background:#0d7c4f08;" title="ЕН від цього партнера протягом 7 днів після переходу на сайт">🚚 ЕН (7д)</th>
+                            <th style="width:65px; text-align:right;" title="Загальна конверсія: ЕН ÷ Зайшли">CR→ЕН</th>
+                            <th style="width:85px; text-align:right; color:var(--text-secondary);" title="Загальна сума витрачених боксиків">💰 Витр.</th>
                         </tr>
                     </thead>
                     <tbody id="partnerMainTableBody"></tbody>
@@ -1525,45 +1444,20 @@
         <!-- PAGE 3: CUSTOMERS -->
         <div id="customers" class="page">
 
-        <!-- ── METRIC SWITCHER ── -->
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.5rem;">
-            <div>
-                <div style="font-size:0.75rem; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:0.4rem;">
-                    👥 Клієнти в програмі лояльності
-                    <button class="info-btn" onclick="showInfo('clients-table')">i</button>
-                </div>
-                <div style="font-size:0.65rem; color:var(--text-secondary); margin-top:0.1rem;">Поведінка клієнтів в розділі "Доставка бонусів"</div>
+        <div style="margin-bottom:0.75rem;">
+            <div style="font-size:0.75rem; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:0.4rem;">
+                👥 Клієнти в програмі лояльності
+                <button class="info-btn" onclick="showInfo('clients-table')">i</button>
             </div>
-            <div style="display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap;">
-                <span style="font-size:0.6rem; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:0.4px;">Обрати показник:</span>
-                <div id="clientMetricSwitcher" style="display:flex; gap:0.3rem; flex-wrap:wrap;">
-                    <button class="seg-btn active" onclick="switchClientMetric('boxik',this)">📦 Боксики</button>
-                    <button class="seg-btn" onclick="switchClientMetric('activity',this)">📊 Активність</button>
-                    <button class="seg-btn" onclick="switchClientMetric('tasks',this)">✅ Завдання</button>
-                    <button class="seg-btn" onclick="switchClientMetric('raffles',this)">🎁 Розіграші</button>
-                </div>
-            </div>
+            <div style="font-size:0.65rem; color:var(--text-secondary); margin-top:0.1rem;">Поведінка клієнтів в розділі "Доставка бонусів"</div>
         </div>
 
-        <!-- ── KPI ROW + MoM block ── -->
-        <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr auto; gap:0.6rem; margin-bottom:0.75rem; align-items:start;">
+        <!-- ── KPI ROW ── -->
+        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:0.6rem; margin-bottom:0.75rem; align-items:start;">
             <div class="card"><div class="card-title">👥 Активних клієнтів</div><div class="card-value">28,450 <span class="card-unit">осіб</span></div><div class="card-change positive">↑ +4.8%</div></div>
             <div class="card"><div class="card-title">📦 Сер. боксиків на балансі</div><div class="card-value">287 <span class="card-unit">шт</span></div><div class="card-change positive">↑ +5.2%</div></div>
-            <div class="card"><div class="card-title">💳 Сер. кешбек на балансі</div><div class="card-value">42 <span class="card-unit">₴</span></div><div class="card-change positive">↑ +3.1%</div></div>
-            <div class="card"><div class="card-title">🏪 Конверсія в пропозиції</div><div class="card-value">34.2 <span class="card-unit">%</span></div><div class="card-change positive">↑ +2.1%</div></div>
-            <div class="card"><div class="card-title">✅ Виконали завдання</div><div class="card-value">38 <span class="card-unit">%</span></div><div class="card-change positive">↑ +3.4%</div></div>
-            <!-- MAU block (було MoM) -->
-            <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:0.6rem 0.9rem; box-shadow:0 2px 8px rgba(0,0,0,0.05); min-width:160px;">
-                <div style="font-size:0.6rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; margin-bottom:0.4rem;">MAU (Monthly Active Users)</div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.3rem; text-align:center;">
-                    <div style="font-size:0.6rem; color:var(--text-secondary);">Попередній міс.</div>
-                    <div style="font-size:0.6rem; color:var(--text-secondary);">Поточний міс.</div>
-                    <div style="font-size:1rem; font-weight:700; color:var(--text-primary);">27,130</div>
-                    <div style="font-size:1rem; font-weight:700; color:var(--primary);">28,450</div>
-                    <div style="font-size:0.65rem; background:rgba(39,174,96,0.15); color:var(--success); border-radius:4px; padding:0.1rem 0.3rem;">↑ +4.8%</div>
-                    <div style="font-size:0.65rem; color:var(--text-secondary);">клієнтів</div>
-                </div>
-            </div>
+            <div class="card" title="Купили хоча б 1 офер у партнера за боксики"><div class="card-title">🛒 Купили офер у партнера</div><div class="card-value">9,470 <span class="card-unit">осіб</span></div><div class="card-change positive">↑ +5.1%</div></div>
+            <div class="card" title="Перейшли на сайт партнера після отримання промокоду"><div class="card-title">🔗 Перейшли на сайт</div><div class="card-value">6,840 <span class="card-unit">осіб</span></div><div class="card-change positive">↑ +5.3%</div></div>
         </div>
 
         <!-- ── SUMMARY CHART ROW ── -->
@@ -1577,35 +1471,14 @@
                     <div style="display:flex; gap:0.3rem; flex-wrap:wrap;">
                         <button class="seg-btn active" id="ctimeBtn-month" onclick="switchClientTime('month',this)">Місяць</button>
                         <button class="seg-btn" id="ctimeBtn-quarter" onclick="switchClientTime('quarter',this)">Квартал</button>
-                        <span style="width:1px; background:var(--border); margin:0 0.2rem;"></span>
-                        <button class="seg-btn active" id="cmetricBtn-boxiky" onclick="switchClientSummaryMetric('boxiky',this)" style="background:rgba(13,124,79,0.15); color:var(--primary); border-color:var(--primary);">📦 Боксики</button>
-                        <button class="seg-btn" id="cmetricBtn-cashback" onclick="switchClientSummaryMetric('cashback',this)">💳 Кешбек</button>
-                        <span style="width:1px; background:var(--border); margin:0 0.2rem;"></span>
-                        <button class="seg-btn active" id="camountBtn-sum" onclick="switchClientAmountMode('sum',this)">Σ Сума</button>
-                        <button class="seg-btn" id="camountBtn-count" onclick="switchClientAmountMode('count',this)">⟳ К-ть разів</button>
                     </div>
                 </div>
                 <div style="position:relative; height:200px;"><canvas id="chartClientSummary"></canvas></div>
-                <!-- YoY + MoM row (reference style) -->
-                <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:0.3rem; margin-top:0.5rem; padding-top:0.5rem; border-top:1px solid var(--border);">
-                    <div style="text-align:center;"><div style="font-size:0.58rem; color:var(--text-secondary);">Лютий</div><div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem;">YoY +14%</div><div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem; margin-top:0.15rem;">MoM +3%</div></div>
-                    <div style="text-align:center;"><div style="font-size:0.58rem; color:var(--text-secondary);">Березень</div><div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem;">YoY +17%</div><div style="font-size:0.7rem; font-weight:700; background:rgba(231,76,60,0.15); color:var(--danger); border-radius:3px; padding:0.1rem; margin-top:0.15rem;">MoM -2%</div></div>
-                    <div style="text-align:center;"><div style="font-size:0.58rem; color:var(--text-secondary);">Квітень</div><div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem;">YoY +12%</div><div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem; margin-top:0.15rem;">MoM +5%</div></div>
-                    <div style="text-align:center;"><div style="font-size:0.58rem; color:var(--text-secondary);">Травень</div><div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem;">YoY +16%</div><div style="font-size:0.7rem; font-weight:700; background:rgba(231,76,60,0.15); color:var(--danger); border-radius:3px; padding:0.1rem; margin-top:0.15rem;">MoM -1%</div></div>
-                    <div style="text-align:center;"><div style="font-size:0.58rem; color:var(--text-secondary);">Червень</div><div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem;">YoY +19%</div><div style="font-size:0.7rem; font-weight:700; background:rgba(39,174,96,0.15); color:var(--success); border-radius:3px; padding:0.1rem; margin-top:0.15rem;">MoM +5%</div></div>
-                </div>
             </div>
             <div class="stat-section-box">
                 <div class="stat-section-label">🎯 Розподіл по сегментах (поточний місяць)</div>
                 <div style="position:relative; height:200px;"><canvas id="chartClientSegShare"></canvas></div>
             </div>
-        </div>
-
-        <!-- ── UNIT SWITCHER ── -->
-        <div style="display:flex; gap:0.4rem; flex-wrap:wrap; align-items:center; margin-bottom:0.5rem;">
-            <span style="font-size:0.6rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase;">📐 Одиниці (для блоків з боксиками):</span>
-            <button class="unit-chip active" onclick="setUnit('boxiky',this)">📦 Боксики</button>
-            <button class="unit-chip" onclick="setUnit('uah',this)">₴ Гривні</button>
         </div>
 
         <!-- ── FILTERS ── -->
@@ -1686,6 +1559,11 @@
 
             // Scroll to top of page
             window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Перерендер воронки при переході на overview
+            if (pageId === 'overview') {
+                requestAnimationFrame(() => renderOverviewFunnel());
+            }
         }
 
         // ── GLOBAL FILTERS ─────────────────────────────────────────────
@@ -1855,6 +1733,7 @@
                 filteredPartners = [...PARTNERS];
             }
             renderPartnerTable();
+            renderOverviewFunnel();
         }
 
         function resetGlobalFilters() {
@@ -1874,6 +1753,7 @@
             renderPartnerTable();
             renderActiveTags({});
             renderConvBlock();
+            renderOverviewFunnel();
         }
 
         const TAG_LABELS = {
@@ -1907,6 +1787,366 @@
             });
         }
 
+        // ═══════════════════════════════════════════════════════════════
+        // OVERVIEW FUNNEL — динамічна воронка лояльності
+        // ═══════════════════════════════════════════════════════════════
+
+        // Кроки воронки MVP-сценарію «Партнери»
+        const OV_STEPS = [
+            { id:'delivery', label:'🎯 Зайшов у Доставку бонусів',  color:'#2c3e50', type:'main', base:true },
+            { id:'partner',  label:'🤝 Зайшов на партнера',         color:'#3498db', type:'main' },
+            { id:'offer',    label:'🛒 Купив офер за боксики',      color:'#1abc9c', type:'main' },
+            { id:'promo',    label:'📋 Скопіював промокод',         color:'#e91e63', type:'main' },
+            { id:'site',     label:'🔗 Перейшов на сайт партнера',  color:'#f39c12', type:'main' },
+            { id:'en',       label:'🚚 ЕН за 7 днів',                color:'#27ae60', type:'main' },
+        ];
+
+        // Базові коефіцієнти конверсії від "Доставка бонусів" (= 1.0)
+        // Розраховуються від обсягу filteredClients (унікальні) і filteredClients × ~3.5 (події)
+        const OV_FUNNEL_RATIOS = {
+            sent:     1.62,  // комунікацій більше ніж заходів (різні канали + повторні)
+            deliv:    1.48,
+            read:     0.78,
+            delivery: 1.00,  // ← база воронки
+            partner:  0.64,
+            offer:    0.38,
+            promo:    0.24,
+            site:     0.18,
+            en:       0.06,  // 6% від верху мають ЕН за 7 днів (тільки з НП-промокодів)
+        };
+
+        // 12 місяців часової шкали (mock)
+        const OV_TIME_LABELS = ['чер 2025','лип','сер','вер','жов','лис','гру','січ 2026','лют','бер','кві','тра'];
+
+        // Множник для подій (1 клієнт → ~3.5 кліки/сесії в середньому, різний на крок)
+        const OV_EVENTS_MULT = {
+            sent: 1.0, deliv: 1.0, read: 1.0,                 // комунікації — це події
+            delivery: 4.2, partner: 5.8, offer: 2.6,
+            promo: 1.4, site: 1.2, en: 1.0,
+        };
+
+        let ovMeasure = 'clients'; // 'clients' | 'events'
+        let ovChart = null;
+
+        // Toast «Наступна ітерація» — для disabled-сценаріїв і вкладок
+        let _toastTimer = null;
+        function showNextIterationToast(scenarioName) {
+            const el = document.getElementById('nextIterToast');
+            if (!el) return;
+            el.innerHTML = `
+                <div style="display:flex; align-items:flex-start; gap:0.5rem;">
+                    <span style="font-size:1.2rem;">🚧</span>
+                    <div>
+                        <div style="font-weight:700; color:#8a6d3b; margin-bottom:0.2rem;">«${scenarioName}» — у наступній ітерації</div>
+                        <div style="font-size:0.65rem; color:#8a6d3b; line-height:1.4;">Зараз концепт побудовано на партнерському сценарії. «${scenarioName}» додамо після підключення відповідного пулу даних.</div>
+                    </div>
+                </div>`;
+            el.style.display = 'block';
+            if (_toastTimer) clearTimeout(_toastTimer);
+            _toastTimer = setTimeout(() => { el.style.display = 'none'; }, 4000);
+        }
+
+        function setOvMeasure(mode, btn) {
+            ovMeasure = mode;
+            document.getElementById('ovMeasureBtn-clients').classList.toggle('active', mode === 'clients');
+            document.getElementById('ovMeasureBtn-events').classList.toggle('active', mode === 'events');
+            renderOverviewFunnel();
+        }
+
+        // Отримати множник на основі обраного періоду (фільтр period)
+        function getOvPeriodMonths() {
+            const p = document.getElementById('periodFilter')?.value || '3m';
+            return { '1m':1, '3m':3, '6m':6, '12m':12 }[p] || 3;
+        }
+
+        // Розрахунок значення для кроку на основі бази filteredClients (з global filters)
+        function calcOvStepValue(stepId, totalClients) {
+            const ratio = OV_FUNNEL_RATIOS[stepId];
+            const mult  = ovMeasure === 'events' ? OV_EVENTS_MULT[stepId] : 1;
+            return Math.round(totalClients * ratio * mult);
+        }
+
+        // Згенерувати timeseries для кроку (per-month розподіл + легкий тренд)
+        function genOvTimeSeries(stepId, totalForStep, months) {
+            // monthlyShare ≈ 1/N з невеликим зростанням до кінця періоду
+            const slice = OV_TIME_LABELS.slice(-months);
+            const n = slice.length;
+            // зростання від 0.92 до 1.08 (середнє = 1)
+            const weights = Array.from({length:n}, (_,i) => 0.92 + (i / Math.max(1,n-1)) * 0.16);
+            const sumW = weights.reduce((a,b)=>a+b,0);
+            return slice.map((label, i) => ({
+                label,
+                value: Math.round(totalForStep * (weights[i] / sumW))
+            }));
+        }
+
+        function renderOverviewFunnel() {
+            const overview = document.getElementById('overview');
+            if (!overview || !overview.classList.contains('active')) {
+                // не на overview — пропускаємо, але оновлюємо коли перейдуть
+            }
+            const totalClients = (filteredClients?.length || CLIENTS.length);
+            // Partner scope: якщо вибрано через picker — звужуємо від кроку "partner" і нижче
+            const partnerScope = (selectedPartners && selectedPartners.size > 0)
+                ? Math.max(0.05, filteredPartners.length / PARTNERS.length)
+                : 1;
+            // Скейл базової "Доставки бонусів" до ~85% від filteredClients
+            const baseDelivery = Math.round(totalClients * 0.85 * getOvPeriodMonths() * 1.3);
+
+            // У MVP всі кроки воронки — main, видимі завжди
+            const visibleSteps = OV_STEPS;
+
+            // Розрахунок поточних значень для кожного кроку
+            const stepTotals = {};
+            visibleSteps.forEach(s => {
+                const v = calcOvStepValue(s.id, baseDelivery);
+                // Звуження за partner picker: тільки для кроків ВІД partner і нижче
+                const stepIdx = OV_STEPS.findIndex(x => x.id === s.id);
+                const partnerIdx = OV_STEPS.findIndex(x => x.id === 'partner');
+                stepTotals[s.id] = (stepIdx >= partnerIdx)
+                    ? Math.round(v * partnerScope)
+                    : v;
+            });
+
+            // Базове значення для конверсії — Доставка бонусів
+            const baseValue = stepTotals['delivery'] || baseDelivery;
+
+            // KPI Row
+            renderOvKpiRow(visibleSteps, stepTotals, baseValue);
+
+            // Chart
+            renderOvChart(visibleSteps, stepTotals);
+
+            // Table
+            renderOvTable(visibleSteps, stepTotals, baseValue);
+
+            // Partners breakdown table
+            renderOvPartnersTable();
+        }
+
+        // ── Таблиця партнерів по кроках воронки (для overview) ──
+        function renderOvPartnersTable() {
+            const tbody = document.getElementById('ovPartnersTableBody');
+            const tfoot = document.getElementById('ovPartnersTableFoot');
+            if (!tbody) return;
+
+            const f = getFilterValues();
+            const months = getOvPeriodMonths();
+            const catMap = { all:null, health:'Медицина', kids:'Дитячі товари', clothes:'Одяг', food:'Їжа', tech:'Технологія' };
+            const wantCat = catMap[f.category] || null;
+            const wantGenEN = f.generatesEN; // 'all'|'yes'|'no'
+
+            // Відфільтрувати партнерів за глобальними фільтрами + пікером
+            let rows = (filteredPartners?.length ? filteredPartners : PARTNERS).filter(p => {
+                if (wantCat && p.category !== wantCat) return false;
+                if (wantGenEN === 'yes' && !p.convEN) return false;
+                if (wantGenEN === 'no'  &&  p.convEN) return false;
+                return true;
+            });
+
+            // Розрахунок показників за обраний період (sum останніх N місяців)
+            const calcRow = (p) => {
+                const slice = p.months.slice(-Math.min(months, p.months.length));
+                const sumBox    = slice.reduce((s,m)=>s+m.box,0);
+                const sumPromo  = slice.reduce((s,m)=>s+m.promo,0);
+                const sumLink   = slice.reduce((s,m)=>s+m.link,0);
+                // "Зайшов на партнера" — приблизно offer × 1.55
+                const visit     = Math.round(sumBox * 1.55);
+                // ЕН (7д) — тільки якщо convEN. link × convRate% для конверсійних магазинів
+                const en        = p.convEN ? Math.round(sumLink * (p.convRate/100)) : 0;
+                const crPromo   = visit > 0 ? (sumPromo / visit * 100) : 0;
+                const crEN      = (p.convEN && visit > 0) ? (en / visit * 100) : 0;
+                return { p, visit, offer:sumBox, promo:sumPromo, link:sumLink, en, conv:crPromo, convEN:crEN };
+            };
+            let data = rows.map(calcRow);
+
+            // Сортування
+            const sortBy = document.getElementById('ovPartnerSort')?.value || 'offer';
+            const sortKey = { offer:'offer', promo:'promo', en:'en', conv:'conv', visit:'visit', link:'link', convEN:'convEN' }[sortBy] || 'offer';
+            data.sort((a,b) => b[sortKey] - a[sortKey]);
+
+            // Топ-10 + "Інші"
+            const TOP_N = 10;
+            const top = data.slice(0, TOP_N);
+            const rest = data.slice(TOP_N);
+
+            const fmt = n => n.toLocaleString('uk-UA');
+            const yn = v => v ? '<span style="color:var(--success); font-weight:700;">✅</span>' : '<span style="color:var(--text-secondary);">—</span>';
+
+            tbody.innerHTML = top.map(r => `
+                <tr style="border-bottom:1px solid var(--border); cursor:pointer;" onclick="openPartnerFromOverview(${r.p.id})"
+                    onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background=''">
+                    <td style="padding:0.45rem 0.5rem;"><strong>${r.p.icon} ${r.p.name}</strong></td>
+                    <td style="padding:0.45rem 0.4rem; color:var(--text-secondary);">${r.p.category}</td>
+                    <td style="padding:0.45rem 0.4rem; text-align:center;">${yn(r.p.convEN)}</td>
+                    <td style="padding:0.45rem 0.4rem; text-align:right;">${fmt(r.visit)}</td>
+                    <td style="padding:0.45rem 0.4rem; text-align:right; font-weight:600;">${fmt(r.offer)}</td>
+                    <td style="padding:0.45rem 0.4rem; text-align:right; font-weight:600;">${fmt(r.promo)}</td>
+                    <td style="padding:0.45rem 0.4rem; text-align:right;">${fmt(r.link)}</td>
+                    <td style="padding:0.45rem 0.4rem; text-align:right; ${r.en > 0 ? 'font-weight:700; color:#27ae60;' : 'color:var(--text-secondary);'}">${r.en > 0 ? fmt(r.en) : '—'}</td>
+                    <td style="padding:0.45rem 0.4rem; text-align:right;"><strong style="color:${r.conv >= 15 ? 'var(--success)' : r.conv >= 8 ? 'var(--warning)' : 'var(--danger)'};">${r.conv.toFixed(1)}%</strong></td>
+                </tr>
+            `).join('');
+
+            // Підсумки: інші + всього
+            if (tfoot) {
+                const sumRest = rest.reduce((acc, r) => ({
+                    visit: acc.visit + r.visit, offer: acc.offer + r.offer,
+                    promo: acc.promo + r.promo, link: acc.link + r.link, en: acc.en + r.en
+                }), {visit:0, offer:0, promo:0, link:0, en:0});
+                const sumAll = data.reduce((acc, r) => ({
+                    visit: acc.visit + r.visit, offer: acc.offer + r.offer,
+                    promo: acc.promo + r.promo, link: acc.link + r.link, en: acc.en + r.en
+                }), {visit:0, offer:0, promo:0, link:0, en:0});
+                const crAll = sumAll.visit > 0 ? (sumAll.promo / sumAll.visit * 100) : 0;
+                const crRest = sumRest.visit > 0 ? (sumRest.promo / sumRest.visit * 100) : 0;
+
+                let footHTML = '';
+                if (rest.length > 0) {
+                    footHTML += `
+                    <tr style="border-top:1px dashed var(--border); background:rgba(0,0,0,0.02);">
+                        <td style="padding:0.45rem 0.5rem; color:var(--text-secondary); font-style:italic;">📦 Інші (${rest.length} партн.)</td>
+                        <td style="padding:0.45rem 0.4rem; color:var(--text-secondary);">—</td>
+                        <td style="padding:0.45rem 0.4rem;"></td>
+                        <td style="padding:0.45rem 0.4rem; text-align:right; color:var(--text-secondary);">${fmt(sumRest.visit)}</td>
+                        <td style="padding:0.45rem 0.4rem; text-align:right; color:var(--text-secondary);">${fmt(sumRest.offer)}</td>
+                        <td style="padding:0.45rem 0.4rem; text-align:right; color:var(--text-secondary);">${fmt(sumRest.promo)}</td>
+                        <td style="padding:0.45rem 0.4rem; text-align:right; color:var(--text-secondary);">${fmt(sumRest.link)}</td>
+                        <td style="padding:0.45rem 0.4rem; text-align:right; color:var(--text-secondary);">${sumRest.en > 0 ? fmt(sumRest.en) : '—'}</td>
+                        <td style="padding:0.45rem 0.4rem; text-align:right; color:var(--text-secondary);">${crRest.toFixed(1)}%</td>
+                    </tr>`;
+                }
+                footHTML += `
+                    <tr style="border-top:2px solid var(--border); background:var(--bg-hover); font-weight:700;">
+                        <td style="padding:0.5rem 0.5rem;">Σ ВСЬОГО (${data.length} партн.)</td>
+                        <td style="padding:0.5rem 0.4rem;"></td>
+                        <td style="padding:0.5rem 0.4rem;"></td>
+                        <td style="padding:0.5rem 0.4rem; text-align:right;">${fmt(sumAll.visit)}</td>
+                        <td style="padding:0.5rem 0.4rem; text-align:right;">${fmt(sumAll.offer)}</td>
+                        <td style="padding:0.5rem 0.4rem; text-align:right;">${fmt(sumAll.promo)}</td>
+                        <td style="padding:0.5rem 0.4rem; text-align:right;">${fmt(sumAll.link)}</td>
+                        <td style="padding:0.5rem 0.4rem; text-align:right; color:#27ae60;">${sumAll.en > 0 ? fmt(sumAll.en) : '—'}</td>
+                        <td style="padding:0.5rem 0.4rem; text-align:right;">${crAll.toFixed(1)}%</td>
+                    </tr>`;
+                tfoot.innerHTML = footHTML;
+            }
+        }
+
+        function renderOvKpiRow(visibleSteps, stepTotals, baseValue) {
+            const row = document.getElementById('ovKpiRow');
+            if (!row) return;
+            // KPI блоки — тільки основні кроки (без комунікацій, без ЕН)
+            const mainSteps = visibleSteps.filter(s => s.type === 'main');
+            row.style.gridTemplateColumns = `repeat(${mainSteps.length},1fr)`;
+            const fmt = n => n.toLocaleString('uk-UA');
+            row.innerHTML = mainSteps.map((s, idx) => {
+                const v = stepTotals[s.id];
+                const conv = s.base ? 100 : (v / baseValue * 100);
+                const isBase = s.base;
+                return `
+                <div class="stat-section-box" style="padding:0.7rem 0.85rem; border-top:3px solid ${s.color}; min-height:90px;">
+                    <div style="font-size:0.6rem; font-weight:700; color:${s.color}; text-transform:uppercase; letter-spacing:0.3px; margin-bottom:0.25rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${s.label}">${s.label}</div>
+                    <div style="font-size:1.45rem; font-weight:900; color:var(--text-primary); line-height:1.1;">${fmt(v)}</div>
+                    <div style="font-size:0.65rem; color:var(--text-secondary); margin-top:0.3rem;">
+                        ${isBase
+                            ? `<span style="font-weight:700; color:${s.color};">База воронки = 100%</span>`
+                            : `Конверсія: <strong style="color:${s.color};">${conv.toFixed(1)}%</strong> від верху`
+                        }
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function renderOvChart(visibleSteps, stepTotals) {
+            const ctx = document.getElementById('ovFunnelChart');
+            if (!ctx) return;
+            const months = getOvPeriodMonths();
+            const labels = OV_TIME_LABELS.slice(-months);
+
+            const datasets = visibleSteps.map(s => {
+                const series = genOvTimeSeries(s.id, stepTotals[s.id], months);
+                const isOptional = s.type !== 'main';
+                return {
+                    label: s.label,
+                    data: series.map(p => p.value),
+                    borderColor: s.color,
+                    backgroundColor: s.color + '15',
+                    borderWidth: s.base ? 3 : 2,
+                    borderDash: isOptional ? [4,4] : [],
+                    pointRadius: 3,
+                    pointHoverRadius: 5,
+                    tension: 0.3,
+                    fill: false,
+                };
+            });
+
+            if (ovChart) ovChart.destroy();
+            ovChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels, datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { font: { size: 10 }, boxWidth: 12, padding: 8 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => {
+                                    const v = ctx.parsed.y;
+                                    return `${ctx.dataset.label}: ${v.toLocaleString('uk-UA')}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { font: { size: 10 }, callback: v => v >= 1000 ? (v/1000).toFixed(0) + 'k' : v }
+                        },
+                        x: { ticks: { font: { size: 10 } } }
+                    }
+                }
+            });
+        }
+
+        function renderOvTable(visibleSteps, stepTotals, baseValue) {
+            const tbody = document.getElementById('ovFunnelTableBody');
+            if (!tbody) return;
+            const fmt = n => n.toLocaleString('uk-UA');
+            let prev = null;
+            tbody.innerHTML = visibleSteps.map(s => {
+                const v = stepTotals[s.id];
+                const conv = s.base ? 100 : (v / baseValue * 100);
+                const dropoff = (prev !== null && !s.base) ? ((1 - v/prev) * 100) : null;
+                const dropoffStr = dropoff === null
+                    ? '<span style="color:var(--text-secondary);">—</span>'
+                    : `<span style="color:${dropoff > 60 ? 'var(--danger)' : dropoff > 30 ? 'var(--warning)' : 'var(--success)'};">−${dropoff.toFixed(1)}%</span>`;
+                const isOptional = s.type !== 'main';
+                const isBase = s.base;
+                prev = v;
+                return `
+                <tr style="border-bottom:1px solid var(--border); ${isOptional ? 'background:rgba(0,0,0,0.02);' : ''}">
+                    <td style="padding:0.5rem 0.6rem;">
+                        <span style="display:inline-block; width:10px; height:10px; background:${s.color}; border-radius:2px; margin-right:0.4rem; vertical-align:middle; ${isOptional?'opacity:0.6;':''}"></span>
+                        <strong style="color:${isBase?s.color:'var(--text-primary)'};">${s.label}</strong>
+                        ${isOptional ? '<span style="font-size:0.6rem; color:var(--text-secondary); margin-left:0.3rem;">(опц.)</span>' : ''}
+                    </td>
+                    <td style="padding:0.5rem 0.6rem; text-align:right; font-weight:600;">${fmt(v)}</td>
+                    <td style="padding:0.5rem 0.6rem; text-align:right;">
+                        ${isBase
+                            ? `<strong style="color:${s.color};">100% (база)</strong>`
+                            : `<strong style="color:${conv > 50 ? 'var(--success)' : conv > 20 ? 'var(--warning)' : 'var(--danger)'};">${conv.toFixed(1)}%</strong>`
+                        }
+                    </td>
+                    <td style="padding:0.5rem 0.6rem; text-align:right;">${dropoffStr}</td>
+                </tr>`;
+            }).join('');
+        }
+
         // ── PARTNERS DATA ──────────────────────────────────────────────
         const PARTNERS = [
             { id:1,  name:'Аптека Доброго Дня',  icon:'💊', category:'Медицина',      npCondition:false, firstOffer:'2023-03-12', totalOffers:48,  activeOffers:{general:12,personal:5,tasks:3,giveaways:2}, favorites:3240, users:2180, boxikSpent:18640, avgBoxikPerOffer:387, avgActivedays:18, convEN:true,  convRate:58, months:[{m:'Лютий',fav:290,box:1620,promo:740,link:980,spent:14200},{m:'Березень',fav:310,box:1740,promo:790,link:1050,spent:15800},{m:'Квітень',fav:340,box:1920,promo:850,link:1120,spent:17200},{m:'Травень',fav:360,box:2010,promo:890,link:1180,spent:18640},{m:'Червень',fav:380,box:2180,promo:940,link:1240,spent:19800}], segments:[{s:'🆕 Новий',fav:480,box:320,promo:145,link:210,spent:2740},{s:'💪 Ядро',fav:1620,box:1240,promo:560,link:740,spent:9320},{s:'♻️ Реактив.',fav:680,box:420,promo:195,link:280,spent:3980},{s:'🟡 Неактивні',fav:460,box:200,promo:90,link:130,spent:2600}] },
@@ -1928,7 +2168,6 @@
             activePartnerMetric = m;
             document.querySelectorAll('#partnerMetricSwitcher .seg-btn').forEach(b => b.classList.remove('active'));
             if (btn) btn.classList.add('active');
-            renderPartnerTable();
             initPartnerSummaryChart();
         }
 
@@ -1945,46 +2184,58 @@
             const ctx = document.getElementById('chartPartnerSummary');
             if (!ctx) return;
             const isQ = activePartnerTime === 'quarter';
-            const labels = isQ ? ['Q3 2024','Q4 2024','Q1 2025','Q2 2025'] : ['Лютий','Березень','Квітень','Травень','Червень'];
-            const dataMap = {
-                boxik: {
-                    month: [[1800,2100,2400,2200,2600],[900,1050,1200,1100,1300],[600,700,800,750,900],[450,520,600,570,650],[320,380,440,420,500],[280,330,380,360,420],[210,250,290,270,310],[180,210,240,225,265]],
-                    quarter: [[5400,8100,6600,7800],[2700,4050,3300,3900],[1800,2700,2200,2550],[1350,2025,1650,1905]]
-                },
-                users: {
-                    month: [[380,440,500,470,540],[190,220,250,235,270],[130,150,170,160,185],[95,110,125,118,135],[68,78,90,85,98],[58,67,77,73,84],[44,51,59,55,63],[38,44,51,47,54]],
-                    quarter: [[1140,1710,1320,1560],[570,855,660,780],[390,585,450,525],[285,428,332,390]]
-                },
-                fav: {
-                    month: [[420,490,560,530,610],[320,370,420,400,460],[210,240,275,260,300],[158,182,208,198,228],[112,130,148,140,162],[98,113,130,123,142],[74,85,98,93,107],[64,73,84,79,91]],
-                    quarter: [[1260,1890,1470,1740],[960,1440,1120,1320],[630,945,720,855],[474,711,558,663]]
-                },
-                en: {
-                    month: [[280,330,380,360,420],[140,165,190,180,210],[95,110,126,119,137],[71,83,95,90,104],[50,58,67,63,73],[44,51,59,55,63],[33,38,44,42,48],[28,33,38,36,42]],
-                    quarter: [[840,1260,1060,1218],[420,630,528,594],[285,428,332,390],[213,320,250,297]]
-                }
+            const monthsAll = filteredPartners[0]?.months || [];
+            const labels = isQ
+                ? ['Q3 2024','Q4 2024','Q1 2025','Q2 2025']
+                : monthsAll.map(m => m.m);
+
+            // Для обраного кроку воронки беремо значення по кожному партнеру по місяцях
+            const stepKey = activePartnerMetric;
+            // visit = round(box*1.55); en = link*convRate (якщо convEN)
+            const valueByPartnerMonth = (p, monthIdx) => {
+                const m = p.months[monthIdx];
+                if (!m) return 0;
+                if (stepKey === 'visit')  return Math.round(m.box * 1.55);
+                if (stepKey === 'boxik')  return m.box;
+                if (stepKey === 'promo')  return m.promo;
+                if (stepKey === 'link')   return m.link;
+                if (stepKey === 'en')     return p.convEN ? Math.round(m.link * (p.convRate/100)) : 0;
+                return 0;
             };
+            const valueByPartnerQuarter = (p, qIdx) => {
+                // Поки концепт — апроксимуємо: середнє × 3, з невеликою варіацією по qIdx
+                const monthly = p.months.reduce((s, m, i) => s + valueByPartnerMonth(p, i), 0) / Math.max(p.months.length, 1);
+                const factor = [0.85, 1.15, 0.95, 1.05][qIdx % 4];
+                return Math.round(monthly * 3 * factor);
+            };
+            const getVal = (p, periodIdx) => isQ ? valueByPartnerQuarter(p, periodIdx) : valueByPartnerMonth(p, periodIdx);
+
             const colors = COLORS8;
-            const pnames = PARTNERS.map(p => p.icon + ' ' + p.name);
-            const dsets = filteredPartners.slice(0, 10).map((p, i) => ({
+            const top = filteredPartners.slice(0, 10);
+            const dsets = top.map((p, i) => ({
                 label: p.icon + ' ' + p.name,
-                data: (dataMap[activePartnerMetric][activePartnerTime][i] || []).slice(0, labels.length),
+                data: labels.map((_, li) => getVal(p, li)),
                 backgroundColor: colors[i % colors.length],
-                borderRadius: 4
+                borderRadius: 4,
             }));
-            // Add "Інші" if more than 10
             if (filteredPartners.length > 10) {
-                const othersData = labels.map((_, li) =>
-                    filteredPartners.slice(10).reduce((sum, p, i) => sum + ((dataMap[activePartnerMetric][activePartnerTime][10+i] || [])[li] || 0), 0)
-                );
+                const others = filteredPartners.slice(10);
+                const othersData = labels.map((_, li) => others.reduce((s, p) => s + getVal(p, li), 0));
                 dsets.push({ label:'⚪ Інші', data: othersData, backgroundColor:'rgba(150,150,150,0.5)', borderRadius:4 });
             }
-            const metricLabels = {boxik:'Боксики',users:'Скористались',fav:'Улюблене',en:'ЕН'};
-            document.getElementById('partnerSummaryLabel').textContent = `📈 Динаміка по партнерах — ${metricLabels[activePartnerMetric]} (${activePartnerTime==='quarter'?'квартально':'по місяцях'})`;
+
+            const stepLabels = {visit:'Зайшли на партнера', boxik:'Купили офер', promo:'Скопіювали промо', link:'Перейшли на сайт', en:'ЕН (7д)'};
+            document.getElementById('partnerSummaryLabel').textContent =
+                `📈 Розподіл партнерів — ${stepLabels[activePartnerMetric] || ''} (${activePartnerTime==='quarter'?'квартально':'по місяцях'})`;
+
             segCharts['chartPartnerSummary'] = new Chart(ctx, {
                 type: 'bar',
                 data: { labels, datasets: dsets },
-                options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ labels:{ color:'#666', font:{size:10}, boxWidth:10, padding:6 }}}, scales:{ x:{stacked:true,ticks:{color:'#666',font:{size:10}}}, y:{stacked:true,ticks:{color:'#666',font:{size:10}},grid:{color:'#e8e8e8'}} } }
+                options: {
+                    responsive:true, maintainAspectRatio:false,
+                    plugins:{ legend:{ labels:{ color:'#666', font:{size:10}, boxWidth:10, padding:6 }}},
+                    scales:{ x:{stacked:true,ticks:{color:'#666',font:{size:10}}}, y:{stacked:true,ticks:{color:'#666',font:{size:10}},grid:{color:'#e8e8e8'}} }
+                }
             });
         }
 
@@ -1992,28 +2243,36 @@
             const tbody = document.getElementById('partnerMainTableBody');
             if (!tbody) return;
             tbody.innerHTML = '';
-            const momData = [-5.4, +8.2, +3.1, -2.8, +11.4, +6.7, +4.2, -1.9];
             filteredPartners.forEach((p, idx) => {
-                const totalActive = p.activeOffers.general + p.activeOffers.personal + p.activeOffers.tasks + p.activeOffers.giveaways;
                 const lastMonth = p.months[p.months.length - 1];
-                const mom = momData[idx % momData.length];
-                const momHtml = `<span style="font-size:0.7rem; font-weight:700; padding:0.15rem 0.4rem; border-radius:4px; background:${mom>=0?'rgba(39,174,96,0.15)':'rgba(231,76,60,0.15)'}; color:${mom>=0?'var(--success)':'var(--danger)'};">${mom>0?'+':''}${mom}%</span>`;
                 const isOpen = activePartnerDrillId === p.id;
                 const rowStyle = isOpen ? 'background:rgba(255,107,53,0.06); border-left:3px solid var(--accent);' : 'cursor:pointer;';
-                const siteVisits = lastMonth.link.toLocaleString('uk-UA');
-                const convPromo  = Math.round(lastMonth.promo / lastMonth.box * 100);
+
+                // 5 кроків воронки за останній місяць
+                const visit = Math.round(lastMonth.box * 1.55);
+                const buy   = lastMonth.box;
+                const promo = lastMonth.promo;
+                const site  = lastMonth.link;
+                const en    = p.convEN ? Math.round(site * (p.convRate/100)) : 0;
+                const crEN  = (p.convEN && visit > 0) ? ((en / visit) * 100).toFixed(1) + '%' : '—';
+                const genEN = p.convEN
+                    ? `<span title="Партнер генерує ЕН" style="color:var(--success);">✅</span>`
+                    : `<span title="Атрибуція ЕН недоступна" style="color:#bbb;">—</span>`;
+
                 const row = document.createElement('tr');
                 row.id = `prow-${p.id}`;
                 row.style.cssText = rowStyle;
                 row.innerHTML = `
                     <td onclick="togglePartnerDrill(${p.id})"><strong>${p.icon} ${p.name}</strong> <span style="font-size:0.6rem; color:var(--accent);">${isOpen?'▲':'▼'}</span></td>
                     <td onclick="togglePartnerDrill(${p.id})">${p.category}</td>
-                    <td onclick="togglePartnerDrill(${p.id})" title="Унікальних клієнтів що списували боксики мін 1 раз">${p.users.toLocaleString('uk-UA')}</td>
-                    <td onclick="togglePartnerDrill(${p.id})" title="Загальна сума всіх боксиків списаних клієнтами"><strong>${p.boxikSpent.toLocaleString('uk-UA')}</strong></td>
-                    <td onclick="togglePartnerDrill(${p.id})">${lastMonth.promo.toLocaleString('uk-UA')}</td>
-                    <td onclick="togglePartnerDrill(${p.id})">${siteVisits}</td>
-                    <td onclick="togglePartnerDrill(${p.id})"><strong style="color:${convPromo>=70?'var(--success)':convPromo>=50?'var(--warning)':'var(--danger)'}">${convPromo}%</strong></td>
-                    <td style="text-align:center;">${momHtml}</td>
+                    <td onclick="togglePartnerDrill(${p.id})" style="text-align:center;">${genEN}</td>
+                    <td onclick="togglePartnerDrill(${p.id})" style="text-align:right;">${visit.toLocaleString('uk-UA')}</td>
+                    <td onclick="togglePartnerDrill(${p.id})" style="text-align:right;">${buy.toLocaleString('uk-UA')}</td>
+                    <td onclick="togglePartnerDrill(${p.id})" style="text-align:right;">${promo.toLocaleString('uk-UA')}</td>
+                    <td onclick="togglePartnerDrill(${p.id})" style="text-align:right;">${site.toLocaleString('uk-UA')}</td>
+                    <td onclick="togglePartnerDrill(${p.id})" style="text-align:right; background:#0d7c4f08; font-weight:600; color:${p.convEN?'var(--primary)':'#bbb'};">${p.convEN ? en.toLocaleString('uk-UA') : '—'}</td>
+                    <td onclick="togglePartnerDrill(${p.id})" style="text-align:right; font-weight:600;">${crEN}</td>
+                    <td onclick="togglePartnerDrill(${p.id})" style="text-align:right; color:var(--text-secondary);">${p.boxikSpent.toLocaleString('uk-UA')}</td>
                 `;
                 tbody.appendChild(row);
 
@@ -2021,7 +2280,7 @@
                 const drillRow = document.createElement('tr');
                 drillRow.id = `pdrill-${p.id}`;
                 drillRow.style.display = isOpen ? '' : 'none';
-                drillRow.innerHTML = `<td colspan="8" style="padding:0; background:rgba(255,107,53,0.03);">
+                drillRow.innerHTML = `<td colspan="10" style="padding:0; background:rgba(255,107,53,0.03);">
                     <div style="padding:1rem 1.25rem; border-top:2px solid var(--accent);" id="pdrill-content-${p.id}"></div>
                 </td>`;
                 tbody.appendChild(drillRow);
@@ -2039,6 +2298,21 @@
             renderPartnerTable();
         }
 
+        // Перехід з вкладки overview на конкретного партнера
+        function openPartnerFromOverview(id) {
+            switchPage('partners');
+            // після switchPage activePartnerDrillId скидається — встановлюємо знову
+            setTimeout(() => {
+                activePartnerDrillId = id;
+                renderPartnerTable();
+                // Скрол до партнера
+                setTimeout(() => {
+                    const row = document.getElementById(`prow-${id}`);
+                    if (row) row.scrollIntoView({ behavior:'smooth', block:'center' });
+                }, 50);
+            }, 100);
+        }
+
         // ── PARTNER DRILL TAB STATE ───────────────────────────────────
         const partnerDrillTab = {};
 
@@ -2046,6 +2320,87 @@
             partnerDrillTab[pid] = tab;
             const p = PARTNERS.find(x => x.id === pid);
             if (p) renderPartnerDrillContent(p);
+        }
+
+        // ── Розгортання сегментів партнера в 4 дименшни з повною воронкою ──
+        // p.segments має 4 рядки (Новий/Ядро/Реактив/Неактивні) — стара структура.
+        // Розгортаємо в 4 окремих групи (Статус Активності / Підстатус Активних / Життєвий Цикл / RFM).
+        // Додаємо visit (зайшли на партнера) і en (ЕН за 7 днів).
+        function expandPartnerSegments(p) {
+            // Базові 4 рядки з даних партнера (Новий/Ядро/Реактив/Неактивні)
+            const [sNew, sCore, sReact, sInact] = p.segments;
+            // visit ≈ box × 1.55 (більше людей зайшло ніж купило)
+            const enrich = (s) => {
+                const visit = Math.round(s.box * 1.55);
+                const en = p.convEN ? Math.round(s.link * (p.convRate / 100)) : 0;
+                return { ...s, visit, en };
+            };
+            const eNew   = enrich(sNew);
+            const eCore  = enrich(sCore);
+            const eReact = enrich(sReact);
+            const eInact = enrich(sInact);
+
+            // Сума активних (Новий + Ядро + Реактив)
+            const sum = (arr, k) => arr.reduce((a,x) => a + (x[k]||0), 0);
+            const active = ['visit','box','promo','link','en','spent'].reduce((acc, k) => {
+                acc[k] = sum([eNew, eCore, eReact], k);
+                return acc;
+            }, {});
+            const arch = {
+                visit: Math.round(active.visit * 0.04),
+                box:   Math.round(active.box   * 0.02),
+                promo: Math.round(active.promo * 0.02),
+                link:  Math.round(active.link  * 0.02),
+                en:    p.convEN ? Math.round(active.en * 0.015) : 0,
+                spent: Math.round(active.spent * 0.02),
+            };
+
+            // Розподіл по Життєвому Циклу (7 категорій) — детермінований по pid
+            const lcShares = [0.04, 0.09, 0.18, 0.24, 0.27, 0.13, 0.05]; // сума ≈1
+            const lcNames  = ['🎓 Навчання','📢 Залучення','🔥 Стимуляція','💼 Продажі','🛡️ Утримання','😴 Заснувші','💔 Втрачені'];
+            const lcRows = lcShares.map((share, i) => ({
+                s: lcNames[i],
+                visit: Math.round((active.visit + eInact.visit) * share),
+                box:   Math.round((active.box   + eInact.box)   * share),
+                promo: Math.round((active.promo + eInact.promo) * share),
+                link:  Math.round((active.link  + eInact.link)  * share),
+                en:    p.convEN ? Math.round((active.en + eInact.en) * share) : 0,
+                spent: Math.round((active.spent + eInact.spent) * share),
+            }));
+
+            // Розподіл по RFM (7 категорій)
+            const rfmShares = [0.16, 0.22, 0.18, 0.14, 0.10, 0.08, 0.12];
+            const rfmNames  = ['💎 Champions','⭐ Loyal','🎯 Potential','⏰ At Risk','⚠️ Declining','❌ Lost','🆕 New'];
+            const rfmRows = rfmShares.map((share, i) => ({
+                s: rfmNames[i],
+                visit: Math.round((active.visit + eInact.visit) * share),
+                box:   Math.round((active.box   + eInact.box)   * share),
+                promo: Math.round((active.promo + eInact.promo) * share),
+                link:  Math.round((active.link  + eInact.link)  * share),
+                en:    p.convEN ? Math.round((active.en + eInact.en) * share) : 0,
+                spent: Math.round((active.spent + eInact.spent) * share),
+            }));
+
+            return [
+                {
+                    title: '🏷️ Статус активності',
+                    rows: [
+                        { s: '🟢 Активний', ...active },
+                        { s: '🟡 Неактивний', visit: eInact.visit, box: eInact.box, promo: eInact.promo, link: eInact.link, en: eInact.en, spent: eInact.spent },
+                        { s: '⚫ Архівний', ...arch },
+                    ]
+                },
+                {
+                    title: '🔖 Підстатус активних',
+                    rows: [
+                        { s: '🆕 Новий',         visit: eNew.visit,   box: eNew.box,   promo: eNew.promo,   link: eNew.link,   en: eNew.en,   spent: eNew.spent },
+                        { s: '💪 Ядро',          visit: eCore.visit,  box: eCore.box,  promo: eCore.promo,  link: eCore.link,  en: eCore.en,  spent: eCore.spent },
+                        { s: '♻️ Реактивований', visit: eReact.visit, box: eReact.box, promo: eReact.promo, link: eReact.link, en: eReact.en, spent: eReact.spent },
+                    ]
+                },
+                { title: '🌱 Життєвий цикл', rows: lcRows },
+                { title: '💎 RFM категорія',  rows: rfmRows },
+            ];
         }
 
         function genPartnerClients(p) {
@@ -2110,33 +2465,32 @@
                     <div class="card" style="padding:0.5rem 0.7rem;"><div class="card-title" style="font-size:0.58rem;">📐 Сер.бокс./проп.</div><div class="card-value" style="font-size:1rem;">${p.avgBoxikPerOffer}</div></div>
                     <div class="card" style="padding:0.5rem 0.7rem;"><div class="card-title" style="font-size:0.58rem;">🎟 Промокодів видано</div><div class="card-value" style="font-size:1rem;">${Math.round(p.users*0.81).toLocaleString('uk-UA')}</div></div>
                 </div>`;
-                html += `<div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
-                    <div>
-                        <div style="font-size:0.72rem; font-weight:700; margin-bottom:0.4rem;">📊 По сегментах</div>
-                        <table style="width:100%; font-size:0.67rem; border-collapse:collapse;">
-                            <thead><tr style="background:var(--bg-hover);">
-                                <th style="padding:0.3rem 0.5rem; text-align:left;">Сегмент</th>
-                                <th style="padding:0.3rem 0.4rem; text-align:right;">❤️</th>
-                                <th style="padding:0.3rem 0.4rem; text-align:right;">📦 Бокс.</th>
-                                <th style="padding:0.3rem 0.4rem; text-align:right;">🎟 Промо</th>
-                                <th style="padding:0.3rem 0.4rem; text-align:right;">🔗 Сайт</th>
-                                <th style="padding:0.3rem 0.4rem; text-align:right;">💰 Витр.</th>
-                            </tr></thead><tbody>`;
-                p.segments.forEach(s => {
-                    html += `<tr style="border-bottom:1px solid var(--border);">
-                        <td style="padding:0.28rem 0.5rem;"><strong>${s.s}</strong></td>
-                        <td style="padding:0.28rem 0.4rem; text-align:right;">${s.fav}</td>
-                        <td style="padding:0.28rem 0.4rem; text-align:right;">${s.box}</td>
-                        <td style="padding:0.28rem 0.4rem; text-align:right;">${s.promo}</td>
-                        <td style="padding:0.28rem 0.4rem; text-align:right;">${s.link}</td>
-                        <td style="padding:0.28rem 0.4rem; text-align:right;">${s.spent.toLocaleString('uk-UA')}</td>
-                    </tr>`;
-                });
-                html += `</tbody></table></div>
-                    <div>
-                        <div style="font-size:0.72rem; font-weight:700; margin-bottom:0.4rem;">📅 Динаміка по місяцях</div>
-                        <div style="position:relative; height:160px;"><canvas id="pchart-months-${p.id}"></canvas></div>
+                const noteCR = p.convEN
+                    ? `Партнер з ознакою "Генерує ЕН". ЕН (7д) — атрибуція через ЕН-лог за 7 днів після переходу на сайт.`
+                    : `Партнер БЕЗ ознаки "Генерує ЕН" — атрибуція ЕН недоступна, лінія ЕН прихована.`;
+
+                html += `
+                <!-- ── ВОРОНКА ПО МІСЯЦЯХ ── -->
+                <div style="margin-bottom:1rem;">
+                    <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.4rem;">
+                        <div style="font-size:0.78rem; font-weight:700;">📅 Воронка партнера — динаміка по місяцях</div>
+                        <div style="font-size:0.6rem; color:var(--text-secondary); font-style:italic;" title="${noteCR}">ℹ️ ${p.convEN ? 'Генерує ЕН' : 'Без атрибуції ЕН'}</div>
                     </div>
+                    <div style="position:relative; height:260px;"><canvas id="pchart-months-${p.id}"></canvas></div>
+                </div>
+
+                <!-- ── ВОРОНКА ПО СЕГМЕНТАХ ── -->
+                <div>
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:0.5rem; margin-bottom:0.4rem; flex-wrap:wrap;">
+                        <div style="font-size:0.78rem; font-weight:700;">📊 Воронка партнера — по сегментах</div>
+                        <div class="seg-switcher" id="pseg-sw-${p.id}" style="display:flex; gap:0.3rem; flex-wrap:wrap;">
+                            <button class="seg-btn active" onclick="switchPartnerSegDim(${p.id},'activity',this)">Статус активності</button>
+                            <button class="seg-btn" onclick="switchPartnerSegDim(${p.id},'substatus',this)">Підстатус активних</button>
+                            <button class="seg-btn" onclick="switchPartnerSegDim(${p.id},'lifecycle',this)">Життєвий цикл</button>
+                            <button class="seg-btn" onclick="switchPartnerSegDim(${p.id},'rfm',this)">RFM</button>
+                        </div>
+                    </div>
+                    <div style="position:relative; height:280px;"><canvas id="pchart-seg-${p.id}"></canvas></div>
                 </div>`;
             }
 
@@ -2201,28 +2555,126 @@
             el.innerHTML = html;
 
             if (tab === 'overview') {
+                // ── ГРАФІК 1: Динаміка по місяцях (line) ──
                 const mCtx = document.getElementById(`pchart-months-${p.id}`);
                 if (mCtx) {
+                    const months = p.months.map(m => m.m);
+                    const visit  = p.months.map(m => Math.round(m.box * 1.55));
+                    const buy    = p.months.map(m => m.box);
+                    const promo  = p.months.map(m => m.promo);
+                    const site   = p.months.map(m => m.link);
+                    const en     = p.months.map(m => p.convEN ? Math.round(m.link * (p.convRate/100)) : 0);
+
+                    const colorBy = { visit:'#2c3e50', buy:'#1abc9c', promo:'#e91e63', site:'#f39c12', en:'#0d7c4f' };
+                    const mkLine = (label, data, color) => ({
+                        label, data,
+                        borderColor: color,
+                        backgroundColor: color + '20',
+                        borderWidth: 2, pointRadius: 3, pointHoverRadius: 5,
+                        tension: 0.3, fill: false,
+                    });
+                    const datasets = [
+                        mkLine('👥 Зайшли', visit, colorBy.visit),
+                        mkLine('🛒 Купили', buy,   colorBy.buy),
+                        mkLine('🎟 Промо',  promo, colorBy.promo),
+                        mkLine('🔗 Сайт',   site,  colorBy.site),
+                    ];
+                    if (p.convEN) {
+                        datasets.push({...mkLine('🚚 ЕН (7д)', en, colorBy.en), borderWidth: 3});
+                    }
+
                     new Chart(mCtx, {
-                        type:'bar',
-                        data:{ labels:p.months.map(m=>m.m), datasets:[
-                            {label:'📦 Боксики', data:p.months.map(m=>m.box), backgroundColor:'rgba(13,124,79,0.7)', borderRadius:3},
-                            {label:'🎟 Промокод', data:p.months.map(m=>m.promo), backgroundColor:'rgba(255,107,53,0.7)', borderRadius:3},
-                            {label:'🔗 Сайт', data:p.months.map(m=>m.link), backgroundColor:'rgba(52,152,219,0.7)', borderRadius:3},
-                        ]},
-                        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#666',font:{size:9},boxWidth:8}}},scales:{x:{ticks:{color:'#666',font:{size:9}}},y:{ticks:{color:'#666',font:{size:9}},grid:{color:'#e8e8e8'}}}}
+                        type: 'line',
+                        data: { labels: months, datasets },
+                        options: {
+                            responsive: true, maintainAspectRatio: false,
+                            interaction: { mode: 'index', intersect: false },
+                            plugins: {
+                                legend: { position: 'top', labels: { color:'#666', font:{size:10}, boxWidth:12, padding:8 } },
+                                tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y.toLocaleString('uk-UA')}` } }
+                            },
+                            scales: {
+                                x: { ticks: { color:'#666', font:{size:10} } },
+                                y: { beginAtZero: true, ticks: { color:'#666', font:{size:10}, callback: v => v >= 1000 ? (v/1000).toFixed(1) + 'k' : v }, grid: { color:'#e8e8e8' } }
+                            }
+                        }
                     });
                 }
+
+                // ── ГРАФІК 2: По сегментах (line) — початковий рендер по 'activity' ──
+                renderPartnerSegChart(p, 'activity');
             }
+        }
+
+        // Стан перемикача дименшнів сегментації для кожного партнера
+        const partnerSegDim = {};
+
+        function switchPartnerSegDim(pid, dim, btn) {
+            partnerSegDim[pid] = dim;
+            const sw = document.getElementById(`pseg-sw-${pid}`);
+            if (sw) sw.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            const p = PARTNERS.find(x => x.id === pid);
+            if (p) renderPartnerSegChart(p, dim);
+        }
+
+        function renderPartnerSegChart(p, dim) {
+            const ctx = document.getElementById(`pchart-seg-${p.id}`);
+            if (!ctx) return;
+            // Знищуємо попередній інстанс якщо є
+            const existing = Chart.getChart ? Chart.getChart(ctx) : null;
+            if (existing) existing.destroy();
+
+            const segData = expandPartnerSegments(p);
+            const dimMap = { activity: 0, substatus: 1, lifecycle: 2, rfm: 3 };
+            const group = segData[dimMap[dim] ?? 0];
+            const labels = group.rows.map(r => r.s);
+
+            const colorBy = { visit:'#2c3e50', buy:'#1abc9c', promo:'#e91e63', site:'#f39c12', en:'#0d7c4f' };
+            const mkLine = (label, data, color) => ({
+                label, data,
+                borderColor: color,
+                backgroundColor: color + '20',
+                borderWidth: 2, pointRadius: 4, pointHoverRadius: 6,
+                tension: 0.3, fill: false,
+            });
+            const datasets = [
+                mkLine('👥 Зайшли', group.rows.map(r => r.visit), colorBy.visit),
+                mkLine('🛒 Купили', group.rows.map(r => r.box),   colorBy.buy),
+                mkLine('🎟 Промо',  group.rows.map(r => r.promo), colorBy.promo),
+                mkLine('🔗 Сайт',   group.rows.map(r => r.link),  colorBy.site),
+            ];
+            if (p.convEN) {
+                datasets.push({...mkLine('🚚 ЕН (7д)', group.rows.map(r => r.en), colorBy.en), borderWidth: 3});
+            }
+
+            new Chart(ctx, {
+                type: 'line',
+                data: { labels, datasets },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { position: 'top', labels: { color:'#666', font:{size:10}, boxWidth:12, padding:8 } },
+                        tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y.toLocaleString('uk-UA')}` } }
+                    },
+                    scales: {
+                        x: { ticks: { color:'#666', font:{size:10}, maxRotation:0, autoSkip:false } },
+                        y: { beginAtZero: true, ticks: { color:'#666', font:{size:10}, callback: v => v >= 1000 ? (v/1000).toFixed(1) + 'k' : v }, grid: { color:'#e8e8e8' } }
+                    }
+                }
+            });
         }
 
         function filterPartnerTable() {
             const search = (document.getElementById('partnerSearch')?.value || '').toLowerCase();
             const cat    = document.getElementById('partnerCategoryFilter')?.value || 'all';
+            const enF    = document.getElementById('partnerENFilter')?.value || 'all';
             filteredPartners = PARTNERS.filter(p => {
                 const matchSearch = p.name.toLowerCase().includes(search);
                 const matchCat    = cat === 'all' || p.category === cat;
-                return matchSearch && matchCat;
+                const matchEN     = enF === 'all' || (enF === 'genEN' && p.convEN) || (enF === 'noEN' && !p.convEN);
+                return matchSearch && matchCat && matchEN;
             });
             renderPartnerTable();
         }
@@ -2440,10 +2892,10 @@
                 <th style="width:110px;">Телефон</th>
                 <th style="width:100px;">Підстатус</th>
                 <th style="width:90px;">ЖЦК</th>
+                <th style="width:95px;">RFM</th>
                 <th style="width:100px;">${h.bal}</th>
                 <th style="width:100px;">${h.spent}</th>
-                <th style="width:70px;">✅ Завдань</th>
-                <th style="width:65px; text-align:center;">MoM%</th>
+                <th style="width:90px; text-align:center;" title="Кількість партнерів у яких клієнт купив офер за боксики">🛒 Партнерів</th>
             </tr>`;
         }
 
@@ -2455,29 +2907,6 @@
         }
 
         let activeClientTime = 'month';
-        let activeClientSummaryMetric = 'boxiky';
-        let activeClientAmountMode = 'sum';
-
-        function switchClientSummaryMetric(m, btn) {
-            activeClientSummaryMetric = m;
-            document.querySelectorAll('[id^="cmetricBtn-"]').forEach(b => {
-                b.classList.remove('active');
-                b.style.background = ''; b.style.color = ''; b.style.borderColor = '';
-            });
-            if (btn) {
-                btn.classList.add('active');
-                if (m === 'cashback') { btn.style.background='rgba(52,152,219,0.15)'; btn.style.color='#2980b9'; btn.style.borderColor='#2980b9'; }
-                else { btn.style.background='rgba(13,124,79,0.15)'; btn.style.color='var(--primary)'; btn.style.borderColor='var(--primary)'; }
-            }
-            initClientSummaryChart();
-        }
-
-        function switchClientAmountMode(m, btn) {
-            activeClientAmountMode = m;
-            document.querySelectorAll('[id^="camountBtn-"]').forEach(b => b.classList.remove('active'));
-            if (btn) btn.classList.add('active');
-            initClientSummaryChart();
-        }
 
         function switchClientTime(t, btn) {
             activeClientTime = t;
@@ -2540,17 +2969,12 @@
             const start = (clientPage - 1) * CLIENT_PAGE_SIZE;
             const slice = filteredClients.slice(start, start + CLIENT_PAGE_SIZE);
             const s = sym();
-            const momArr = [+4.2,-2.1,+7.8,+1.3,-5.4,+9.1,+3.6,-1.8,+6.4,+2.9,-3.7,+8.2,+0.5,-4.1,+5.7,+11.2,-2.8,+4.9,+1.1,-6.2];
 
             tbody.innerHTML = '';
             slice.forEach((c, idx) => {
                 const segLabel = `${SEG_ICONS[c.segment] || ''} ${c.segment}`;
                 const lcLabel  = `${LC_ICONS[c.lifecycle] || ''} ${c.lifecycle}`;
-                const rfmLabel = RFM_CATS[c.segment] || '—';
-                const scratchUsed = seededRnd(c.id*3+1, 0, 5);
-                const raffleCount = seededRnd(c.id*5+2, 0, 8);
-                const mom = momArr[idx % momArr.length];
-                const momHtml = `<span style="font-size:0.7rem; font-weight:700; padding:0.15rem 0.4rem; border-radius:4px; background:${mom>=0?'rgba(39,174,96,0.15)':'rgba(231,76,60,0.15)'}; color:${mom>=0?'var(--success)':'var(--danger)'};">${mom>0?'+':''}${mom}%</span>`;
+                const rfmLabel = c.rfm || RFM_CATS[c.segment] || '🆕 New';
                 const isOpen = activeClientDrillId === c.id;
                 const rowStyle = isOpen ? 'background:rgba(13,124,79,0.06); border-left:3px solid var(--primary);' : 'cursor:pointer;';
 
@@ -2562,10 +2986,10 @@
                     <td onclick="toggleClientDrill(${c.id})" style="color:var(--text-secondary); font-size:0.67rem;">${c.phone}</td>
                     <td onclick="toggleClientDrill(${c.id})">${segLabel}</td>
                     <td onclick="toggleClientDrill(${c.id})" style="font-size:0.67rem;">${lcLabel}</td>
+                    <td onclick="toggleClientDrill(${c.id})" style="font-size:0.67rem;">${rfmLabel}</td>
                     <td onclick="toggleClientDrill(${c.id})"><strong>${fmt(c.balance)}</strong> <span style="font-size:0.6rem;color:var(--text-secondary);">${s}</span></td>
                     <td onclick="toggleClientDrill(${c.id})">${fmt(c.spent)} <span style="font-size:0.6rem;color:var(--text-secondary);">${s}</span></td>
-                    <td onclick="toggleClientDrill(${c.id})" style="text-align:center;">${c.generalBoxUsed}</td>
-                    <td style="text-align:center;">${momHtml}</td>
+                    <td onclick="toggleClientDrill(${c.id})" style="text-align:center;"><strong>${c.offersVisited || 0}</strong></td>
                 `;
                 tbody.appendChild(row);
 
@@ -2771,23 +3195,26 @@
             if (!tbody) return;
             tbody.innerHTML = '';
             filteredCampaigns.forEach(c => {
-                const convEN = Math.round(c.en / c.promo * 100);
+                const convPromo = Math.round(c.promo / c.sent * 100);
                 const statusBadge = c.status === 'active'
                     ? '<span class="badge badge-success">🟢 Активна</span>'
                     : '<span class="badge" style="background:var(--bg-hover);color:var(--text-secondary);">✅ Завершена</span>';
                 const mcBadge = c.multiChannel
                     ? `<span class="badge" style="background:rgba(142,68,173,0.15);color:#8e44ad;font-size:0.6rem;padding:0.1rem 0.35rem;margin-left:0.3rem;" title="Каскадна акція — запущена на кількох каналах">🔗 Каскад</span>`
                     : '';
+                // SMS — opened немає, тільки delivered
+                const openedCell = c.channel === 'SMS'
+                    ? `<span style="color:var(--text-secondary); font-style:italic;">— (SMS)</span>`
+                    : `${c.opened.toLocaleString('uk-UA')} <span style="font-size:0.65rem;color:var(--text-secondary);">${Math.round(c.opened/c.sent*100)}%</span>`;
                 tbody.innerHTML += `<tr onclick="openCampaignDrill(${c.id})">
                     <td><strong>${c.name}</strong>${mcBadge}<br><span style="font-size:0.62rem;color:var(--text-secondary);">${c.promoType}</span></td>
                     <td>${c.icon} ${c.channel}</td>
                     <td style="font-size:0.68rem; color:var(--text-secondary); max-width:160px;">${c.audience}</td>
                     <td>${c.sent.toLocaleString('uk-UA')}</td>
                     <td>${c.delivered.toLocaleString('uk-UA')} <span style="font-size:0.65rem;color:var(--text-secondary);">${Math.round(c.delivered/c.sent*100)}%</span></td>
-                    <td>${c.opened.toLocaleString('uk-UA')} <span style="font-size:0.65rem;color:var(--text-secondary);">${Math.round(c.opened/c.sent*100)}%</span></td>
-                    <td>${c.promo.toLocaleString('uk-UA')} <span style="font-size:0.65rem;color:var(--text-secondary);">${Math.round(c.promo/c.sent*100)}%</span></td>
-                    <td><strong>${c.en.toLocaleString('uk-UA')}</strong></td>
-                    <td><strong style="color:${convEN>30?'var(--success)':convEN>15?'var(--warning)':'var(--danger)'}">${convEN}%</strong></td>
+                    <td>${openedCell}</td>
+                    <td>${c.promo.toLocaleString('uk-UA')} <span style="font-size:0.65rem;color:var(--text-secondary);">${convPromo}%</span></td>
+                    <td><strong style="color:${convPromo>15?'var(--success)':convPromo>7?'var(--warning)':'var(--danger)'}">${convPromo}%</strong></td>
                     <td>${statusBadge}</td>
                     <td style="color:var(--accent);font-weight:700;font-size:0.75rem;white-space:nowrap;">Детальніше →</td>
                 </tr>`;
@@ -2821,8 +3248,6 @@
                 <div class="card"><div class="card-title">👁️ Відкрили / Клікнули</div><div class="card-value">${c.channel==='SMS'?'—':Math.round(c.opened/c.sent*100)}<span class="card-unit">${c.channel==='SMS'?'':('%')}</span></div></div>
                 <div class="card"><div class="card-title">🎟 Взаємодія з промо</div><div class="card-value">${(c.channel==='SMS'||c.channel==='Push')?'—':c.promo.toLocaleString('uk-UA')}</div>
                     <div style="font-size:0.58rem;color:var(--text-secondary);">${lastStepLabel}</div></div>
-                <div class="card" style="border:1px dashed var(--border);opacity:0.5;"><div class="card-title">🚚 ЕН</div><div class="card-value" style="font-size:0.75rem;color:var(--text-secondary);">н/д</div>
-                    <div style="font-size:0.58rem;color:var(--text-secondary);">не відстежується</div></div>
             `;
 
             // Funnel — глибина залежить від каналу
@@ -3597,7 +4022,7 @@
             `;
         }
 
-        // ── L4: ДЕТАЛІ КЛІЄНТА ──
+        // ── L4: ДЕТАЛІ КЛІЕНТА ──
         function renderL4_client() {
             const content = document.getElementById('drillContent');
             const meta = SCENARIO_META[drillState.scenario];
@@ -3632,10 +4057,6 @@
                     <div class="stat-section-box" style="padding:0.7rem 0.85rem;">
                         <div style="font-size:0.6rem; color:var(--text-secondary);">📦 Витрачено всього</div>
                         <div style="font-size:1.4rem; font-weight:800; color:var(--text-primary);">${(cl.spent||0).toLocaleString('uk-UA')}</div>
-                    </div>
-                    <div class="stat-section-box" style="padding:0.7rem 0.85rem;">
-                        <div style="font-size:0.6rem; color:var(--text-secondary);">💳 Кешбек ₴</div>
-                        <div style="font-size:1.4rem; font-weight:800; color:var(--text-primary);">${(Math.round((cl.balance||0)*0.15)).toLocaleString('uk-UA')}</div>
                     </div>
                     <div class="stat-section-box" style="padding:0.7rem 0.85rem;">
                         <div style="font-size:0.6rem; color:var(--text-secondary);">🎟 Промокодів/міс</div>
@@ -3747,64 +4168,6 @@
                 ]
             }
         };
-
-        function switchOverviewFunnel(mode, btn) {
-            overviewFunnelMode = mode;
-            document.querySelectorAll('[id^="funnelBtn-"]').forEach(b => b.classList.remove('active'));
-            if (btn) btn.classList.add('active');
-            renderOverviewFunnel();
-        }
-
-        function renderOverviewFunnel() {
-            const el = document.getElementById('overviewFunnelBody');
-            if (!el) return;
-            const data = FUNNEL_DATA[overviewFunnelMode] || FUNNEL_DATA.all;
-            const max = data.steps[0].value;
-            const color = data.color;
-
-            el.innerHTML = `
-                <div style="display:flex; align-items:stretch; gap:0.4rem; padding:0.4rem 0.2rem;">
-                    ${data.steps.map((step, i) => {
-                        const pct = Math.round(step.value / max * 100);
-                        const prevVal = i > 0 ? data.steps[i-1].value : step.value;
-                        const conv = i > 0 ? Math.round(step.value / prevVal * 100) : 100;
-                        const dropoff = i > 0 ? prevVal - step.value : 0;
-                        const barWidth = Math.max(pct, 12);
-                        const isLast = i === data.steps.length - 1;
-                        return `
-                            <div style="flex:1; display:flex; flex-direction:column; align-items:center; min-width:0;">
-                                <div style="font-size:0.62rem; font-weight:700; color:var(--text-secondary); text-align:center; margin-bottom:0.3rem; min-height:2.5em; display:flex; align-items:center; line-height:1.2;">${step.name}</div>
-                                <div style="width:100%; background:${color}; opacity:${0.4 + (pct/100)*0.6}; border-radius:6px; padding:0.6rem 0.4rem; text-align:center; min-height:60px; display:flex; flex-direction:column; justify-content:center;">
-                                    <div style="font-size:1.3rem; font-weight:900; color:white;">${(step.value/1000).toFixed(1)}K</div>
-                                    <div style="font-size:0.58rem; color:rgba(255,255,255,0.9); margin-top:0.1rem;">${step.note}</div>
-                                </div>
-                                ${i > 0 ? `
-                                <div style="margin-top:0.35rem; text-align:center; font-size:0.6rem;">
-                                    <div style="font-weight:700; color:${conv >= 70 ? 'var(--success)' : conv >= 40 ? 'var(--warning)' : 'var(--danger)'};">${conv}% переходять</div>
-                                    <div style="color:var(--text-secondary); font-size:0.55rem;">−${(dropoff/1000).toFixed(1)}K drop-off</div>
-                                </div>` : `
-                                <div style="margin-top:0.35rem; text-align:center; font-size:0.6rem; color:var(--text-secondary);">
-                                    <div style="font-weight:700;">старт</div>
-                                </div>`}
-                            </div>
-                            ${!isLast ? `<div style="display:flex; align-items:center; padding-top:2.8em; color:${color}; font-size:1.2rem; font-weight:700;">›</div>` : ''}
-                        `;
-                    }).join('')}
-                </div>
-                <div style="margin-top:0.6rem; padding:0.5rem 0.75rem; background:rgba(0,0,0,0.03); border-radius:6px; font-size:0.65rem; color:var(--text-secondary); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
-                    <span><strong style="color:var(--text-primary);">${data.title}.</strong> Загальна конверсія: <strong style="color:${color};">${Math.round(data.steps[data.steps.length-1].value / data.steps[0].value * 100)}%</strong> (${(data.steps[0].value/1000).toFixed(1)}K → ${(data.steps[data.steps.length-1].value/1000).toFixed(1)}K)</span>
-                    <span style="font-style:italic;">Найбільший drop-off: етап ${getMaxDropoff(data.steps)}</span>
-                </div>`;
-        }
-
-        function getMaxDropoff(steps) {
-            let maxIdx = 1, maxDrop = 0;
-            for (let i = 1; i < steps.length; i++) {
-                const drop = steps[i-1].value - steps[i].value;
-                if (drop > maxDrop) { maxDrop = drop; maxIdx = i; }
-            }
-            return `"${steps[maxIdx].name}" (−${(maxDrop/1000).toFixed(1)}K)`;
-        }
 
         // ── СПАРКЛАЙНИ для 4 блоків ──
         function initSparklines() {
@@ -4215,12 +4578,6 @@
                 { label:'Витрачено',  data:[3480,3840,4020,4280,4540,4820,5040,5240,5480] },
             ]);
 
-            // Кешбек по місяцях
-            makeLine('chartCashback', MONTHS, [
-                { label:'Нараховано ₴', data:[1820,1980,2140,2280,2380,2480,2580,2680,2780] },
-                { label:'Витрачено ₴',  data:[1240,1380,1480,1560,1640,1720,1820,1920,1980] },
-            ]);
-
             // Завдання — виконань по сегментах
             makeBarChart('chartTasksSeg', labels, [{ label:'Виконань', data:TASKS_SEG[dim] }]);
 
@@ -4424,7 +4781,8 @@
             renderPartnerTable();
             renderClientTable();
             initLoyaltyCharts();
-            initOverviewCharts();
+            // Overview: нова воронка
+            renderOverviewFunnel();
             initPartnerCharts();
             initCampaignCharts();
             setInterval(updateLastUpdateTime, 60000);
@@ -4432,19 +4790,9 @@
             const _sp = window.switchPage;
             window.switchPage = function(pageId) {
                 _sp.call(this, pageId);
-                // Reset drill state if leaving overview
-                if (pageId !== 'overview' && drillState && drillState.level > 0) {
-                    drillState = { level: 0, scenario: null, entityId: null, clientId: null };
-                    const l1 = document.getElementById('drillL1');
-                    const dc = document.getElementById('drillContent');
-                    const bc = document.getElementById('drillBreadcrumbs');
-                    if (l1) l1.style.display = 'block';
-                    if (dc) dc.style.display = 'none';
-                    if (bc) bc.style.display = 'none';
-                }
                 if (pageId === 'economics') { initLoyaltyCharts(); }
                 if (pageId === 'campaigns') { initCampaignCharts(); closeCampaignDrill(); }
-                if (pageId === 'overview')  { initOverviewCharts(); }
+                if (pageId === 'overview')  { requestAnimationFrame(() => renderOverviewFunnel()); }
                 if (pageId === 'partners') {
                     activePartnerDrillId = null;
                     renderPartnerTable();
@@ -4567,18 +4915,6 @@
                     { label:'Джерело', value:'NovaPlace: таблиці boxik_accrual (типи нарахування), boxik_spent (списання) → агрегація в BigQuery' },
                 ]
             },
-            'loy-cashback': {
-                title: '💳 Кешбек — що вимірює кожен показник',
-                rows: [
-                    { label:'Що таке кешбек', value:'Гривневий кешбек що нараховується клієнту за певні дії (наприклад за першу відправку або за відправки вище певної суми). Витрачається на оплату послуг НП — тобто безпосередньо стимулює нові ЕН.' },
-                    { label:'Нараховано', value:'Загальна сума гривневого кешбеку нарахованого всім клієнтам за поточний місяць. Зростання — більше клієнтів виконують умови нарахування.', formula:'SUM(cashback_accrued) WHERE month=current' },
-                    { label:'Витрачено на НП', value:'Сума кешбеку що клієнти реально використали при оплаті послуг НП. Це пряма конверсія кешбеку в ЕН.', formula:'SUM(cashback_spent_on_np)' },
-                    { label:'% використання', value:'Яка частка нарахованого кешбеку реально витрачається. Низький % (наприклад 40%) означає що клієнти накопичують але не повертаються. Високий % (>70%) — механіка добре утримує клієнтів.', formula:'SUM(spent) / SUM(accrued) × 100' },
-                    { label:'Невикористано', value:'Залишок: нараховано мінус витрачено. Якщо росте місяць за місяцем — клієнти відходять не витративши кешбек. Це сигнал що треба нагадувати про залишок або додати термін дії.', formula:'SUM(accrued) - SUM(spent)' },
-                    { label:'Динаміка по місяцях', value:'Бар — нараховано (що клієнти заробили). Лінія — витрачено (що використали). Ідеальна картина: обидва зростають разом. Якщо витрати відстають — клієнти не повертаються.' },
-                    { label:'Джерело', value:'NovaPlace: cashback_log (нарахування та списання) → BigQuery' },
-                ]
-            },
             'loy-tasks': {
                 title: '✅ Завдання → Промокод НП — повна логіка блоку',
                 rows: [
@@ -4633,7 +4969,7 @@
                     { label:'Боксиків витрачено', value:'Загальна сума боксиків списаних у цього партнера за весь час. Показує "вагу" партнера в програмі лояльності — скільки реальних боксиків партнер "поглинає".', formula:'SUM(boxik_amount WHERE partner_id=x)' },
                     { label:'Сер. бокс./пропоз.', value:'Середня вартість пропозиції в боксиках. Показує чи "дорогий" партнер — якщо середня вартість висока, менше клієнтів можуть дозволити собі використати пропозицію.', formula:'AVG(offer_price_boxiky WHERE partner_id=x AND status=active)' },
                     { label:'Сер. час активності', value:'Скільки днів в середньому одна пропозиція партнера "висить" активною в каталозі. Короткий час = часта ротація. Довгий = стабільні офери.', formula:'AVG(offer_end_date - offer_start_date) WHERE completed' },
-                    { label:'Умова НП', value:'Застаріле поле — партнери не генерують ЕН безпосередньо. Воронка партнера завершується на кроці "Перейти на сайт". Що відбувається далі на сайті партнера — поза нашим відстеженням.' },
+                    { label:'Генерує ЕН (ознака)', value:'Атрибут партнера: якщо клієнт скопіював промокод цього партнера і протягом 7 днів зробив ЕН — ми атрибутуємо цю ЕН партнеру (логічне завершення сценарію). Для партнерів без ознаки атрибуція ЕН не рахується. Що відбувається на сайті партнера після кліку — поза нашим відстеженням, атрибуція виключно за подіями в додатку НП + ЕН-логом.' },
                     { label:'🔗 Конв. бокс→промо', value:'Частка клієнтів що купили офер за боксики і скопіювали промокод. Показує наскільки привабливий промокод після факту списання.', formula:'COUNT(promo_copied) / COUNT(boxik_spent) × 100' },
                     { label:'MoM%', value:'Відсоткова зміна обраної метрики відносно попереднього місяця. Зелений = зріст, червоний = падіння. Дозволяє швидко виявити партнерів що втрачають активність.', formula:'(current - prev) / prev × 100' },
                     { label:'Джерело', value:'NovaPlace: partners, offers, boxik_transactions → BigQuery; EN-трекінг: en_log' },
@@ -4643,7 +4979,7 @@
                 title: '📈 Summary-графік партнерів — як читати',
                 rows: [
                     { label:'Що це таке', value:'Стекований стовпчиковий графік де кожен стовпець = один часовий період, кожен кольоровий шар в стовпці = один партнер. Висота шару = значення обраної метрики для цього партнера за цей місяць. Дозволяє побачити і загальний тренд і внесок кожного партнера одночасно.' },
-                    { label:'Перемикач метрики', value:'Змінює що відображається: Боксики (скільки списано) / Скористались (унікальних клієнтів) / В улюбленому (кількість підписників) / ЕН (скільки ЕН згенеровано). Кожна метрика дає інший погляд на ефективність партнерів.' },
+                    { label:'Перемикач метрики', value:'Змінює що відображається: Боксики (скільки списано) / Скористались (унікальних клієнтів) / В улюбленому (кількість підписників) / Перейшли на сайт (кліки на посилання магазину). Кожна метрика дає інший погляд на ефективність партнерів.' },
                     { label:'Місяць / Квартал', value:'Перемикач агрегації часу. Місяць = деталізований тренд, видно сезонність. Квартал = стратегічна картина, прибирає "шум" окремих місяців.' },
                     { label:'YoY% (рядок під графіком)', value:'Year over Year — порівняння поточного місяця з тим самим місяцем минулого року. Прибирає сезонність. Якщо травень 2025 кращий за травень 2024 — це реальне зростання, а не "просто так вийшло".', formula:'(current_month - same_month_prev_year) / same_month_prev_year × 100' },
                     { label:'MoM% (рядок під графіком)', value:'Month over Month — порівняння з попереднім місяцем. Показує оперативний тренд. Зручно помічати різкі зміни: якщо MoM -20% без очевидної причини — щось пішло не так.', formula:'(current_month - prev_month) / prev_month × 100' },
@@ -4665,7 +5001,6 @@
                     { label:'Скретч-карт (вик.)', value:'Кількість скретч-карт що клієнт використав. Скретч-картки — окрема механіка лояльності де клієнт "стирає" захисний шар і дізнається про виграш.', formula:'COUNT(scratch_used WHERE CID=x)' },
                     { label:'ЕН з промокодом', value:'Булева ознака: чи робив клієнт хоча б одне ЕН за останні 90 днів використовуючи будь-який промокод (НП або партнера або акції). Так/Ні — бінарна ознака конверсії.', formula:'BOOL: EXISTS(en WHERE promo_used AND CID=x AND days<=90)' },
                     { label:'MoM%', value:'Зміна суми витрачених боксиків клієнта між поточним і попереднім місяцем. Зелений = клієнт став активнішим у програмі. Червоний = спад активності — потенційний відтік.', formula:'(spent_current - spent_prev) / spent_prev × 100' },
-                    { label:'Одиниці вимірювання', value:'Перемикач "Одиниці" (вгорі сторінки) перераховує числові колонки: Боксики = базова одиниця / Гривні = боксики × 18.5 / ЕН-еквівалент = боксики × 0.18 (середній коефіцієнт конверсії).' },
                     { label:'Джерело', value:'CDP (CID, сегменти, ЖЦК, RFM) + NovaPlace (боксики, завдання, партнери) + BigQuery' },
                 ]
             },
